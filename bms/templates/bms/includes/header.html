@@ -1,0 +1,15 @@
+<div class="theme-header-navigate" style="background-color: white;">
+    <div class="left"
+         style="width:auto;font-size:30px;color:dodgerblue;font-weight:bolder;margin-left:20px;margin-top:0px;">
+        {{ org_name }}
+    </div>
+    <div class="right">
+        <span> 登陆用户：<b>{{ request.user.username }}</b></span>
+        <ul class="nav navbar-nav navbar-right">
+{#            <li>{{ perms }}</li>#}
+
+            <li><a href="/bms/index"><b>首页</b></a></li>
+            <li><a href="/bms/logout"><b>注销</b></a></li>
+        </ul>
+    </div>
+</div>

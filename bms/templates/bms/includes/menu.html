@@ -1,0 +1,18 @@
+<div id="aa" class="easyui-accordion" style="width:260px;">
+    {% if ls_menu %}
+        {% for menu in ls_menu %}
+            <div title="{{ menu.name }}" data-options="iconCls:'icon-scategorys',selected:true"
+                 style="overflow:auto;padding:10px;">
+                <ul class="nav nav-pills nav-stacked">
+                    {% if menu.child %}
+                        {% for cmenu in  menu.child %}
+                            <li class="nav-li" role="presentation">
+                                <a href="#" onclick="newone('{{ cmenu.name }}','{{ cmenu.url }}',this)">{{ cmenu.name }}</a>
+                            </li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>

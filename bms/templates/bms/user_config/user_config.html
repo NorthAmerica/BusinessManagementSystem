@@ -1,0 +1,441 @@
+
+<script>
+
+    $(function () {
+        initTable();
+    });
+
+    //初始化表格
+    function initTable() {
+        $('#UserGrid').datagrid({
+            title: '机构管理员列表',
+            iconCls: 'icon-user',
+            loadMsg: '数据加载中...',
+            nowrap: true,
+            autoRowHeight: true,
+            striped: true,
+            url: '../bms/main_user_list',
+            {#sortName: 'username',#}
+            {#sortOrder: 'asc',#}
+            border: true,
+            remoteSort: false,
+            idField: 'UserID',
+            pageSize: 10,
+            pagination: true,
+            rownumbers: true,
+            singleSelect: true,
+            fitColumns: true,
+            columns: [[
+                {field: 'ck', checkbox: true},
+                {field: 'id', title: 'ID', width: 80, hidden:true },
+                {field: 'username', title: '用户名', width: 200, sortable: true},
+                {field: 'last_name', title: "姓名", width: 250, sortable: true},
+                {field: 'email', title: '邮箱', width: 200, sortable: true},
+                {field: 'position', title: '职位', width: 200, sortable: true},
+                {field: 'mobile_phone', title: '手机号码', width: 200, sortable: true},
+                {
+                    field: 'is_active',
+                    title: "是否启用",
+                    width: 200,
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        if (value == true) {
+                            return value = '是';
+                        } else {
+                            return value = '否';
+                        }
+                    }
+                }
+            ]],
+            toolbar: [{
+                id: 'btnadd',
+                text: '添加用户',
+                iconCls: 'icon-add',
+                handler: function () {
+                    AddUserDialog('添加用户');
+                }
+            }, '-', {
+                id: 'btnedit',
+                text: '修改用户',
+                iconCls: 'icon-edit',
+                handler: function () {
+                    UpdateUserDialog('修改用户');
+                }
+            }, '-', {
+                id: 'btncut',
+                text: '修改密码',
+                iconCls: 'icon-lock-password',
+                handler: function () {
+                    ChangePwd();
+                }
+            }, '-', {
+                id: 'btnrefresh',
+                text: '刷新',
+                iconCls: 'icon-reload',
+                handler: function () {
+                    initTable();
+                }
+            }],
+            onDblClickRow: function (index, row) {
+                UpdateUserDialog('修改用户');
+            }
+        });
+    }
+
+    function AddUserDialog(init_title) {
+        $('#AddUserDialog').dialog({title:init_title,
+            width:650,
+            height:650,
+            buttons:[{
+				text:'保存',
+				handler:function(){
+				    AddUserEvent();
+				}
+			},{
+				text:'关闭',
+				handler:function(){
+				    $('#AddUserDialog').dialog('close')
+                }
+			}]
+        });
+        $('#AddUserDialog').dialog('open');
+        ClearText();
+    }
+
+    function UpdateUserDialog(init_title) {
+        var UpdateUser = $("#UserGrid").datagrid("getSelections");
+        if (UpdateUser.length == 0) {
+            $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
+            return false;
+        }
+        $('#UpdateUserDialog').dialog({title:init_title,
+            width:650,
+            height:550,
+            buttons:[{
+				text:'保存',
+				handler:function(){
+				    UpdateUserEvent();
+				}
+			},{
+				text:'关闭',
+				handler:function(){
+				    $('#UpdateUserDialog').dialog('close')
+                }
+			}]
+        });
+        $('#UpdateUserDialog').dialog('open');
+        var row = $('#UserGrid').datagrid('getSelected');
+        if(row)
+        {
+            $('#UpdateUserForm').form('load',row);
+        }
+    }
+    function UpdateUserEvent() {
+            //验证所有的文本框是否通过用户的验证
+            var valid = $('#UpdateUserForm').form('validate');
+
+            var userid = $("#UserGrid").datagrid("getSelections")[0].id;
+            if (userid == "" || userid == null || userid == undefined) {
+                $.messager.alert('错误', '用户主键丢失');
+                return false
+            }
+            if (valid == false) {
+                return false;
+            }
+
+            var CBEnable = '';
+
+            if ($("#is_active1").combobox('getValue') == "0"|| $("#is_active1").combobox('getValue') == "false") {
+                CBEnable = 'False';
+            }else if ($("#is_active1").combobox('getValue') == "1" || $("#is_active1").combobox('getValue') == "true") {
+                CBEnable = 'True';
+            }
+
+
+            var postdata = {
+                id: userid,
+                username: $("#username1").val(),
+                last_name:$("#last_name1").val(),
+                email:    $("#email1").val(),
+                position: $("#position1").val(),
+                mobile_phone: $("#mobile_phone1").val(),
+                is_active: CBEnable
+            };
+            var passurl='../bms/update_main_user';
+            $.ajax({
+                type: 'POST',
+                url: passurl,
+                cache: false,
+                data:postdata,
+                success: function (data) {
+                    if (data && data.success) {
+                        $.messager.show({
+                            title: '我的消息',
+                            msg: data.msg,
+                            timeout: 5000,
+                            showType: 'slide'
+                        });
+                        $('#UpdateUserDialog').dialog('close');
+                        $("#UserGrid").datagrid("reload");
+                    }
+                    else {
+                        alert("添加失败，请您重新检查");
+                    }
+                },
+                error: function (data) {
+                    $.messager.alert('错误', data.responseText);
+                }
+            });
+
+        }
+
+    function ChangePwd() {
+        var UpdateUser = $("#UserGrid").datagrid("getSelections");
+        if (UpdateUser.length == 0) {
+            $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
+            return false;
+        }
+        $('#ChangePwdDialog').dialog({title:'修改密码',
+            width:550,
+            height:300,
+            buttons:[{
+				text:'保存',
+				handler:function(){
+				    ChangePwdEvent();
+				}
+			},{
+				text:'关闭',
+				handler:function(){
+				    $('#ChangePwdDialog').dialog('close')
+                }
+			}]
+        });
+        $('#ChangePwdDialog').dialog('open');
+    }
+    function ChangePwdEvent() {
+            //验证所有的文本框是否通过用户的验证
+            var valid = $('#ChangePwdForm').form('validate');
+
+            var userid = $("#UserGrid").datagrid("getSelections")[0].id;
+            if (userid == "" || userid == null || userid == undefined) {
+                $.messager.alert('错误', '用户主键丢失');
+                return false
+            }
+            if (valid == false) {
+                return false;
+            }
+            if ($("#password1").val() != $("#PasswordOK1").val()) {
+                $.messager.alert("友情提示", "两次输入的密码不一致，请重新输入。")
+                $("#password1").val("");
+                $("#PasswordOK1").val("");
+                return;
+            }
+
+            //创建传递的参数
+            var postdata = {
+                id: userid,
+                password: $("#password1").val(),
+            };
+            var passurl='../bms/change_pwd_main_user';
+            $.ajax({
+                type: 'POST',
+                url: passurl,
+                cache: false,
+                {#headers: headers,#}
+                data:postdata,
+                success: function (data) {
+                    if (data && data.success) {
+                        $.messager.show({
+                            title: '我的消息',
+                            msg: data.msg,
+                            timeout: 5000,
+                            showType: 'slide'
+                        });
+                        $('#ChangePwdDialog').dialog('close');
+                        $("#UserGrid").datagrid("reload");
+                    }
+                    else {
+                        alert("添加失败，请您重新检查");
+                    }
+                },
+                error: function (data) {
+                    $.messager.alert('错误', data.responseText);
+                }
+            });
+
+        }
+    function AddUserEvent() {
+            //验证所有的文本框是否通过用户的验证
+            var valid = $('#AddUserForm').form('validate');
+            if (valid == false) {
+                return false;
+            }
+            var CBEnable = 'True';
+            if ($("#is_active").combobox('getValue') == "0") {
+                CBEnable = 'False';
+            }
+
+            if ($("#password").val() != $("#PasswordOK").val()) {
+                $.messager.alert("友情提示", "两次输入的密码不一致，请重新输入。")
+                $("#password").val("");
+                $("#PasswordOK").val("");
+                return;
+            }
+
+            //创建传递的参数
+            var postdata = {
+                username: $("#username").val(),
+                password: $("#password").val(),
+                last_name:$("#last_name").val(),
+                email:    $("#email").val(),
+                position: $("#position").val(),
+                mobile_phone: $("#mobile_phone").val(),
+                is_active: CBEnable
+            };
+            var passurl='../bms/add_main_user';
+            $.ajax({
+                type: 'POST',
+                url: passurl,
+                cache: false,
+                {#headers: headers,#}
+                {#data: $('#AddUserForm').serialize(),#}
+                data:postdata,
+                success: function (data) {
+                    if (data && data.success) {
+                        $.messager.show({
+                            title: '我的消息',
+                            msg: data.msg,
+                            timeout: 5000,
+                            showType: 'slide'
+                        });
+                        $('#AddUserDialog').dialog('close');
+                        $("#UserGrid").datagrid("reload");
+                    }
+                    else {
+                        alert("添加失败，请您重新检查");
+                    }
+                },
+                error: function (data) {
+                    $.messager.alert('错误', data.responseText);
+                }
+            });
+
+        }
+    function ClearText() {
+        $('#AddUserForm').form('clear');
+    }
+</script>
+<div id="main-tab">
+    <div title="后台管理员" style="padding:10px">
+        <table id="UserGrid"></table>
+        {#----------------------新增用户界面------------------------------------------------------------#}
+        <div id="AddUserDialog" class="easyui-dialog" style="padding:10px 20px"
+         closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="AddUserForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="username">用户名：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="username" name="username" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="password">密码：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="password" id="password" name="password" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="PasswordOK">确认密码：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="password" id="PasswordOK" name="PasswordOK" data-options="required:true" validtype="equalTo['password']" invalidmessage="两次输入密码不匹配" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="last_name">姓名：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="last_name" name="last_name" data-options="validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="email">邮箱：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="email" name="email" data-options="validType:'length[1,200]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="position">岗位：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="position" name="position" data-options="validType:'length[1,100]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="mobile_phone">手机号码：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="mobile_phone" name="mobile_phone" data-options="validType:'length[1,100]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="is_active">是否启用：</label></td>
+                    <td>
+                        <select id="is_active" name="is_active" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
+                            <option value="1">启用</option>
+                            <option value="0">禁止</option>
+                        </select>
+                    </td>
+                </tr>
+
+{#                <tr>#}
+{#                    <td colspan="2" style="text-align:center; padding-top:10px">#}
+{#                        <a href="javascript:void(0)" class="easyui-linkbutton" id="btnAddUser" iconcls="icon-ok" onclick="javascript:AddUserEvent()">确定</a>#}
+{#                        <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel" onclick="javascript:$('#AddUserDialog').dialog('close')">关闭</a>#}
+{#                    </td>#}
+{#                </tr>#}
+            </table>
+        </form>
+    </div>
+        {#----------------------新增用户界面结束------------------------------------------------------------#}
+        {#----------------------更新用户界面------------------------------------------------------------#}
+        <div id="UpdateUserDialog" class="easyui-dialog" style="padding:10px 20px"
+         closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="UpdateUserForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="username">用户名：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="username1" name="username" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="last_name">姓名：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="last_name1" name="last_name" data-options="validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="email">邮箱：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="email1" name="email" data-options="validType:'length[1,200]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="position">岗位：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="position1" name="position" data-options="validType:'length[1,100]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="mobile_phone">手机号码：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="mobile_phone1" name="mobile_phone" data-options="validType:'length[1,100]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="is_active">是否启用：</label></td>
+                    <td>
+                        <select id="is_active1" name="is_active" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
+                            <option value="1">启用</option>
+                            <option value="0">禁止</option>
+                        </select>
+                    </td>
+                </tr>
+
+            </table>
+        </form>
+    </div>
+        {#----------------------更新用户界面结束------------------------------------------------------------#}
+        {#----------------------更新密码界面------------------------------------------------------------#}
+        <div id="ChangePwdDialog" class="easyui-dialog" style="padding:10px 20px"
+         closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="ChangePwdForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="password">密码：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="password" id="password1" name="password" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="PasswordOK">确认密码：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="password" id="PasswordOK1" name="PasswordOK" data-options="required:true" validtype="equalTo['password']" invalidmessage="两次输入密码不匹配" style="width:350px;" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+        {#----------------------更新密码界面结束------------------------------------------------------------#}
+    </div>
+</div>

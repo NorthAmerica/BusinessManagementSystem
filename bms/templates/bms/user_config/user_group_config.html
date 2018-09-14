@@ -1,0 +1,36 @@
+<script>
+
+    $(function () {
+        initRoleTree();
+        {#initUserGrid();#}
+        {#AddUserGrid();#}
+    });
+    function initRoleTree() {
+        $('#RoleTree').tree({
+            url: '../bms/group_list',
+            {#onLoadSuccess: function (node, data) { $("#RoleTreeloading").css('display', 'none')},#}
+            onClick: function (node) {
+                // 在用户点击的时候提示
+                $('#UserRoleGrid').datagrid('loadData', { total: 0, rows: [] });
+                $('#UserRoleGrid').datagrid('load', {
+                    id: node.id
+                });
+            }
+        })
+    }
+</script>
+
+
+<div id="cc" class="easyui-layout" style="height:700px;" fit="true">
+    <div data-options="region:'west',title:'角色列表',split:true,collapsible:false" style="width:150px;">
+{#        <img id="RoleTreeloading" src="~/Images/loading.gif" width="160" height="160" />#}
+        <ul id="RoleTree"></ul>
+    </div>
+    <div data-options="region:'center',title:'人员列表-选择角色后自动更新'" style="padding:5px;background:#eee;height:400px;">
+        <table id="UserRoleGrid"></table>
+    </div>
+</div>
+<div id="AddUserRoleDialog" class="easyui-dialog" style="width:560px;height:340px;padding:10px 20px"
+     closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+    <table id="AddUserGrid"></table>
+</div>

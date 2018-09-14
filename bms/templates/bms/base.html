@@ -1,0 +1,130 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'InsdepUI/master.css' %}">
+    <link rel="stylesheet" href="{% static 'InsdepUI/insdep.easyui.min.css' %}">
+    <link rel="stylesheet" href="{% static 'InsdepUI/icon.css' %}">
+    <link rel="stylesheet" href="{% static 'InsdepUI/iconfont/iconfont.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'self.css' %}">
+    <script src="{% static 'InsdepUI/jquery.min.js' %}"></script>
+    <script>
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+        });
+    </script>
+</head>
+<body class="easyui-layout">
+<div data-options="region:'north'" style="height:65px;overflow:hidden">
+    {% include 'bms/includes/header.html' %}
+</div>
+
+<div data-options="region:'west',title:'菜单',split:true" style="width:260px;padding:0px; ">
+    {% include 'bms/includes/menu.html' %}
+</div>
+<div data-options="region:'center'" style="padding:5px;background:#eee;">
+    {% block main-content %}
+    {% endblock main-content %}
+</div>
+{#    <div class="theme-layout">#}
+{#        <div class="theme-left-layout">#}
+{#            <div class="theme-left-logo"></div>#}
+{#            <div class="theme-left-menu">#}
+{#                <dl>#}
+{#                    <dt href="#">控制台</dt>#}
+{#                </dl>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="theme-right-layout">#}
+{#            <div class="theme-header-navigate">#}
+{#                 <!--顶部导航左侧布局-->#}
+{#                <div class="left">#}
+{#                    <a class="easyui-linkbutton theme-left-menu-switch">#}
+{#                       <span class="iconfont">&#xe699;</span>#}
+{#                    </a>#}
+{##}
+{#                    <!--导航-->#}
+{##}
+{#                </div>#}
+{#                <!--顶部导航左侧布局 end-->#}
+{##}
+{#                <!--顶部导航右侧布局-->#}
+{#                <div class="right">#}
+{##}
+{#                    <!--用户信息-->#}
+{#                    <a href="#" class="easyui-menubutton theme-header-navigate-user-button" data-options="menu:'.theme-header-navigate-user-panel'"><img src="https://www.insdep.com/static/insdep/theme.default/images/portrait_250x250.png" width="32" height="32">39685109</a>#}
+{#                    <div class="theme-header-navigate-user-panel">#}
+{#                       <dl>#}
+{#                            <dd>#}
+{#                                <img src="https://www.insdep.com/static/insdep/theme.default/images/portrait_250x250.png" width="86" height="86">#}
+{#                                <b>39685109</b>#}
+{#                                <span class="font-grayish">未设置</span>#}
+{#                                <p>安全等级：<i class="font-green">高</i></p>#}
+{#                            </dd>#}
+{#                            <dt>#}
+{#                                <a class="theme-navigate-user-modify">修改资料</a>#}
+{#                                <a class="theme-navigate-user-logout" href="https://www.insdep.com/member/application/index/index/exits">注销</a>#}
+{#                            </dt>#}
+{#                       </dl>#}
+{#                    </div>#}
+{##}
+{#                    <div class="theme-header-navigate-sep"></div>#}
+{##}
+{##}
+{#                    <a href="#" class="easyui-linkbutton"><span class="iconfont">&#xe690;</span></a>#}
+{##}
+{#                    <a href="#" class="easyui-menubutton" data-options="menu:'#navigate_more',hasDownArrow:false"><span class="iconfont">&#xe684;</span></a>#}
+{#                    <div id="navigate_more" class="theme-header-navigate-menu-panel" data-options="noline:true">#}
+{#                        <div>联系我们</div>#}
+{#                        <div>参与改进计划</div>#}
+{#                        <div>关于</div>#}
+{#                    </div>#}
+{##}
+{#                </div>#}
+{#                <!--顶部导航右侧布局 end-->#}
+{##}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+</body>
+
+<script src="{% static 'InsdepUI/jquery.easyui.min.js' %}"></script>
+<script src="{% static 'InsdepUI/insdep.extend.min.js' %}"></script>
+<script>
+    $(function () {
+        $('#main-tab').tabs({
+            border: false,
+            width: $("#main-tab").parent().width(),
+            height: "auto",
+            onSelect: function (title,index) {
+                $('li.nav-li').each(function () { $(this).removeClass('active') });
+                $('li.nav-li a').each(function () {
+                    if ($(this).text() == title) {
+                        $(this).parent().addClass('active');
+                    }
+                });
+            }
+        });
+    });
+    function newone(title, url, a) {
+        $('li.nav-li').each(function () { $(this).removeClass('active') });
+        $(a).parent().addClass('active');
+        if ($('#main-tab').tabs('exists', title)) {
+            $('#main-tab').tabs('select', title);
+        } else {
+            $('#main-tab').tabs('add', {
+                title: title,
+                href: url,
+                closable: true
+            });
+        }
+    }
+
+    </script>
+    {% block javascript %}
+    {% endblock javascript %}
+
+</html>
