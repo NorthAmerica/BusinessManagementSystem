@@ -48,5 +48,5 @@ class Agency_User(models.Model):
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
 	class Meta:
 		# app_label = '用户组'
-		verbose_name = '代理后台用户'
-		verbose_name_plural = '代理后台用户'
+		verbose_name = '归属后台用户'
+		verbose_name_plural = '归属后台用户'

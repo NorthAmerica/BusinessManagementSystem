@@ -26,5 +26,5 @@ class Agency(models.Model):
 		return self.name
 
 	class Meta:
-		verbose_name = '代理'
-		verbose_name_plural = '代理'
+		verbose_name = '归属'
+		verbose_name_plural = '归属'

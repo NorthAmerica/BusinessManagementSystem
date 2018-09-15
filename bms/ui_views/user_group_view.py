@@ -7,6 +7,7 @@ from django.db import transaction
 import json
 from bms.models import *
 from bms.forms import *
+from django.contrib.auth.models import Group
 from bms.ui_views.view_shortcuts import get_org_user_list, get_org_id
 
 def user_group(request):
@@ -29,11 +30,44 @@ def group_list(request):
 				'text': '所有组',
 				'state': 'open',
 				'children':child}]
-			return HttpResponse(json.dumps(item))
+			return JsonResponse(item,safe=False)
+			# return HttpResponse(json.dumps(item))
 		except Exception as ex:
 			print(ex)
 			return JsonResponse(({'id': '0', 'text': '取角色异常'}))
 
 
-def user_list(request):
-	pass
+def add_user_to_group(request):
+	if request.method == 'POST':
+		try:
+
+			group_id = request.POST.get('RoleID')
+			users_id = request.POST.get('UserIDs')
+			if group_id is not None and users_id is not None:
+				group = Group.objects.get(pk=group_id)
+
+				users = str(users_id).split(",")
+				for user_id in users:
+					user = User.objects.get(pk=user_id)
+					group.user_set.add(user)
+			return JsonResponse({'success':'true','msg':'用户添加组成功！'})
+		except Exception as ex:
+			print(ex)
+			return  JsonResponse({'success':'false','msg':ex})
+
+def remove_user_from_group(request):
+	if request.method == 'POST':
+		try:
+			group_id = request.POST.get('RoleID')
+			users_id = request.POST.get('UserIDs')
+			if group_id is not None and users_id is not None:
+				group = Group.objects.get(pk=group_id)
+
+				users = str(users_id).split(",")
+				for user_id in users:
+					user = User.objects.get(pk=user_id)
+					group.user_set.remove(user)
+			return JsonResponse({'success':'true','msg':'用户添加组成功！'})
+		except Exception as ex:
+			print(ex)
+			return  JsonResponse({'success':'false','msg':ex})

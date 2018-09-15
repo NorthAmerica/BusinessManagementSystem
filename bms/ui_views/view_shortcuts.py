@@ -1,4 +1,5 @@
 from ..models.user_model import  Org_User,Agency_User
+from ..models.agency_model import Agency
 
 def get_org_user_list(request):
 	'''从登陆用户获取所属机构管理员列表'''
@@ -40,12 +41,31 @@ def get_org_id(request):
 	else:
 		raise PermissionError()
 
+def get_org_obj(request):
+	'''从登陆用户获取所属机构ID'''
+	if  request.user is not None and request.user.identity == 'org':
+		return request.user.org_user.organization
+	else:
+		raise PermissionError()
+
 def get_org_name(request):
 	'''从登陆用户获取所属机构名称'''
 	if  request.user is not None and request.user.identity == 'org':
 		return request.user.org_user.organization.name
 	else:
 		return '广州金艮投资有限公司'
+
+def get_ageny_id(request):
+	if  request.user is not None and request.user.identity == 'agency':
+		return request.user.agency_user.agency.id
+	else:
+		raise PermissionError()
+
+def get_ageny_obj(request):
+	if  request.user is not None and request.user.identity == 'agency':
+		return request.user.agency_user.agency
+	else:
+		raise PermissionError()
 
 def get_agency_name(request):
 	'''从登陆用户获取所属机构名称'''
@@ -59,3 +79,29 @@ def get_org_agency_set(request):
 		return request.user.org_user.organization.agency_set
 	else:
 		return None
+
+
+def get_all_son_agency(first):
+	'''递归获得所有子归属'''
+	try:
+		child = []
+		for ag in first:
+			child_agency = Agency.objects.filter(f_agency=ag)
+			if len(child_agency)>0:
+				child.append(
+					{'id': ag.id,
+					 'text': ag.name,
+					 'iconCls':'icon-man',
+					 'state': 'open',
+					 'children':get_all_son_agency(child_agency)
+					 })
+			else:
+				child.append(
+					{'id': ag.id,
+					 'text': ag.name,
+					 'iconCls': 'icon-man',
+					 'state': 'open'
+					 })
+		return child
+	except Exception as ex:
+		print(ex)

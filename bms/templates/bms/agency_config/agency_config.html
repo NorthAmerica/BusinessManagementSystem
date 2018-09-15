@@ -1,0 +1,170 @@
+<script>
+    $(function () {
+        initAgencyTree();
+        initAgencyGrid();
+        {#initComboTree();#}
+    });
+    function initComboTree() {
+        $('#f_agency_combotree').combotree({
+            url: '../bms/get_agency_tree',
+            required: false
+        });
+    }
+    function initAgencyTree() {
+        $('#AgencyTree').tree({
+            url: '../bms/get_agency_tree',
+            {#onLoadSuccess: function (node, data) { $("#RoleTreeloading").css('display', 'none')},#}
+            onClick: function (node) {
+                $('#AgencyGrid').datagrid('uncheckAll');
+                // 在用户点击的时候提示
+                $('#AgencyGrid').datagrid('loadData', { total: 0, rows: [] });
+                $('#AgencyGrid').datagrid('load', {
+                    agency_id: node.id
+                });
+            }
+        })
+    }
+    function initAgencyGrid() {
+        $('#AgencyGrid').datagrid({
+            iconCls: 'icon-user',
+            loadMsg: '数据加载中...',
+            nowrap: true,
+            autoRowHeight: true,
+            striped: true,
+            url: '../bms/get_agency_list',
+            //sortName: 'UserID',
+            //sortOrder: 'asc',
+            border: true,
+            remoteSort: false,
+            idField: 'id',
+            {#pageSize: 10,#}
+            {#pagination: true,#}
+            singleSelect: false,
+            fitColumns: false,
+            columns: [[
+                { field: 'ck', checkbox: true },
+                { field: 'id', title: 'ID', width: 150, sortable: true,hidden:true },
+                { field: 'name', title: '归属名', width: 150, sortable: true },
+                { field: 'organization', title: '所属机构', width: 150, sortable: true },
+                { field: 'rebate_x', title: '返佣参数X', width: 150, sortable: true },
+                { field: 'rebate_y', title: '返佣参数Y', width: 150, sortable: true },
+                { field: 'rebate_z', title: '返佣参数Z', width: 150, sortable: true },
+                { field: 'f_agency_id', title: '上级代理id', width: 150, sortable: true,hidden:true },
+                { field: 'f_agency', title: '上级代理', width: 150, sortable: true },
+                { field: 'invite_num', title: '邀请码', width: 150, sortable: true },
+                {
+                    field: 'is_freeze',
+                    title: "能否冻结",
+                    width: 200,
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        if (value == true) {
+                            return value = '是';
+                        } else {
+                            return value = '否';
+                        }
+                    }
+                }
+            ]],
+            toolbar: [{
+                id: 'btnupdate',
+                text: '修改归属信息',
+                iconCls: 'icon-add',
+                handler: function () {
+                    UpdateAgencyDialog();
+                }
+            }, '-']
+        });
+    }
+
+    function UpdateAgencyDialog() {
+
+        var selectA = $('#AgencyGrid').datagrid('getSelected');
+        if (selectA == null) {
+            $.messager.alert("友情提示", "请先选择一个代理");
+            return;
+        }
+        $('#UpdateAgencyDialog').dialog({
+            title:'修改归属信息',
+            width:650,
+            height:650,
+            buttons:[{
+				text:'保存',
+				handler:function(){
+				    AddUserEvent();
+				}
+			},{
+				text:'关闭',
+				handler:function(){
+				    $('#UpdateAgencyDialog').dialog('close')
+                }
+			}]
+        });
+        $('#UpdateAgencyDialog').dialog('open');
+
+        if(selectA)
+        {
+
+            $('#f_agency_combotree').combotree('setValue', {
+                id: selectA.f_agency_id,
+                text: selectA.f_agency
+            });
+            $('#UpdateAgencyForm').form('load',selectA);
+        }
+
+    }
+    function ClearText() {
+        $('#UpdateAgencyForm').form('clear');
+    }
+</script>
+
+<div id="cc" class="easyui-layout" style="height:700px;" fit="true">
+    <div data-options="region:'west',title:'归属列表',split:true,collapsible:false" style="width:200px;">
+{#        <img id="RoleTreeloading" src="~/Images/loading.gif" width="160" height="160" />#}
+        <ul id="AgencyTree"></ul>
+    </div>
+    <div data-options="region:'center',title:'归属详情-选择左侧归属后自动更新'" style="padding:2px;background:#eee;height:400px;">
+        <table id="AgencyGrid"></table>
+    </div>
+</div>
+
+<div id="UpdateAgencyDialog" class="easyui-dialog" style="width:560px;height:340px;padding:10px 20px"
+     closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+    <form id="UpdateAgencyForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="name">归属名：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="name" name="name" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="rebate_x">返佣参数X：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="rebate_x" name="rebate_x" data-options="validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="rebate_y">返佣参数Y：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="rebate_y" name="rebate_y" data-options="validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="rebate_z">返佣参数Z：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="rebate_z" name="rebate_z" data-options="validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="f_agency">上级代理：</label></td>
+                    <td>
+{#                        <input id="f_agency_combotree" value="01" style="width:200px;">#}
+                        <select id="f_agency_combotree" class="easyui-combotree" style="width:200px;"
+                                data-options="url:'../bms/get_agency_tree',required:false"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="is_freeze">能否冻结：</label></td>
+                    <td>
+                        <select id="is_freeze" name="is_freeze" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+</div>

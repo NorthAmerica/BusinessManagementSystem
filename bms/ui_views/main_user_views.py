@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from bms.models import *
 from bms.forms import *
+from django.contrib.auth.models import Group
 from bms.ui_views.view_shortcuts import get_org_user_list,get_org_id
 
 @login_required
@@ -18,36 +19,59 @@ def main_user_list(request):
 			if request.user.is_superuser:
 				user_all =list(User.objects.all())#.values_list('username','mobile_phone','position')
 			elif request.user.identity =='org':
-				user_all = get_org_user_list(request)
-			paginator = Paginator(user_all, rows)
+				#获取页面选择的组下的用户
+				if request.POST.get('group_id') is not None:
+					group = Group.objects.get(pk=request.POST.get('group_id'))
+					user_all = list(group.user_set.all())
+				else:
+					#获取当前用户同机构下的用户
+					user_all = get_org_user_list(request)
+			#分页判断
+			if page is not None and rows is not None:
+				#有分页
+				paginator = Paginator(user_all, rows)
 
-			try:
-				books = paginator.page(page)
-			except PageNotAnInteger:
-				books = paginator.page(1)
-			except EmptyPage:
-				books = paginator.page(paginator.num_pages)
-			eaList=[]
-			for user in books.object_list:
-				eaList.append({
-					'id':user.id,
-					"username":user.username,
-					"mobile_phone":user.mobile_phone,
-					'last_name':user.last_name,
-					'email':user.email,
-					"position":user.position,
-					"is_active" :user.is_active
-				})
+				try:
+					books = paginator.page(page)
+				except PageNotAnInteger:
+					books = paginator.page(1)
+				except EmptyPage:
+					books = paginator.page(paginator.num_pages)
+				eaList=[]
+				for user in books.object_list:
+					eaList.append({
+						'id':user.id,
+						"username":user.username,
+						"mobile_phone":user.mobile_phone,
+						'last_name':user.last_name,
+						'email':user.email,
+						"position":user.position,
+						"is_active" :user.is_active
+					})
 
-			json_data_list = {
-				'total':paginator.count,
-				'rows':eaList
-			}
-			return JsonResponse(json_data_list)
+				json_data_list = {
+					'total':paginator.count,
+					'rows':eaList
+				}
+				return JsonResponse(json_data_list)
+			else:
+				#无分页
+				User_List = []
+				for user in user_all:
+					User_List.append({
+						'id': user.id,
+						"username": user.username,
+						"mobile_phone": user.mobile_phone,
+						'last_name': user.last_name,
+						'email': user.email,
+						"position": user.position,
+						"is_active": user.is_active
+					})
+				return JsonResponse(User_List,safe=False)
 		except Exception as ex:
 			print(ex)
 	else:
-		return render(request, 'bms/user_config/user_config.html')
+		return render(request, 'bms/user_config/org_user_config.html')
 
 @login_required
 @transaction.atomic
@@ -62,7 +86,7 @@ def add_main_user(request):
 			position = request.POST.get('position')
 			mobile_phone = request.POST.get('mobile_phone')
 			is_active = request.POST.get('is_active')
-			org_id = get_org_id(request)
+			# org_id = get_org_id(request)
 			dic = {
 				"username": username,
 				"password": make_password(password),
