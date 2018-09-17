@@ -3,12 +3,9 @@ from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
-from django.db import transaction
-import json
 from bms.models import *
-from bms.forms import *
 from django.contrib.auth.models import Group
-from bms.ui_views.view_shortcuts import get_org_user_list, get_org_id
+from bms.ui_views.view_shortcuts import get_org_obj,get_ageny_obj
 
 def user_group(request):
 	return render(request, 'bms/user_config/user_group_config.html')
@@ -16,15 +13,20 @@ def user_group(request):
 def group_list(request):
 	if request.method == 'POST':
 		try:
-			all_group = Special_Group.objects.all()
+			all_group=[]
+			if request.user.is_superuser:
+				all_group = Special_Group.objects.all()
+			elif request.user.identity =='org':
+				all_group = Special_Group.objects.filter(org=get_org_obj(request))
+			elif request.user.identity=='agency':
+				all_group = Special_Group.objects.filter(agency=get_ageny_obj(request))
 			child = []
 			for group in all_group:
 				child.append(
 					{'id': group.id,
 					 'text': group.name,
 					 'state': 'open'
-					 }
-				)
+					 })
 			item = [{
 				'id': '0',
 				'text': '所有组',

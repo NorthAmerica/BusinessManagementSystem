@@ -91,7 +91,7 @@ def get_all_son_agency(first):
 				child.append(
 					{'id': ag.id,
 					 'text': ag.name,
-					 'iconCls':'icon-man',
+					 'iconCls': 'icon-man' if ag.is_freeze is False else 'icon-lock',
 					 'state': 'open',
 					 'children':get_all_son_agency(child_agency)
 					 })
@@ -99,7 +99,7 @@ def get_all_son_agency(first):
 				child.append(
 					{'id': ag.id,
 					 'text': ag.name,
-					 'iconCls': 'icon-man',
+					 'iconCls': 'icon-man' if ag.is_freeze is False else 'icon-lock',
 					 'state': 'open'
 					 })
 		return child

@@ -1,10 +1,12 @@
-from django.urls import path
+from django.conf.urls import url
+from django.urls import path, include
 from . import views
 from bms.ui_views import main_user_views,user_group_view,agency_views,client_views,order_views
 
 app_name = 'bms'
 
 urlpatterns = [
+	url(r'^chaining/', include('smart_selects.urls')),
 	path('login',views.login_page,name='login'),
 	path('logout',views.Logout_page,name='logout'),
 	path('login_check',views.login_check,name='login_check'),
@@ -21,8 +23,11 @@ urlpatterns = [
 	path('remove_user_from_group',user_group_view.remove_user_from_group,name='remove_user_from_group'),
 	# 代理管理
 	path('agency_config', agency_views.agency_config, name='agency_config'),
+	path('agency_user_config',agency_views.agency_user_config,name='agency_user_config'),
 	path('get_agency_tree', agency_views.get_agency_tree, name='get_agency_tree'),
 	path('get_agency_list', agency_views.get_agency_list, name='get_agency_list'),
+	path('add_agency',agency_views.add_agency,name='add_agency'),
+	path('update_agency',agency_views.update_agency,name='update_agency'),
 	# 客户管理
 	path('client_list',client_views.client_list,name='client_list'),
 

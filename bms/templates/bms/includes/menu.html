@@ -1,6 +1,9 @@
+{% load guardian_tags %}
 <div id="aa" class="easyui-accordion" style="width:260px;">
     {% if ls_menu %}
         {% for menu in ls_menu %}
+            {% get_obj_perms request.user for menu as "context_var" %}
+            {{ context_var }}
             <div title="{{ menu.name }}" data-options="iconCls:'icon-scategorys',selected:true"
                  style="overflow:auto;padding:10px;">
                 <ul class="nav nav-pills nav-stacked">

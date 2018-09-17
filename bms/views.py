@@ -54,13 +54,18 @@ def index(request):
 	for menu in main_menu:
 
 		p_menu = menu_model.MenuModel()
+
 		p_menu.setName(menu.menu_name)
 		p_menu.setUrl(menu.menu_url)
+		p_menu.setMeta(menu._meta)
+		p_menu.setPk(menu.pk)
 		child_menu = menu.get_child()
 		for child in child_menu:
 			c_menu = menu_model.MenuModel()
 			c_menu.setName(child.menu_name)
 			c_menu.setUrl(child.menu_url)
+			c_menu.setMeta(child._meta)
+			c_menu.setPk(child.pk)
 			# if  request.user.has_perm('view_menu',child):
 			p_menu.child.append(c_menu)
 		# if  request.user.has_perm('view_menu',menu):

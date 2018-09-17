@@ -3,10 +3,11 @@ from bms.models import *
 from django.forms import ModelForm
 from guardian.admin import GuardedModelAdmin
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm
 from multiselectfield import MultiSelectField
 
-admin.site.site_header = '广州金艮业务系统管理后台'
+admin.site.site_header = '广州金艮-云平台管理后台'
 admin.site.site_title = '管理后台'
 
 
@@ -30,7 +31,9 @@ class UserAdmin(GuardedModelAdmin):
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
-		obj.password = make_password(form.data['password'])
+		str1 = str(form.data['password'])[:13]
+		if str(form.data['password'])[:13]!='pbkdf2_sha256':
+			obj.password = make_password(form.data['password'])
 		obj.save()
 
 	readonly_fields = ('operator',)
@@ -38,6 +41,7 @@ class UserAdmin(GuardedModelAdmin):
 
 @admin.register(Org_User)
 class Org_UserAdmin(GuardedModelAdmin):
+	'''机构用户'''
 	list_display = ('user', 'organization', 'operator')
 
 	def save_model(self, request, obj, form, change):
@@ -55,11 +59,13 @@ class Org_UserAdmin(GuardedModelAdmin):
 
 @admin.register(Agency_User)
 class Agency_UserAdmin(GuardedModelAdmin):
+	'''代理用户'''
 	list_display = ('user', 'agency')
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()
+
 
 	readonly_fields = ('operator',)
 
@@ -72,14 +78,24 @@ class Agency_UserAdmin(GuardedModelAdmin):
 
 @admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
+	'''机构'''
 	date_hierarchy = 'date_joined'
 	list_display = ('name', 'logo', 'cachet', 'account', 'is_freeze', 'date_joined')
-
+	readonly_fields = ('operator',)
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()
+		# 复制组模板
+		all_temp = Group_Template.objects.filter(type='org')
 
-	readonly_fields = ('operator',)
+		new_user = User.objects.create(username=obj.name + '总管理员',identity='org',password=make_password('686868'))
+		Org_User.objects.create(user=new_user, organization=obj, operator=request.user.username)
+		for temp in all_temp:
+			s_group = Special_Group.objects.create(name=obj.name+temp.name,org=obj,operator=request.user.username)
+			new_user.groups.add(s_group)
+
+
+
 
 
 @admin.register(Org_Rule)
@@ -96,9 +112,10 @@ class Org_RuleAdmin(admin.ModelAdmin):
 
 @admin.register(Agency)
 class AgencyAdmin(admin.ModelAdmin):
+	'''代理'''
 	date_hierarchy = 'date_joined'
 	list_display = (
-	'name', 'get_org_name', 'is_freeze', 'rebate_x', 'rebate_y', 'rebate_z', 'get_f_name', 'invite_num', 'date_joined')
+	'name', 'get_org_name', 'grade','is_freeze', 'rebate_x', 'rebate_y', 'rebate_z', 'get_f_name', 'invite_num', 'date_joined')
 	readonly_fields = ('invite_num', 'operator',)
 
 	def get_org_name(self, obj):
@@ -112,11 +129,32 @@ class AgencyAdmin(admin.ModelAdmin):
 		else:
 			return '无'
 
-	get_f_name.short_description = '父级代理'
+	get_f_name.short_description = '父级归属'
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
+		if obj.f_agency is None:
+			obj.grade = 1
+		else:
+			obj.grade = obj.f_agency.grade+1
 		obj.save()
+		# 复制组模板
+		all_temp = Group_Template.objects.filter(type='agency')
+		new_user = User.objects.create(username=obj.name + '总管理员', identity='agency',password=make_password('686868'))
+		Agency_User.objects.create(user=new_user, agency=obj, operator=request.user.username)
+		for temp in all_temp:
+			s_group = Special_Group.objects.create(name=obj.name + temp.name, agency=obj,
+			                                       operator=request.user.username)
+			new_user.groups.add(s_group)
+
+
+
+@admin.register(Group_Template)
+class Group_TemplateAdmin(admin.ModelAdmin):
+	'''组模板'''
+	date_hierarchy = 'date_joined'
+	list_display = ('name','type', 'operator', 'date_joined',)
+	readonly_fields = ('operator',)
 
 
 @admin.register(Special_Group)

@@ -26,19 +26,23 @@ def main_user_list(request):
 				else:
 					#获取当前用户同机构下的用户
 					user_all = get_org_user_list(request)
+			elif request.user.identity=='agency':
+				if request.POST.get('agency_id') is not None:
+					agency = Agency.objects.get(pk=request.POST.get('agency_id'))
+					user_all =[agency_user_set.user for agency_user_set in agency.agency_user_set.all()]
 			#分页判断
 			if page is not None and rows is not None:
 				#有分页
 				paginator = Paginator(user_all, rows)
 
 				try:
-					books = paginator.page(page)
+					users = paginator.page(page)
 				except PageNotAnInteger:
-					books = paginator.page(1)
+					users = paginator.page(1)
 				except EmptyPage:
-					books = paginator.page(paginator.num_pages)
+					users = paginator.page(paginator.num_pages)
 				eaList=[]
-				for user in books.object_list:
+				for user in users.object_list:
 					eaList.append({
 						'id':user.id,
 						"username":user.username,
@@ -87,34 +91,67 @@ def add_main_user(request):
 			mobile_phone = request.POST.get('mobile_phone')
 			is_active = request.POST.get('is_active')
 			# org_id = get_org_id(request)
-			dic = {
-				"username": username,
-				"password": make_password(password),
-				"last_name": last_name,
-				"email": email,
-				"position": position,
-				"mobile_phone": mobile_phone,
-				"is_active": is_active,
-				"identity": 'org'
-			}
 
-			obj = User.objects.create(**dic)
-			if  obj is not None:
-				org_user = {
-					"user":obj,
-					"organization":request.user.org_user.organization,
-					"operator":request.user.username
+			if request.POST.get('agency_id') is not None:
+				#新增代理管理员
+				dic = {
+					"username": username,
+					"password": make_password(password),
+					"last_name": last_name,
+					"email": email,
+					"position": position,
+					"mobile_phone": mobile_phone,
+					"is_active": is_active,
+					"identity": 'agency'
 				}
-				create_user = Org_User.objects.create(**org_user)
-				if  create_user is not None:
-					return JsonResponse({'success':'true','msg':'新用户添加成功！'})
+
+				obj = User.objects.create(**dic)
+				if obj is not None:
+					#如果是选择的新增代理用户
+					ag_user = {
+						"user": obj,
+						"agency": Agency.objects.get(pk=request.POST.get('agency_id')),
+						"operator": request.user.username
+					}
+					create_user = Agency_User.objects.create(**ag_user)
+					if create_user is not None:
+						return JsonResponse({'success': 'true', 'msg': '新用户添加成功！'})
+					else:
+						return JsonResponse({'success': 'false', 'msg': '新用户没有添加成功，请您重新检查'})
 				else:
-					return JsonResponse({'success': 'false', 'msg': '新用户没有添加成功，请您重新检查'})
+					return JsonResponse({'success':'false','msg':'新用户没有添加成功，请您重新检查'})
 			else:
-				return JsonResponse({'success':'false','msg':'新用户没有添加成功，请您重新检查'})
+				# 新增机构管理员
+				dic = {
+					"username": username,
+					"password": make_password(password),
+					"last_name": last_name,
+					"email": email,
+					"position": position,
+					"mobile_phone": mobile_phone,
+					"is_active": is_active,
+					"identity": 'org'
+				}
+
+				obj = User.objects.create(**dic)
+				if obj is not None:
+					#如果是新增机构用户
+					org_user = {
+						"user":obj,
+						"organization":request.user.org_user.organization,
+						"operator":request.user.username
+					}
+					create_user = Org_User.objects.create(**org_user)
+					if  create_user is not None:
+						return JsonResponse({'success':'true','msg':'新用户添加成功！'})
+					else:
+						return JsonResponse({'success': 'false', 'msg': '新用户没有添加成功，请您重新检查'})
+				else:
+					return JsonResponse({'success':'false','msg':'新用户没有添加成功，请您重新检查'})
 		except Exception as ex:
 			print(ex)
 			return  JsonResponse({'success':'false','msg':ex})
+
 
 @login_required
 def update_main_user(request):

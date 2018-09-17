@@ -26,6 +26,9 @@ class Menu(models.Model):
 class MenuModel:
 	def __init__(self):
 		self.name = ''
+		self.url=''
+		self._meta=''
+		self.pk=''
 		self.child = []
 	def setUrl(self, url):
 		self.url = url
@@ -35,3 +38,9 @@ class MenuModel:
 		self.name = name
 	def getName(self):
 		return self.name
+	def setMeta(self,meta):
+		self._meta = meta
+	def getMeta(self):
+		return self._meta
+	def setPk(self,pk):
+		self.pk=pk

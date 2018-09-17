@@ -8,3 +8,4 @@ from .fund_model import Fund_Detail,random_key
 from .menu_model import Menu
 from .record_model import Change_Info
 from .rule_model import Fund_In_Rule,Fund_Out_Rule,Exchange_Rule
+from .group_template_model import Group_Template

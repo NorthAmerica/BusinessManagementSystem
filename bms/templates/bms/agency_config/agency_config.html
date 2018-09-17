@@ -1,19 +1,14 @@
+{#归属管理界面#}
 <script>
     $(function () {
         initAgencyTree();
         initAgencyGrid();
-        {#initComboTree();#}
+
     });
-    function initComboTree() {
-        $('#f_agency_combotree').combotree({
-            url: '../bms/get_agency_tree',
-            required: false
-        });
-    }
+
     function initAgencyTree() {
-        $('#AgencyTree').tree({
+        $('#AgencyTree1').tree({
             url: '../bms/get_agency_tree',
-            {#onLoadSuccess: function (node, data) { $("#RoleTreeloading").css('display', 'none')},#}
             onClick: function (node) {
                 $('#AgencyGrid').datagrid('uncheckAll');
                 // 在用户点击的时候提示
@@ -67,18 +62,110 @@
                 }
             ]],
             toolbar: [{
+                id: 'btnadd',
+                text: '添加归属',
+                iconCls: 'icon-add',
+                handler: function () {
+                    AddAgencyDialog('添加归属');
+                }
+            }, '-', {
                 id: 'btnupdate',
                 text: '修改归属信息',
-                iconCls: 'icon-add',
+                iconCls: 'icon-edit',
                 handler: function () {
                     UpdateAgencyDialog();
                 }
-            }, '-']
+            }, '-'],
+            onDblClickRow: function (index, row) {
+                UpdateAgencyDialog();
+            }
         });
     }
 
-    function UpdateAgencyDialog() {
+    function AddAgencyDialog(init_title) {
+        $('#AddAgencyDialog').dialog({title:init_title,
+            width:650,
+            height:650,
+            buttons:[{
+				text:'保存',
+				handler:function(){
+				    AddAgencyEvent();
+				}
+			},{
+				text:'关闭',
+				handler:function(){
+				    $('#AddAgencyDialog').dialog('close')
+                }
+			}]
+        });
+        $('#AddAgencyDialog').dialog('open');
+        ClearText();
+    }
+    function AddAgencyEvent() {
+        //验证所有的文本框是否通过用户的验证
 
+        var valid = $('#AddAgencyForm').form('validate');
+        if (valid == false) {
+            return false;
+        }
+        var CBEnable = 'True';
+        if ($("#is_freeze1").combobox('getValue') == "0") {
+            CBEnable = 'False';
+        }
+
+        //创建传递的参数
+        {% if request.user.identity == 'org' %}
+            var postdata = {
+                name: $("#name1").val(),
+                rebate_x: $('#rebate_x1').numberbox('getValue'),
+                rebate_y: $('#rebate_y1').numberbox('getValue'),
+                rebate_z: $('#rebate_z1').numberbox('getValue'),
+                f_agency: $('#f_agency_combotree1').combotree('getValue'),
+                is_freeze: CBEnable
+            };
+        {% else %}
+            var postdata = {
+                name: $("#name1").val(),
+                rebate_x: $('#rebate_x1').numberbox('getValue'),
+                rebate_y: $('#rebate_y1').numberbox('getValue'),
+                rebate_z: $('#rebate_z1').numberbox('getValue'),
+                is_freeze: CBEnable
+            };
+        {% endif %}
+        var passurl='../bms/add_agency';
+        $.ajax({
+            type: 'POST',
+            url: passurl,
+            cache: false,
+            data:postdata,
+            success: function (data) {
+                if (data && data.success) {
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: data.msg,
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+                    $('#AddAgencyDialog').dialog('close');
+                    $("#AgencyGrid").datagrid("reload");
+                    $('#AgencyTree1').tree('reload');
+                }
+                else {
+                    alert("添加失败，请您重新检查");
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
+            }
+        });
+
+    }
+
+    function UpdateAgencyDialog() {
+        {% if request.user.identity != 'org' and not request.user.is_superuser%}
+            alert('您没有修改归属的权限，如要修改信息请联系机构管理员。')
+            return;
+        {% endif %}
         var selectA = $('#AgencyGrid').datagrid('getSelected');
         if (selectA == null) {
             $.messager.alert("友情提示", "请先选择一个代理");
@@ -91,7 +178,7 @@
             buttons:[{
 				text:'保存',
 				handler:function(){
-				    AddUserEvent();
+				    UpdateAgencyEvent();
 				}
 			},{
 				text:'关闭',
@@ -113,22 +200,112 @@
         }
 
     }
-    function ClearText() {
-        $('#UpdateAgencyForm').form('clear');
+    function UpdateAgencyEvent() {
+        var valid = $('#UpdateAgencyForm').form('validate');
+        if (valid == false) {
+            return false;
+        }
+        var CBEnable = 'True';
+        if ($("#is_freeze").combobox('getValue') == "0") {
+            CBEnable = 'False';
+        }
+
+        var postdata = {
+            name: $("#name").val(),
+            rebate_x: $('#rebate_x').numberbox('getValue'),
+            rebate_y: $('#rebate_y').numberbox('getValue'),
+            rebate_z: $('#rebate_z').numberbox('getValue'),
+            f_agency: $('#f_agency_combotree').combotree('getValue'),
+            is_freeze: CBEnable
+        }
+        var passurl='../bms/update_agency';
+        $.ajax({
+            type: 'POST',
+            url: passurl,
+            cache: false,
+            data:postdata,
+            success: function (data) {
+                if (data && data.success) {
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: data.msg,
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+                    $('#UpdateAgencyDialog').dialog('close');
+                    $("#AgencyGrid").datagrid("reload");
+                    $('#AgencyTree1').tree('reload');
+                }
+                else {
+                    alert("添加失败，请您重新检查");
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
+            }
+        });
     }
+
+    function ClearText() {
+        $('#AddAgencyForm').form('clear');
+    }
+
 </script>
 
 <div id="cc" class="easyui-layout" style="height:700px;" fit="true">
     <div data-options="region:'west',title:'归属列表',split:true,collapsible:false" style="width:200px;">
-{#        <img id="RoleTreeloading" src="~/Images/loading.gif" width="160" height="160" />#}
-        <ul id="AgencyTree"></ul>
+        <ul id="AgencyTree1"></ul>
     </div>
     <div data-options="region:'center',title:'归属详情-选择左侧归属后自动更新'" style="padding:2px;background:#eee;height:400px;">
         <table id="AgencyGrid"></table>
     </div>
 </div>
 
-<div id="UpdateAgencyDialog" class="easyui-dialog" style="width:560px;height:340px;padding:10px 20px"
+ {#----------------------新增归属界面------------------------------------------------------------#}
+    <div id="AddAgencyDialog" class="easyui-dialog" style="padding:10px 20px"
+     closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="AddAgencyForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="name">归属名：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="text" id="name1" name="name" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                {% if request.user.identity == 'org' %}
+                    <tr>
+                        <td><label for="rebate_x">返佣参数X：</label></td>
+                        <td><input class="easyui-numberbox form-control" type="text" id="rebate_x1" name="rebate_x" data-options="validType:'length[1,32],precision:2'" style="width:350px;" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="rebate_y">返佣参数Y：</label></td>
+                        <td><input class="easyui-numberbox form-control" type="text" id="rebate_y1" name="rebate_y" data-options="validType:'length[1,32],precision:2'" style="width:350px;" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="rebate_z">返佣参数Z：</label></td>
+                        <td><input class="easyui-numberbox form-control" type="text" id="rebate_z1" name="rebate_z" data-options="validType:'length[1,32],precision:2'" style="width:350px;" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="f_agency">上级代理：</label></td>
+                        <td>
+                            <select id="f_agency_combotree1" class="easyui-combotree" style="width:200px;"
+                                    data-options="url:'../bms/get_agency_tree',required:true"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="is_freeze">能否冻结：</label></td>
+                        <td>
+                            <select id="is_freeze1" name="is_freeze" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
+                                <option value="1">是</option>
+                                <option value="0">否</option>
+                            </select>
+                        </td>
+                    </tr>
+                {% endif %}
+            </table>
+        </form>
+    </div>
+ {#----------------------新增归属界面结束------------------------------------------------------------#}
+ {#----------------------更新归属界面-------必须机构用户-----------------------------------------------------#}
+    <div id="UpdateAgencyDialog" class="easyui-dialog" style="width:560px;height:340px;padding:10px 20px"
      closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
     <form id="UpdateAgencyForm" method="post" novalidate="novalidate">
             <table id="tblAdd" class="self-input-table">
@@ -149,13 +326,13 @@
                     <td><input class="easyui-validatebox form-control" type="text" id="rebate_z" name="rebate_z" data-options="validType:'length[1,32]'" style="width:350px;" /></td>
                 </tr>
                 <tr>
-                    <td><label for="f_agency">上级代理：</label></td>
+                    <td><label for="f_agency">上级归属：(必须与上级归属同级)</label></td>
                     <td>
-{#                        <input id="f_agency_combotree" value="01" style="width:200px;">#}
                         <select id="f_agency_combotree" class="easyui-combotree" style="width:200px;"
-                                data-options="url:'../bms/get_agency_tree',required:false"></select>
+                                data-options="url:'../bms/get_agency_tree',required:true"></select>
                     </td>
                 </tr>
+
                 <tr>
                     <td><label for="is_freeze">能否冻结：</label></td>
                     <td>
@@ -166,5 +343,6 @@
                     </td>
                 </tr>
             </table>
-        </form>
+    </form>
 </div>
+ {#----------------------更新归属界面结束------------------------------------------------------------#}
