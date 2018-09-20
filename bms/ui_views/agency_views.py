@@ -8,6 +8,7 @@ from bms.models import *
 from bms.forms import *
 from django.contrib.auth.models import Group
 from bms.ui_views.view_shortcuts import get_org_obj,get_all_son_agency,get_ageny_id
+import logging
 
 
 def agency_config(request):
@@ -176,3 +177,39 @@ def update_agency(request):
 	except Exception as ex:
 		print(ex)
 		return render(request, './bms/404.html')
+
+
+def agency_group_config(request):
+	return render(request,'bms/agency_config/agency_group_config.html')
+
+def get_agency_group(request):
+	try:
+		if request.method == 'POST':
+			all_group = []
+			if request.POST.get('agency_id') is not None:
+				all_group = Special_Group.objects.filter(agency=Agency.objects.get(pk=request.POST.get('agency_id')))
+			child = []
+			if  all_group is None or len(all_group)==0:
+				item = [{
+					'id': '0',
+					'text': '没有任何组',
+					'state': 'open',
+					'children': child}]
+				return JsonResponse(item, safe=False)
+			else:
+				for group in all_group:
+					child.append(
+						{'id': group.id,
+						 'text': group.name,
+						 'state': 'open'
+						 })
+				item = [{
+					'id': '0',
+					'text': '所有组',
+					'state': 'open',
+					'children': child}]
+				return JsonResponse(item, safe=False)
+
+	except Exception as ex:
+		print(ex)
+		return JsonResponse(({'id': '0', 'text': '取角色异常'}))

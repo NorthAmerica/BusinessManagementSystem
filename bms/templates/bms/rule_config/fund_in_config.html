@@ -1,0 +1,209 @@
+<script>
+    $(function () {
+        initOrgTree();
+        initFundInForm(0);
+    });
+
+    function initOrgTree() {
+        $('#OrgTree').tree({
+            url: '../bms/get_org_tree',
+            onClick: function (node) {
+                initFundInForm(node.id)
+            }
+        })
+    }
+
+    function initFundInForm(org_id) {
+        var postdata = {
+            org_id:org_id
+        };
+        $.ajax({
+            type: 'POST',
+            url: '../bms/get_global_fund_in',
+            cache: false,
+            data: postdata,
+            success: function (data) {
+                $('#FundInForm').form('clear');
+                if (data.success=='true' || data.success==true) {
+                    if (data.org == '' || data.org == null || data.org == undefined)
+                    {
+                        $("#FundInForm #org").textbox('setText','默认显示全局入金配置');
+                        $("#FundInForm #org").textbox('readonly');
+                    }
+                    else
+                    {
+                        $("#FundInForm #org").textbox('setText',data.org);
+                        $("#FundInForm #org").textbox('readonly');
+                    }
+                    $("#FundInForm #begin_time").timespinner('setValue', data.begin_time);
+                    $("#FundInForm #end_time").timespinner('setValue', data.end_time);
+                    $("#FundInForm #min_gateway").numberbox('setValue', data.min_gateway);
+                    $("#FundInForm #min_shortcut").numberbox('setValue', data.min_shortcut);
+                    for (var i = 0; i < data.week.length; i++) {
+                        $("#FundInForm").find("input:checkbox[value=" + data.week[i].toString() + "]").prop('checked', true);
+                    }
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: '入金配置加载成功',
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+
+                }
+                else {
+                    $('#FundInForm').form('clear');
+                    alert("入金配置加载失败，" + data.msg);
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
+            }
+        });
+
+    }
+
+    function FundInEvent() {
+        var valid = $('#FundInForm').form('validate');
+        if (valid == false) {
+            return false;
+        }
+        var begin = $('#FundInForm #begin_time').timespinner('getValue');
+        var end = $('#FundInForm #end_time').timespinner('getValue');
+        if (begin == end) {
+            $.messager.alert('注意', '开始时间不能与结束时间一样');
+            return false;
+        }
+        var selectOrg = $("#OrgTree").tree("getSelected");
+        if (selectOrg == null || selectOrg.id == 0 || selectOrg.id == '0') {
+            $.messager.alert("友情提示", "不能对全局入金配置进行修改，请先选择一个机构");
+            return false;
+        }
+
+        var arr = new Array();
+        $.each($('#FundInForm input:checkbox'), function () {
+            if (this.checked) {
+                arr.push($(this).val());
+            }
+        });
+        var days = arr.join(",");
+        if (arr.length == 0) {
+            $.messager.alert("友情提示", "您还没选择合适的工作日");
+            return false;
+        }
+        var postdata = {
+            org: selectOrg.id,
+            begin_time: begin,
+            end_time: end,
+            week: days,
+            min_gateway: $('#FundInForm #min_gateway').numberbox('getValue'),
+            min_shortcut: $('#FundInForm #min_shortcut').numberbox('getValue')
+        };
+        $.ajax({
+            type: 'POST',
+            url: '../bms/add_fund_in',
+            cache: false,
+            data: postdata,
+            success: function (data) {
+                if (data.success == 'true' || data.success == true) {
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: data.msg,
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+                }
+                else {
+                    alert("更新入金配置失败，请检查" + data.msg);
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
+            }
+        });
+    }
+</script>
+
+<div id="cc" class="easyui-layout" style="height:700px;" fit="true">
+    <div data-options="region:'west',title:'机构列表',split:true,collapsible:false" style="width:200px;">
+        <ul id="OrgTree"></ul>
+    </div>
+    <div data-options="region:'center',title:'入金规则-选择机构后自动更新（系统优先采用各自机构的配置参数，没有配置机构参数就用默认参数。）'"
+         style="padding:10px 10px;background:#eee;height:400px;width:100%">
+        <form id="FundInForm" method="post" novalidate="novalidate" style="margin-left: 50px">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="org">目前显示的配置：</label></td>
+                    <td>
+                        <input class="easyui-textbox form-control" type="text" id="org" name="org" data-options="" style="width:350px;" />
+
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="begin_time">开始时间：</label></td>
+                    <td>
+                        <input id="begin_time" name="begin_time" class="easyui-timespinner" style="width:120px;"
+                               required="required" data-options="value:'00:00',min:'00:00',showSeconds:true"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="end_time">结束时间：</label></td>
+                    <td>
+                        <input id="end_time" name="end_time" class="easyui-timespinner" style="width:120px;"
+                               required="required" data-options="value:'00:00',max:'23:59',showSeconds:true"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="week">工作日：</label></td>
+                    <td>
+                        <ul id="week">
+                            <li>
+                                <input type="checkbox" name="week" id="Monday" value="Monday"/>星期一
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Tuesday" value="Tuesday"/>星期二
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Wednesday" value="Wednesday"/>星期三
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Thursday" value="Thursday"/>星期四
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Friday" value="Friday"/>星期五
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Saturday" value="Saturday"/>星期六
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Sunday" value="Sunday"/>星期日
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="min_gateway">网关单笔最小入金金额：</label></td>
+                    <td>
+                        <input type="text" class="easyui-numberbox form-control" id="min_gateway" name="min_gateway"
+                               value="100" data-options="min:0,precision:2" style="width:200px;">
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="min_shortcut">快捷单笔最小入金金额：</label></td>
+                    <td>
+                        <input type="text" class="easyui-numberbox form-control" id="min_shortcut" name="min_shortcut"
+                               value="100" data-options="min:0,precision:2" style="width:200px;">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" style="text-align:center; padding-top:10px">
+                        <a href="javascript:void(0)" class="easyui-linkbutton" id="btnFundIn" iconcls="icon-ok"
+                           onclick="javascript:FundInEvent()">保存</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel"
+                           onclick="javascript:$('#FundInForm').form('clear')">清空</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>

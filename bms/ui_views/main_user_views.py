@@ -16,17 +16,20 @@ def main_user_list(request):
 			page = request.POST.get("page")
 			rows = request.POST.get("rows")
 			user_all= []
-			if request.user.is_superuser:
+			if request.user.is_superuser: #超级管理员
 				user_all =list(User.objects.all())#.values_list('username','mobile_phone','position')
-			elif request.user.identity =='org':
+			elif request.user.identity =='org': #机构管理员
 				#获取页面选择的组下的用户
 				if request.POST.get('group_id') is not None:
 					group = Group.objects.get(pk=request.POST.get('group_id'))
 					user_all = list(group.user_set.all())
+				elif request.POST.get('agency_id') is not None:
+					agency = Agency.objects.get(pk=request.POST.get('agency_id'))
+					user_all =[agency_user_set.user for agency_user_set in agency.agency_user_set.all()]
 				else:
 					#获取当前用户同机构下的用户
 					user_all = get_org_user_list(request)
-			elif request.user.identity=='agency':
+			elif request.user.identity=='agency': #归属管理员
 				if request.POST.get('agency_id') is not None:
 					agency = Agency.objects.get(pk=request.POST.get('agency_id'))
 					user_all =[agency_user_set.user for agency_user_set in agency.agency_user_set.all()]
@@ -74,6 +77,7 @@ def main_user_list(request):
 				return JsonResponse(User_List,safe=False)
 		except Exception as ex:
 			print(ex)
+			#Change_Info.objects.create(initiator=request.user.username,receiver='',event_type='ERROR',)
 	else:
 		return render(request, 'bms/user_config/org_user_config.html')
 
@@ -115,6 +119,7 @@ def add_main_user(request):
 					}
 					create_user = Agency_User.objects.create(**ag_user)
 					if create_user is not None:
+						#Change_Info.objects.create(initiator=request.user.username, receiver=create_user.user.username, event_type='ERROR', )
 						return JsonResponse({'success': 'true', 'msg': '新用户添加成功！'})
 					else:
 						return JsonResponse({'success': 'false', 'msg': '新用户没有添加成功，请您重新检查'})

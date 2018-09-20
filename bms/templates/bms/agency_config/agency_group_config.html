@@ -1,19 +1,33 @@
-{#用户组分配页面#}
-
 <script>
     $(function () {
-        initRoleTree();
+        initAgencyTree();
+        initGroupTree();
         initUserGrid();
         AddUserGrid();
     });
-    function initRoleTree() {
-        $('#RoleTree').tree({
-            url: '../bms/group_list',
-            {#onLoadSuccess: function (node, data) { $("#RoleTreeloading").css('display', 'none')},#}
+    function initAgencyTree() {
+        $('#AgencyTree2').tree({
+            url: '../bms/get_agency_tree',
             onClick: function (node) {
+                {#$('#AgencyGrid').datagrid('uncheckAll');#}
                 // 在用户点击的时候提示
-                $('#UserRoleGrid').datagrid('loadData', { total: 0, rows: [] });
-                $('#UserRoleGrid').datagrid('load', {
+                {#$('#GroupTree').tree('loadData', { total: 0, rows: [] });#}
+                var params = {
+                    agency_id: node.id
+                };
+                $('#GroupTree').tree("options").queryParams = params;
+                $('#GroupTree').tree('reload');
+            }
+        })
+    }
+    function initGroupTree() {
+        $('#GroupTree').tree({
+            url: '../bms/get_agency_group',
+            onClick: function (node) {
+                $('#UserGrid1').datagrid('uncheckAll');
+                // 在用户点击的时候提示
+                $('#UserGrid1').datagrid('loadData', { total: 0, rows: [] });
+                $('#UserGrid1').datagrid('load', {
                     group_id: node.id
                 });
             }
@@ -21,7 +35,7 @@
     }
 
     function initUserGrid() {
-        $('#UserRoleGrid').datagrid({
+        $('#UserGrid1').datagrid({
             iconCls: 'icon-user',
             loadMsg: '数据加载中...',
             nowrap: true,
@@ -33,8 +47,8 @@
             border: true,
             remoteSort: false,
             idField: 'id',
-            pageSize: 30,
-            pagination: true,
+            //pageSize: 30,
+            //pagination: true,
             singleSelect: false,
             fitColumns: false,
             fit:false,
@@ -63,7 +77,7 @@
 
     //添加用户角色对话框
     function AddUserRoleDialog() {
-        var selectRole = $("#RoleTree").tree("getSelected");
+        var selectRole = $("#GroupTree").tree("getSelected");
         if (selectRole == null) {
             $.messager.alert("友情提示", "请先选择一个组");
             return;
@@ -118,9 +132,9 @@
     }
     //添加用户角色关系
     function AddUserRole() {
-        var selectRole = $("#RoleTree").tree("getSelected");
+        var selectRole = $("#GroupTree").tree("getSelected");
         if (selectRole==null) {
-            $.messager.alert("友情提示", "请先选择一个需要添加用户的组");
+            $.messager.alert("友情提示", "请先在左边选择一个需要添加用户的组");
             return;
         }
         var RoleID = selectRole.id;
@@ -156,7 +170,7 @@
                         showType: 'slide'
                     });
                     $("#AddUserRoleDialog").dialog('close');
-                    $("#UserRoleGrid").datagrid('reload');
+                    $("#UserGrid1").datagrid('reload');
                 }
                 else {
                     alert("添加失败，请检查"+data.msg);
@@ -171,7 +185,7 @@
     //删除用户角色关系
     function DeleteUserRole() {
 
-        var selectRole = $("#RoleTree").tree("getSelected");
+        var selectRole = $("#GroupTree").tree("getSelected");
         if (selectRole == null) {
             $.messager.alert("友情提示", "请先选择一个需要删除用户的角色");
             return;
@@ -179,7 +193,7 @@
 
         var UserIDs = "";
         var RoleID = selectRole.id;
-        var selectsUser = $("#UserRoleGrid").datagrid("getSelections");
+        var selectsUser = $("#UserGrid1").datagrid("getSelections");
         if (selectsUser.length != 0) {
             for (var i = 0; i < selectsUser.length; i++) {
                 UserIDs += selectsUser[i].id + ",";
@@ -210,7 +224,7 @@
                                 showType: 'slide'
                             });
 
-                            $("#UserRoleGrid").datagrid('reload');
+                            $("#UserGrid1").datagrid('reload');
                         }
                         else {
                             alert("删除失败，请检查"+data.msg);
@@ -225,14 +239,19 @@
     }
 </script>
 
-
 <div id="cc" class="easyui-layout" style="height:700px;" fit="true">
-    <div data-options="region:'west',title:'组列表',split:true,collapsible:false" style="width:200px;">
-{#        <img id="RoleTreeloading" src="~/Images/loading.gif" width="160" height="160" />#}
-        <ul id="RoleTree"></ul>
+    <div data-options="region:'west',title:'归属列表',split:true,collapsible:false" style="width:200px;">
+        <ul id="AgencyTree2"></ul>
     </div>
-    <div data-options="region:'center',title:'人员列表-选择组后自动更新'" style="padding:10px 10px;background:#eee;height:400px;width:100%">
-        <table id="UserRoleGrid"></table>
+    <div data-options="region:'center',title:'归属详情-选择左侧归属后自动更新'" style="padding:2px;background:#eee;height:400px;">
+        <div class="easyui-layout" data-options="fit:true">
+            <div data-options="region:'west',collapsed:false,title:'所属组列表'" style="width:180px">
+                <ul id="GroupTree"></ul>
+            </div>
+            <div data-options="region:'center'">
+                <table id="UserGrid1"></table>
+            </div>
+        </div>
     </div>
 </div>
 <div id="AddUserRoleDialog" class="easyui-dialog" style="width:560px;height:340px;padding:10px 20px"

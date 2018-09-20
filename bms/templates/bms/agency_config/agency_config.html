@@ -163,7 +163,7 @@
 
     function UpdateAgencyDialog() {
         {% if request.user.identity != 'org' and not request.user.is_superuser%}
-            alert('您没有修改归属的权限，如要修改信息请联系机构管理员。')
+            alert('您没有修改归属的权限，如需要修改信息请联系机构管理员。')
             return;
         {% endif %}
         var selectA = $('#AgencyGrid').datagrid('getSelected');
