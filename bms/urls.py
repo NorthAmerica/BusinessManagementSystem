@@ -39,6 +39,8 @@ urlpatterns = [
 	path('add_fund_out',rule_views.add_fund_out,name='add_fund_out'),
 	path('fund_out_config',rule_views.fund_out_config,name='fund_out_config'),
 	path('exchange_config',rule_views.exchange_config,name='exchange_config'),
+	path('get_exchange_rule',rule_views.get_exchange_rule,name='get_exchange_rule'),
+	path('add_exchange_rule',rule_views.add_exchange_rule,name='add_exchange_rule'),
 	# 客户管理
 	path('client_list',client_views.client_list,name='client_list'),
 	# 订单管理

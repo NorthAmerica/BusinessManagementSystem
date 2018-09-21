@@ -1,1 +1,366 @@
-<div></div>
+<script>
+    $(function () {
+        initOrgTree();
+        initExchangeRuleForm(0);
+    });
+    function initOrgTree() {
+        $('#OrgTree2').tree({
+            url: '../bms/get_org_tree',
+            onClick: function (node) {
+                initExchangeRuleForm(node.id)
+            }
+        })
+    }
+    function initExchangeRuleForm(org_id) {
+        var postdata = {
+            org_id:org_id
+        };
+        $.ajax({
+            type: 'POST',
+            url: '../bms/get_exchange_rule',
+            cache: false,
+            data: postdata,
+            success: function (data) {
+                debugger;
+                $('#ExchangeRuleForm').form('clear');
+                if (data.success=='true' || data.success==true) {
+                    if (data.org == '' || data.org == null || data.org == undefined)
+                    {
+                        $("#ExchangeRuleForm #org").textbox('setText','默认显示全局出金配置');
+                        $("#ExchangeRuleForm #org").textbox('readonly');
+                    }
+                    else
+                    {
+                        $("#ExchangeRuleForm #org").textbox('setText',data.org);
+                        $("#ExchangeRuleForm #org").textbox('readonly');
+                    }
+                    if(data.enquiry_stock != '' && data.enquiry_stock != null && data.enquiry_stock != undefined)
+                    {
+                        insertContact(data.enquiry_stock,'enquiry_stock')
+                    }
+                    if(data.enquiry_commodity != '' && data.enquiry_commodity != null && data.enquiry_commodity != undefined)
+                    {
+                        insertContact(data.enquiry_commodity,'enquiry_commodity')
+                    }
+                    if(data.order_stock != '' && data.order_stock != null && data.order_stock != undefined)
+                    {
+                        insertContact(data.order_stock,'order_stock')
+                    }
+                    if(data.order_commodity != '' && data.order_commodity != null && data.order_commodity != undefined)
+                    {
+                        insertContact(data.order_commodity,'order_commodity')
+                    }
+                    if(data.close_stock != '' && data.close_stock != null && data.close_stock != undefined)
+                    {
+                        insertContact(data.close_stock,'close_stock')
+                    }
+                    if(data.close_commodity != '' && data.close_commodity != null && data.close_commodity != undefined)
+                    {
+                        insertContact(data.close_commodity,'close_commodity')
+                    }
+                }
+            }
+        })
+    }
+    function insertContact(idata,type) {
+        $("#ExchangeRuleForm ."+type+" #begin_time").timespinner('setValue', idata.begin_time);
+        $("#ExchangeRuleForm ."+type+" #end_time").timespinner('setValue', idata.end_time);
+        for (var i = 0; i < idata.week.length; i++) {
+            $("#ExchangeRuleForm ."+type+"").find("input:checkbox[value=" + idata.week[i].toString() + "]").prop('checked', true);
+        }
+    }
+</script>
+
+<div id="cc" class="easyui-layout" style="height:700px;" fit="true">
+    <div data-options="region:'west',title:'组列表',split:true,collapsible:false" style="width:200px;">
+        <ul id="OrgTree2"></ul>
+    </div>
+    <div data-options="region:'center',title:'交易询价时间设置-默认显示全局规则，选择机构后可对机构的规则进行个性化定制。'" style="padding:10px 10px;background:#eee;height:400px;width:100%">
+        <form id="ExchangeRuleForm" method="post" novalidate="novalidate" style="margin-left: 50px">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="org">目前显示的配置：</label></td>
+                    <td>
+                        <input class="easyui-textbox form-control" type="text" id="org" name="org" data-options="" style="width:350px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <h3>个股期权询价时间设置</h3>-----------------------------------------------------------------------------------------
+                    </td>
+                </tr>
+                <tr class="enquiry_stock">
+                    <td><label for="begin_time">开始时间：</label></td>
+                    <td>
+                        <input id="begin_time" name="begin_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',min:'00:00',showSeconds:true" />
+                    </td>
+                </tr>
+                <tr class="enquiry_stock">
+                    <td><label for="end_time">结束时间：</label></td>
+                    <td><input id="end_time" name="end_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',max:'23:59',showSeconds:true" /></td>
+                </tr>
+                <tr class="enquiry_stock">
+                    <td><label for="week">工作日：</label></td>
+                    <td>
+                        <ul id="week">
+                            <li>
+                                <input type="checkbox" name="week" id="Monday" value="Monday" />星期一
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Tuesday" value="Tuesday" />星期二
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"  id="Wednesday" value="Wednesday" />星期三
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Thursday" value="Thursday" />星期四
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"id="Friday" value="Friday" />星期五
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Saturday" value="Saturday" />星期六
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Sunday" value="Sunday" />星期日
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <h3>商品期权询价时间设置</h3>---------------------------------------------------------------------------------------
+                    </td>
+                </tr>
+                <tr class="enquiry_commodity">
+                    <td><label for="begin_time">开始时间：</label></td>
+                    <td>
+                        <input id="begin_time" name="begin_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',min:'00:00',showSeconds:true" />
+                    </td>
+                </tr>
+                <tr class="enquiry_commodity">
+                    <td><label for="end_time">结束时间：</label></td>
+                    <td><input id="end_time" name="end_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',max:'23:59',showSeconds:true" /></td>
+                </tr>
+                <tr class="enquiry_commodity">
+                    <td><label for="week">工作日：</label></td>
+                    <td>
+                        <ul id="week">
+                            <li>
+                                <input type="checkbox" name="week" id="Monday" value="Monday" />星期一
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Tuesday" value="Tuesday" />星期二
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"  id="Wednesday" value="Wednesday" />星期三
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Thursday" value="Thursday" />星期四
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"id="Friday" value="Friday" />星期五
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Saturday" value="Saturday" />星期六
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Sunday" value="Sunday" />星期日
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <h3>个股期权下单时间设置</h3>---------------------------------------------------------------------------------------
+                    </td>
+                </tr>
+                <tr class="order_stock">
+                    <td><label for="begin_time">开始时间：</label></td>
+                    <td>
+                        <input id="begin_time" name="begin_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',min:'00:00',showSeconds:true" />
+                    </td>
+                </tr>
+                <tr class="order_stock">
+                    <td><label for="end_time">结束时间：</label></td>
+                    <td><input id="end_time" name="end_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',max:'23:59',showSeconds:true" /></td>
+                </tr>
+                <tr class="order_stock">
+                    <td><label for="week">工作日：</label></td>
+                    <td>
+                        <ul id="week">
+                            <li>
+                                <input type="checkbox" name="week" id="Monday" value="Monday" />星期一
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Tuesday" value="Tuesday" />星期二
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"  id="Wednesday" value="Wednesday" />星期三
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Thursday" value="Thursday" />星期四
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"id="Friday" value="Friday" />星期五
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Saturday" value="Saturday" />星期六
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Sunday" value="Sunday" />星期日
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <h3>商品期权下单时间设置</h3>---------------------------------------------------------------------------------------
+                    </td>
+                </tr>
+                <tr class="order_commodity">
+                    <td><label for="begin_time">开始时间：</label></td>
+                    <td>
+                        <input id="begin_time" name="begin_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',min:'00:00',showSeconds:true" />
+                    </td>
+                </tr>
+                <tr class="order_commodity">
+                    <td><label for="end_time">结束时间：</label></td>
+                    <td><input id="end_time" name="end_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',max:'23:59',showSeconds:true" /></td>
+                </tr>
+                <tr class="order_commodity">
+                    <td><label for="week">工作日：</label></td>
+                    <td>
+                        <ul id="week">
+                            <li>
+                                <input type="checkbox" name="week" id="Monday" value="Monday" />星期一
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Tuesday" value="Tuesday" />星期二
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"  id="Wednesday" value="Wednesday" />星期三
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Thursday" value="Thursday" />星期四
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"id="Friday" value="Friday" />星期五
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Saturday" value="Saturday" />星期六
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Sunday" value="Sunday" />星期日
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <h3>个股期权平仓时间设置</h3>---------------------------------------------------------------------------------------
+                    </td>
+                </tr>
+                <tr class="close_stock">
+                    <td><label for="begin_time">开始时间：</label></td>
+                    <td>
+                        <input id="begin_time" name="begin_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',min:'00:00',showSeconds:true" />
+                    </td>
+                </tr>
+                <tr class="close_stock">
+                    <td><label for="end_time">结束时间：</label></td>
+                    <td><input id="end_time" name="end_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',max:'23:59',showSeconds:true" /></td>
+                </tr>
+                <tr class="close_stock">
+                    <td><label for="week">工作日：</label></td>
+                    <td>
+                        <ul id="week">
+                            <li>
+                                <input type="checkbox" name="week" id="Monday" value="Monday" />星期一
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Tuesday" value="Tuesday" />星期二
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"  id="Wednesday" value="Wednesday" />星期三
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Thursday" value="Thursday" />星期四
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"id="Friday" value="Friday" />星期五
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Saturday" value="Saturday" />星期六
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Sunday" value="Sunday" />星期日
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <h3>商品期权平仓时间设置</h3>---------------------------------------------------------------------------------------
+                    </td>
+                </tr>
+                <tr class="close_commodity">
+                    <td><label for="begin_time">开始时间：</label></td>
+                    <td>
+                        <input id="begin_time" name="begin_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',min:'00:00',showSeconds:true" />
+                    </td>
+                </tr>
+                <tr class="close_commodity">
+                    <td><label for="end_time">结束时间：</label></td>
+                    <td><input id="end_time" name="end_time" class="easyui-timespinner"  style="width:120px;"
+                        required="required" data-options="value:'00:00',max:'23:59',showSeconds:true" /></td>
+                </tr>
+                <tr class="close_commodity">
+                    <td><label for="week">工作日：</label></td>
+                    <td>
+                        <ul id="week">
+                            <li>
+                                <input type="checkbox" name="week" id="Monday" value="Monday" />星期一
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Tuesday" value="Tuesday" />星期二
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"  id="Wednesday" value="Wednesday" />星期三
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Thursday" value="Thursday" />星期四
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week"id="Friday" value="Friday" />星期五
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Saturday" value="Saturday" />星期六
+                            </li>
+                            <li>
+                                <input type="checkbox" name="week" id="Sunday" value="Sunday" />星期日
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>

@@ -214,7 +214,7 @@ class Fund_In_RuleAdmin(admin.ModelAdmin):
 class Fund_Out_RuleAdmin(admin.ModelAdmin):
 	date_hierarchy = 'date_joined'
 	list_display = (
-		'org', 'begin_time', 'end_time', 'week', 'max_count_each_day', 'max_money_each_day', 'max_money_each_time',
+		'week', 'org', 'begin_time', 'end_time', 'max_count_each_day', 'max_money_each_day', 'max_money_each_time',
 		'operator', 'date_joined')
 	readonly_fields = ('operator',)
 
@@ -227,8 +227,19 @@ class Fund_Out_RuleAdmin(admin.ModelAdmin):
 class Exchange_RuleAdmin(admin.ModelAdmin):
 	date_hierarchy = 'date_joined'
 	list_display = (
-		'org', 'begin_time', 'end_time', 'week', 'option_type', 'type', 'operator',
+		'week','org', 'begin_time', 'end_time', 'option_type', 'type', 'operator',
 		'date_joined')
+	readonly_fields = ('operator',)
+
+	def save_model(self, request, obj, form, change):
+		obj.operator = request.user.username
+		obj.save()
+
+@admin.register(Notional_Principal)
+class Notional_PrincipalAdmin(admin.ModelAdmin):
+	date_hierarchy = 'date_joined'
+	list_display = (
+		'number', 'org', 'option_type', 'operator', 'date_joined')
 	readonly_fields = ('operator',)
 
 	def save_model(self, request, obj, form, change):

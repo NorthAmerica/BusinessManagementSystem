@@ -183,3 +183,64 @@ def add_fund_out(request):
 	except Exception as ex:
 		print(ex)
 		return render(request, './bms/404.html')
+
+
+def get_exchange_rule(request):
+	try:
+		if request.method == 'POST':
+			if request.POST.get('org_id')==0 or request.POST.get('org_id')=='0':
+				exchange_rule = Exchange_Rule.objects.filter(org=None)
+				json_ret = {'success': True, 'org': ''}
+			else:
+				Org = Organization.objects.get(pk=request.POST.get('org_id'))
+				exchange_rule = Exchange_Rule.objects.filter(org=Org)
+				json_ret = {'success': True, 'org': Org.name}
+			for rule in exchange_rule:
+				if rule is not None:
+					if rule.type == 'enquiry' and rule.option_type == 'stock':
+						json_ret['enquiry_stock'] = {
+							'begin_time': rule.begin_time,
+							'end_time': rule.end_time,
+							'week': [day for day in rule.week],
+						}
+					elif rule.type == 'enquiry' and rule.option_type == 'commodity':
+						json_ret['enquiry_commodity'] = {
+							'begin_time': rule.begin_time,
+							'end_time': rule.end_time,
+							'week': [day for day in rule.week],
+						}
+					elif rule.type == 'order' and rule.option_type == 'stock':
+						json_ret['order_stock'] = {
+							'begin_time': rule.begin_time,
+							'end_time': rule.end_time,
+							'week': [day for day in rule.week],
+						}
+					elif rule.type == 'order' and rule.option_type == 'commodity':
+						json_ret['order_commodity'] = {
+							'begin_time': rule.begin_time,
+							'end_time': rule.end_time,
+							'week': [day for day in rule.week],
+						}
+					elif rule.type == 'close' and rule.option_type == 'stock':
+						json_ret['close_stock'] = {
+							'begin_time': rule.begin_time,
+							'end_time': rule.end_time,
+							'week': [day for day in rule.week],
+						}
+					elif rule.type == 'close' and rule.option_type == 'commodity':
+						json_ret['close_commodity'] = {
+							'begin_time': rule.begin_time,
+							'end_time': rule.end_time,
+							'week': [day for day in rule.week],
+						}
+			return JsonResponse(json_ret, safe=False)
+				# else:
+				# 	return JsonResponse({'success': False, 'msg': '没有满足条件的全局出金配置'})
+				# else:
+				# 	return JsonResponse({'success': 'false', 'msg': '该机构没有满足条件的出金配置'})
+	except Exception as ex:
+		print(ex)
+		return render(request, './bms/404.html')
+
+def add_exchange_rule(request):
+	pass
