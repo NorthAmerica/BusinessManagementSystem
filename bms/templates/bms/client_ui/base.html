@@ -1,0 +1,75 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>jQuery WeUI</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'jquery-weui/lib/weui.min.css'%}">
+    <link rel="stylesheet" href="{% static 'jquery-weui/css/jquery-weui.min.css'%}">
+    <link rel="stylesheet" href="{% static 'jquery-weui/css/demos.css'%}">
+      <script src="{% static 'jquery-weui/lib/jquery-2.1.4.js'%}"></script>
+    <script>
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+        });
+    </script>
+  </head>
+  <body ontouchstart>
+    <div class="weui-tab">
+      <div class="weui-tab__bd">
+        <div id="subtab1" class="weui-tab__bd-item">
+          <h1>页面一</h1>
+        </div>
+          <div id="subtab2" class="weui-tab__bd-item weui-tab__bd-item--active">
+{#              <h1>test</h1>#}
+           {% include 'bms/client_ui/exchange.html' %}
+          </div>
+        <div id="subtab3" class="weui-tab__bd-item">
+          {% include 'bms/client_ui/me.html' %}
+        </div>
+      </div>
+
+      <div class="weui-tabbar">
+        <a href="#subtab1" class="weui-tabbar__item">
+{#          <span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">8</span>#}
+          <div class="weui-tabbar__icon">
+            <img src="{% static 'jquery-weui/images/icon_tab_1.png'%}" alt="">
+          </div>
+          <p class="weui-tabbar__label">行情</p>
+        </a>
+        <a href="#subtab2" class="weui-tabbar__item weui-bar__item--on">
+          <div class="weui-tabbar__icon">
+            <img src="{% static 'jquery-weui/images/icon_tab_2.png'%}" alt="">
+          </div>
+          <p class="weui-tabbar__label">交易</p>
+        </a>
+        <a href="#subtab3" class="weui-tabbar__item">
+          <div class="weui-tabbar__icon">
+            <img src="{% static 'jquery-weui/images/icon_tab_3.png'%}" alt="">
+          </div>
+          <p class="weui-tabbar__label">我的</p>
+        </a>
+      </div>
+    </div>
+
+    <script src="{% static 'jquery-weui/lib/fastclick.js'%}"></script>
+    <script>
+      $(function() {
+        FastClick.attach(document.body);
+      });
+    </script>
+    <script src="{% static 'jquery-weui/js/jquery-weui.js'%}"></script>
+
+    <script>
+      $("#a").select({
+        title: "选择职业",
+        items: ["法官", "医生", "猎人", "学生", "记者", "其他"]
+      });
+    </script>
+  </body>
+</html>

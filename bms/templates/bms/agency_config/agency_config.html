@@ -46,6 +46,7 @@
                 { field: 'rebate_z', title: '返佣参数Z', width: 150, sortable: true },
                 { field: 'f_agency_id', title: '上级代理id', width: 150, sortable: true,hidden:true },
                 { field: 'f_agency', title: '上级代理', width: 150, sortable: true },
+                { field: 'invite_url',title: '邀请链接', width: 100, sortable: true,formatter:formatUrl },
                 { field: 'invite_num', title: '邀请码', width: 150, sortable: true },
                 {
                     field: 'is_freeze',
@@ -82,6 +83,19 @@
         });
     }
 
+    function getRandom(min, max){
+            var r = Math.random() * (max - min);
+            var re = Math.round(r + min);
+            re = Math.max(Math.min(re, max), min)
+
+            return re;
+        }
+
+    function formatUrl(val,row,index){
+            var url = "http://" + val+'&slider='+getRandom(0,100);
+            var returnString = '<a href='+url+' target="_blank">邀请链接</a>';
+            return returnString;
+        }
     function AddAgencyDialog(init_title) {
         $('#AddAgencyDialog').dialog({title:init_title,
             width:650,
@@ -346,3 +360,5 @@
     </form>
 </div>
  {#----------------------更新归属界面结束------------------------------------------------------------#}
+
+<a href="#" target="_blank"></a>

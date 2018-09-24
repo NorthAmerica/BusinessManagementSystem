@@ -6,7 +6,7 @@ from bms.ui_views import main_user_views,user_group_view,agency_views,client_vie
 app_name = 'bms'
 
 urlpatterns = [
-	url(r'^chaining/', include('smart_selects.urls')),
+
 	path('login',views.login_page,name='login'),
 	path('logout',views.Logout_page,name='logout'),
 	path('login_check',views.login_check,name='login_check'),

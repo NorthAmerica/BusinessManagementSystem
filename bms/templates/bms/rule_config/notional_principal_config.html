@@ -1,0 +1,86 @@
+<script>
+    $(function () {
+        initOrgTree();
+        initNotionalPrincipalForm(0);
+        });
+    function initOrgTree() {
+        $('#OrgTree3').tree({
+            url: '../bms/get_org_tree',
+            onClick: function (node) {
+                initExchangeRuleForm(node.id)
+            }
+        })
+    }
+    function initNotionalPrincipalForm(org_id) {
+        var postdata = {
+            org_id:org_id
+        };
+        $.ajax({
+            type: 'POST',
+            url: '../bms/get_notional_principal',
+            cache: false,
+            data: postdata,
+            success: function (data) {
+                $('#NotionalPrincipalForm').form('clear');
+                if (data.success=='true' || data.success==true) {
+                    if (data.org == '' || data.org == null || data.org == undefined)
+                    {
+                        $("#NotionalPrincipalForm #org").textbox('setText','默认显示全局入金配置');
+                        $("#NotionalPrincipalForm #org").textbox('readonly');
+                    }
+                    else
+                    {
+                        $("#NotionalPrincipalForm #org").textbox('setText',data.org);
+                        $("#NotionalPrincipalForm #org").textbox('readonly');
+                    }
+
+                    $("#NotionalPrincipalForm #min_gateway").numberbox('setValue', data.min_gateway);
+
+                    for (var i = 0; i < data.week.length; i++) {
+                        $("#NotionalPrincipalForm").find("input:checkbox[value=" + data.week[i].toString() + "]").prop('checked', true);
+                    }
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: '入金配置加载成功',
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+
+                }
+                else {
+                    $('#NotionalPrincipalForm').form('clear');
+                    alert("入金配置加载失败，" + data.msg);
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
+            }
+        });
+
+    }
+</script>
+
+<div id="cc" class="easyui-layout" style="height:700px;" fit="true">
+    <div data-options="region:'west',title:'组列表',split:true,collapsible:false" style="width:200px;">
+        <ul id="OrgTree2"></ul>
+    </div>
+    <div data-options="region:'center',title:'名义本金设置-默认显示全局规则，选择机构后可对机构的规则进行个性化定制。'" style="padding:10px 10px;background:#eee;height:400px;width:100%">
+        <form id="NotionalPrincipalForm" method="post" novalidate="novalidate" style="margin-left: 50px">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="org">目前显示的配置：</label></td>
+                    <td>
+                        <input class="easyui-textbox form-control" type="text" id="org" name="org" data-options="" style="width:350px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="number">网关单笔最小入金金额：</label></td>
+                    <td>
+                        <input type="text" class="easyui-numberbox form-control" id="number" name="number"
+                               value="100" data-options="min:0,precision:2" style="width:200px;">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>

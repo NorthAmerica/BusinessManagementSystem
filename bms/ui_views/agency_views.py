@@ -5,7 +5,6 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from bms.models import *
-from bms.forms import *
 from django.contrib.auth.models import Group
 from bms.ui_views.view_shortcuts import get_org_obj,get_all_son_agency,get_ageny_id
 import logging
@@ -71,6 +70,7 @@ def get_agency_list(request):
 					"rebate_z": agency.rebate_z,
 					"f_agency_id": 0 if agency.f_agency is None else agency.f_agency.id,
 					"f_agency": '无' if agency.f_agency is None else agency.f_agency.name,
+					'invite_url':request.get_host()+'/register?code='+agency.invite_num,
 					'invite_num': agency.invite_num,
 					'is_freeze':agency.is_freeze
 				})

@@ -21,12 +21,11 @@
             cache: false,
             data: postdata,
             success: function (data) {
-                debugger;
                 $('#ExchangeRuleForm').form('clear');
                 if (data.success=='true' || data.success==true) {
                     if (data.org == '' || data.org == null || data.org == undefined)
                     {
-                        $("#ExchangeRuleForm #org").textbox('setText','默认显示全局出金配置');
+                        $("#ExchangeRuleForm #org").textbox('setText','默认显示全局配置');
                         $("#ExchangeRuleForm #org").textbox('readonly');
                     }
                     else
@@ -68,6 +67,132 @@
         for (var i = 0; i < idata.week.length; i++) {
             $("#ExchangeRuleForm ."+type+"").find("input:checkbox[value=" + idata.week[i].toString() + "]").prop('checked', true);
         }
+    }
+
+    function ExchangeRuleEvent() {
+        var valid = $('#ExchangeRuleForm').form('validate');
+        if (valid == false) {
+            return false;
+        }
+        var begin = $('#ExchangeRuleForm #begin_time').timespinner('getValue');
+        var end = $('#ExchangeRuleForm #end_time').timespinner('getValue');
+        if (begin == end) {
+            $.messager.alert('注意', '开始时间不能与结束时间一样');
+            return false;
+        }
+        var selectOrg = $("#OrgTree2").tree("getSelected");
+        if (selectOrg == null || selectOrg.id == 0 || selectOrg.id == '0') {
+            $.messager.alert("友情提示", "不能对全局配置进行修改，请先选择一个机构");
+            return false;
+        }
+
+        var enquiry_stock_week = new Array();
+        $.each($('#ExchangeRuleForm .enquiry_stock input:checkbox'), function () {
+            if (this.checked) {
+                enquiry_stock_week.push($(this).val());
+            }
+        });
+        var enquiry_stock_days = enquiry_stock_week.join(",");
+        if (enquiry_stock_week.length == 0) {
+            $.messager.alert("友情提示", "您还没选择合适的工作日");
+            return false;
+        }
+        var enquiry_commodity_week = new Array();
+        $.each($('#ExchangeRuleForm .enquiry_commodity input:checkbox'), function () {
+            if (this.checked) {
+                enquiry_commodity_week.push($(this).val());
+            }
+        });
+        var enquiry_commodity_days = enquiry_commodity_week.join(",");
+
+        var order_stock_week = new Array();
+        $.each($('#ExchangeRuleForm .order_stock input:checkbox'), function () {
+            if (this.checked) {
+                order_stock_week.push($(this).val());
+            }
+        });
+        var order_stock_days = order_stock_week.join(",");
+
+        var order_commodity_week = new Array();
+        $.each($('#ExchangeRuleForm .order_commodity input:checkbox'), function () {
+            if (this.checked) {
+                order_commodity_week.push($(this).val());
+            }
+        });
+        var order_commodity_days = order_commodity_week.join(",");
+
+        var close_stock_week = new Array();
+        $.each($('#ExchangeRuleForm .close_stock input:checkbox'), function () {
+            if (this.checked) {
+                close_stock_week.push($(this).val());
+            }
+        });
+        var close_stock_days = close_stock_week.join(",");
+
+        var close_commodity_week = new Array();
+        $.each($('#ExchangeRuleForm .close_commodity input:checkbox'), function () {
+            if (this.checked) {
+                close_commodity_week.push($(this).val());
+            }
+        });
+        var close_commodity_days = close_commodity_week.join(",");
+
+        var postdata = {
+            org: selectOrg.id,
+            enquiry_stock:{
+                begin_time: $('#ExchangeRuleForm .enquiry_stock #begin_time').timespinner('getValue'),
+                end_time: $('#ExchangeRuleForm .enquiry_stock #end_time').timespinner('getValue'),
+                week: enquiry_stock_days
+                },
+            enquiry_commodity:{
+                begin_time: $('#ExchangeRuleForm .enquiry_commodity #begin_time').timespinner('getValue'),
+                end_time: $('#ExchangeRuleForm .enquiry_commodity #end_time').timespinner('getValue'),
+                week: enquiry_commodity_days
+            },
+            order_stock:{
+                begin_time: $('#ExchangeRuleForm .order_stock #begin_time').timespinner('getValue'),
+                end_time: $('#ExchangeRuleForm .order_stock #end_time').timespinner('getValue'),
+                week: order_stock_days
+            },
+            order_commodity:{
+                begin_time: $('#ExchangeRuleForm .order_commodity #begin_time').timespinner('getValue'),
+                end_time: $('#ExchangeRuleForm .order_commodity #end_time').timespinner('getValue'),
+                week: order_commodity_days
+            },
+            close_stock:{
+                begin_time: $('#ExchangeRuleForm .close_stock #begin_time').timespinner('getValue'),
+                end_time: $('#ExchangeRuleForm .close_stock #end_time').timespinner('getValue'),
+                week: close_stock_days
+            },
+            close_commodity:{
+                begin_time: $('#ExchangeRuleForm .close_commodity #begin_time').timespinner('getValue'),
+                end_time: $('#ExchangeRuleForm .close_commodity #end_time').timespinner('getValue'),
+                week: close_commodity_days
+            },
+
+        };
+        $.ajax({
+            type: 'POST',
+            url: '../bms/add_exchange_rule',
+            cache: false,
+            data: postdata,
+            success: function (data) {
+                if (data.success == 'true' || data.success == true) {
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: data.msg,
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+                }
+                else {
+                    alert("更新配置失败，请检查" + data.msg);
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
+            }
+        });
     }
 </script>
 
@@ -358,6 +483,14 @@
                                 <input type="checkbox" name="week" id="Sunday" value="Sunday" />星期日
                             </li>
                         </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align:center; padding-top:10px">
+                        <a href="javascript:void(0)" class="easyui-linkbutton" id="btnFundIn" iconcls="icon-ok"
+                           onclick="javascript:ExchangeRuleEvent()">保存</a>
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconcls="icon-cancel"
+                           onclick="javascript:$('#ExchangeRuleForm').form('clear')">清空</a>
                     </td>
                 </tr>
             </table>

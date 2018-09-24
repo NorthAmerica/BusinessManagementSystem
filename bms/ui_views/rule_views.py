@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_list_or_404
-from django.http import JsonResponse,HttpResponse
+from django.http import JsonResponse,HttpResponse,HttpResponseNotFound
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
@@ -39,7 +39,7 @@ def get_org_tree(request):
 
 	except Exception as ex:
 		print(ex)
-		return render(request, './bms/404.html')
+		return HttpResponseNotFound(ex)
 
 def get_global_fund_in(request):
 	try:
@@ -77,12 +77,12 @@ def get_global_fund_in(request):
 					return JsonResponse({'success': 'false', 'msg': '该机构没有满足条件的入金配置'})
 	except Exception as ex:
 		print(ex)
-		return render(request, './bms/404.html')
+		return HttpResponseNotFound(ex)
 
 def add_fund_in(request):
 	try:
 		if request.method == 'POST':
-			if request.user.is_superuser or request.user.identity == 'org':
+			if request.user.is_superuser or request.user.identity == 'org': #前端限制必须选择机构进行修改
 				org = request.POST.get('org')
 				begin_time = request.POST.get('begin_time')
 				end_time = request.POST.get('end_time')
@@ -108,7 +108,7 @@ def add_fund_in(request):
 						return JsonResponse({'success': 'true', 'msg': '入金规则修改成功！'})
 	except Exception as ex:
 		print(ex)
-		return render(request, './bms/404.html')
+		return HttpResponseNotFound(ex)
 
 
 def get_global_fund_out(request):
@@ -149,12 +149,12 @@ def get_global_fund_out(request):
 					return JsonResponse({'success': 'false', 'msg': '该机构没有满足条件的出金配置'})
 	except Exception as ex:
 		print(ex)
-		return render(request, './bms/404.html')
+		return HttpResponseNotFound(ex)
 
 def add_fund_out(request):
 	try:
 		if request.method == 'POST':
-			if request.user.is_superuser or request.user.identity == 'org':
+			if request.user.is_superuser or request.user.identity == 'org':#前端限制必须选择机构进行修改
 				org = request.POST.get('org')
 				begin_time = request.POST.get('begin_time')
 				end_time = request.POST.get('end_time')
@@ -182,10 +182,11 @@ def add_fund_out(request):
 						return JsonResponse({'success': 'true', 'msg': '出金规则修改成功！'})
 	except Exception as ex:
 		print(ex)
-		return render(request, './bms/404.html')
+		return HttpResponseNotFound(ex)
 
 
 def get_exchange_rule(request):
+	'''获取交易询价时间设置'''
 	try:
 		if request.method == 'POST':
 			if request.POST.get('org_id')==0 or request.POST.get('org_id')=='0':
@@ -242,5 +243,52 @@ def get_exchange_rule(request):
 		print(ex)
 		return render(request, './bms/404.html')
 
+@transaction.atomic
 def add_exchange_rule(request):
+	'''新增交易询价时间设置'''
+	try:
+		if request.method == 'POST':
+			if request.user.is_superuser or request.user.identity == 'org':
+				org_id = request.POST.get('org')
+				org_obj = Organization.objects.get(pk=org_id)
+
+				rule_list = ['enquiry_stock','enquiry_commodity','order_stock',
+				             'order_commodity','close_stock','close_commodity']
+
+				for rule_name in rule_list:
+					begin_time = '%s[begin_time]'%rule_name
+					end_time = '%s[end_time]'%rule_name
+					week='%s[week]'%rule_name
+					option_type = rule_name.split('_')[1]
+					type = rule_name.split('_')[0]
+					insert_dict = {
+						"org": org_obj,
+						"begin_time": request.POST.get(begin_time),
+						"end_time": request.POST.get(end_time),
+						"week": request.POST.get(week),
+						'option_type': option_type,
+						'type': type,
+						'operator': request.user.username
+					}
+					if org_obj.exchange_rule_set.filter(option_type=option_type).filter(
+							type=type).count() == 0:
+						Exchange_Rule.objects.create(**insert_dict)
+					else:
+						org_obj.exchange_rule_set.filter(option_type=option_type).filter(
+							type=type).all().update(**insert_dict)
+
+				return JsonResponse({'success': 'true', 'msg': '交易询价时间设置添加成功！'})
+	except Exception as ex:
+		print(ex)
+		return HttpResponseNotFound(ex)
+
+def notional_principal_config(request):
+	'''获取名义本金设置'''
+	pass
+
+def get_notional_principal(request):
+	pass
+
+def add_notional_principal(request):
+	'''新增名义本金设置'''
 	pass

@@ -1,0 +1,132 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>用户登陆</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'jquery-weui/lib/weui.min.css'%}">
+    <link rel="stylesheet" href="{% static 'jquery-weui/css/jquery-weui.min.css'%}">
+    <link rel="stylesheet" href="{% static 'jquery-weui/css/demos.css'%}">
+      <script src="{% static 'jquery-weui/lib/jquery-2.1.4.js'%}"></script>
+    <script>
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+        });
+    </script>
+  </head>
+  <body ontouchstart>
+    <header class='demos-header'>
+      <h1 class="demos-title">用户登陆</h1>
+    </header>
+    <div class="weui-cells weui-cells_form">
+
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">账户：</label></div>
+            <div class="weui-cell__bd weui-cell_primary">
+                <input id="user_tel" type="tel" class="weui-input" placeholder="手机号码"/>
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">密码：</label></div>
+            <div class="weui-cell__bd weui-cell_primary">
+                <input id="user_pwd" type="password" class="weui-input" placeholder="不少于6位"/>
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">滑动到<span id="sliderB"></span></label></div>
+            <div class="weui-cell__bd weui-cell_primary">
+
+                <div class="weui-slider-box" id='slider2'>
+                <div class="weui-slider">
+                  <div id="sliderInner" class="weui-slider__inner">
+                    <div id="sliderTrack" style="width: 0%;" class="weui-slider__track"></div>
+                    <div id="sliderHandler" style="left: 0%;" class="weui-slider__handler"></div>
+                  </div>
+                </div>
+                <div id="sliderValue" class="weui-slider-box__value">0</div>
+              </div>
+
+            </div>
+        </div>
+{#        <div class="weui-cell weui-cell_vcode">#}
+{#            <div class="weui-cell__hd"><label class="weui-label">验证码</label></div>#}
+{#            <div class="weui-cell__bd weui-cell_primary"><input type="number" class="weui-input"></div>#}
+{#            <div class="weui-cell__ft">![](service/validate_code/create)</div>#}
+{#        </div>#}
+    </div>
+    <div class="weui-cells__tips"></div>
+    <div class="weui-btn-area">
+        <a href="#" class="weui-btn weui-btn_primary" id="login_btn">登录</a>
+        <a href="/register" class="important-tips">没账户，去注册</a>
+    </div>
+
+
+    <script src="{% static 'jquery-weui/lib/fastclick.js'%}"></script>
+    <script>
+      $(function() {
+        FastClick.attach(document.body);
+      });
+    </script>
+    <script src="{% static 'jquery-weui/js/jquery-weui.js'%}"></script>
+
+    <script>
+        var slider_value = 0;
+        $('#slider2').slider(function (per) {
+            slider_value = per;
+          });
+        function getRandom(min, max){
+                var r = Math.random() * (max - min);
+                var re = Math.round(r + min);
+                re = Math.max(Math.min(re, max), min)
+
+                return re;
+            }
+        $(function () {
+            var slider = getRandom(0,100);
+            if (slider != '' && slider != null && slider != undefined){
+                $('#sliderB').html(slider);
+            }
+            loginbtn = $('#login_btn').click(function () {
+                if ($('#user_tel').val() == '' ||$('#user_tel').val() == null || $('#user_tel').val() == undefined) {
+                    $.toptip('登陆失败,登陆手机号码不能为空', 'error');
+                    return false
+                }
+                if ($('#user_pwd').val() == '' ||$('#user_pwd').val() == null || $('#user_pwd').val() == undefined) {
+                    $.toptip('登陆失败,登陆密码不能为空', 'error');
+                    return false
+                }
+                if (slider_value!=slider){
+                    $.toptip('登陆失败,请将滑动条滑动到指定数字位置', 'error');
+                    return false
+                }
+
+                var postdata = {
+                    username: $("#user_tel").val(),
+                    password: $("#user_pwd").val()
+                };
+                $.ajax({
+                    method: "POST",
+                    url: '/login_check',
+                    cache: false,
+                    data: postdata,
+                    success: function (data) {
+                        if (data && data.success) {
+                            window.location.href = "/index";
+                        } else {
+                            $.alert(data.msg,"提示");
+                        }
+                    },
+                    error: function (data) {
+                        $.alert(data.responseText,'错误');
+                    }
+                });
+            });
+    });
+    </script>
+  </body>
+</html>

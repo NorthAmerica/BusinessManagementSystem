@@ -29,7 +29,7 @@ class Client(models.Model):
 	agency = models.ForeignKey('Agency',blank=True, null=True,on_delete=models.SET_NULL, verbose_name='所属代理')
 	status = models.CharField(choices=STATUS_CHOICES,max_length=10,default='1',verbose_name='状态')
 	is_freeze = models.BooleanField(default=False,verbose_name='能否冻结')
-	web_app = models.CharField(choices=WEB_APP_CHOICES,max_length=32,default='back',verbose_name='申请端口')
+	web_app = models.CharField(choices=WEB_APP_CHOICES,max_length=32,default='app',verbose_name='申请端口')
 	last_login_time = models.DateTimeField(blank=True, null=True,verbose_name='最后登陆时间')
 	date_joined = models.DateTimeField( default=timezone.now,verbose_name='注册时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')

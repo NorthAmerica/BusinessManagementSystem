@@ -27,7 +27,7 @@
 <div class="container">
     <form class="form-signin" id="loginForm">
         <div class="form-signin-heading text-center">
-            <h1 class="sign-title">广州金艮业务管理系统</h1>
+            <h1 class="sign-title">广州金艮云平台</h1>
             <img src="{% static 'AdminEx/images/login-logo.png' %}" alt=""/>
         </div>
         <div class="login-wrap">
@@ -103,7 +103,6 @@
                 method: "POST",
                 url: '/bms/login_check',
                 cache: false,
-                {#headers: headers,#}
                 data: postdata,
                 success: function (data) {
 
