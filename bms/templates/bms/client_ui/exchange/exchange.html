@@ -1,0 +1,119 @@
+<div class="weui-tab" id="ex-nav">
+  <div class="weui-navbar">
+    <a class="weui-navbar__item weui-bar__item--on" href="#ex-tab1">
+      询价
+    </a>
+    <a class="weui-navbar__item" href="#ex-tab2">
+      下单
+    </a>
+    <a class="weui-navbar__item" href="#ex-tab3">
+      持仓
+    </a>
+    <a class="weui-navbar__item" href="#ex-tab4">
+      结算
+    </a>
+  </div>
+
+  <div class="weui-tab__bd for-ex">
+    <div id="ex-tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+      <h1>询价</h1>
+        <h1>页面一</h1>
+        <h1>页面一</h1>
+        <h1>页面一</h1>
+        <h1>页面一</h1>
+    </div>
+    <div id="ex-tab2" class="weui-tab__bd-item">
+      <h1>下单</h1>
+        <h1>页面二</h1>
+        <h1>页面二</h1><h1>页面二</h1><h1>页面二</h1>
+        <h1>页面二</h1>
+    </div>
+    <div id="ex-tab3" class="weui-tab__bd-item">
+      <h1>持仓</h1>
+        <h1>页面二</h1>
+        <h1>页面二</h1><h1>页面二</h1><h1>页面二</h1>
+        <h1>页面二</h1>
+    </div>
+    <div id="ex-tab4" class="weui-tab__bd-item">
+      <h1>结算</h1>
+        <h1>页面二</h1>
+        <h1>页面二</h1><h1>页面二</h1><h1>页面二</h1>
+        <h1>页面二</h1>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+    $(function(){
+    });
+
+
+    $('#ex-nav .weui-navbar__item').click(function () {
+        var href = $(this).attr("href");
+        if($(this).hasClass(ITEM_ON)) return;
+        if(!/^#/.test(href)) return;
+
+        $(this).parent().find("."+ITEM_ON).removeClass(ITEM_ON);
+        $(this).addClass(ITEM_ON);
+        {#debugger;#}
+        var bd = $(this).parents("#ex-nav").find(".weui-tab__bd");
+        bd = bd.filter('.for-ex');
+
+        bd.children(".weui-tab__bd-item--active").removeClass("weui-tab__bd-item--active");
+
+        $(href).addClass("weui-tab__bd-item--active");
+    });
+
+</script>
+
+{#<header class='demos-header'>#}
+{#      <h1 class="demos-title">交易功能</h1>#}
+{#    </header>#}
+{##}
+{#    <div class='demos-content-padded'>#}
+{#      <a href="javascript:;" class="weui-btn weui-btn_primary open-popup" data-target="#full">询价</a>#}
+{#      <a href="javascript:;" class="weui-btn weui-btn_primary open-popup" data-target="#half">下单</a>#}
+{#        <a href="javascript:;" class="weui-btn weui-btn_primary open-popup" data-target="#half">持仓</a>#}
+{#        <a href="javascript:;" class="weui-btn weui-btn_primary open-popup" data-target="#half">结算</a>#}
+{#    </div>#}
+{#    <div id="full" class='weui-popup__container'>#}
+{#      <div class="weui-popup__overlay"></div>#}
+{#      <div class="weui-popup__modal">#}
+{#        <header class='demos-header'>#}
+{#          <h2 class="demos-second-title">关于 jQuery WeUI</h2>#}
+{#          <p class="demos-sub-title">By 言川 @2016/03/30</p>#}
+{#        </header>#}
+{#          <a href="javascript:;" class="weui-btn weui-btn_primary close-popup">关闭</a>#}
+{#        <article class="weui-article">#}
+{#          <h1>大标题</h1>#}
+{#          <section>#}
+{#            <h2 class="title">章标题</h2>#}
+{#            <section>#}
+{#              <h3>1.1 节标题</h3>#}
+{#              <p>#}
+{#                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod#}
+{#                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,#}
+{#                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo#}
+{#                consequat.#}
+{#              </p>#}
+{#              <p>#}
+{#                #}
+{#              </p>#}
+{#            </section>#}
+{#            <section>#}
+{#              <h3>1.2 节标题</h3>#}
+{#              <p>#}
+{#                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod#}
+{#                tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,#}
+{#                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non#}
+{#                proident, sunt in culpa qui officia deserunt mollit anim id est laborum.#}
+{#              </p>#}
+{#                #}
+{#                <a href="javascript:;" class="weui-btn weui-btn_primary close-popup" style="margin-bottom: 50px">关闭</a>#}
+{#            </section>#}
+{#          </section>#}
+{##}
+{#        </article>#}
+{##}
+{#      </div>#}
+{#    </div>#}
+{#{% endblock exchange-page %}#}

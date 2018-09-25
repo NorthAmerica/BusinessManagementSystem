@@ -49,7 +49,7 @@
             </div>
         </div>
         <div class="weui-cell">
-            <div class="weui-cell__hd"><label class="weui-label">滑动到<span id="sliderB"></span></label></div>
+            <div class="weui-cell__hd"><label class="weui-label">滑到<span id="sliderB"></span></label></div>
             <div class="weui-cell__bd weui-cell_primary">
 
                 <div class="weui-slider-box" id='slider2'>
@@ -86,29 +86,19 @@
       });
     </script>
     <script src="{% static 'jquery-weui/js/jquery-weui.js'%}"></script>
-
+    <script src="{% static 'jquery-weui/js/tool-kit.js'%}"></script>
     <script>
-        var slider_value = 0;
-        $('#slider2').slider(function (per) {
-            slider_value = per;
-          });
-        function GetQueryString(name)
-        {
-             var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-             var r = window.location.search.substr(1).match(reg);
-             if(r!=null)return  unescape(r[2]); return null;
-        }
-        function isPhoneNo(phone) {
-            var pattern = /^1[345678]\d{9}$/;
-            return pattern.test(phone);
-        }
-
         $(function () {
+            var slider_value = 0;
+            $('#slider2').slider(function (per) {
+                slider_value = per;
+            });
+
             var code = GetQueryString('code');
             if (code != null && code != undefined) {
                 $('#input_code').val(code);
             }
-            var slider = GetQueryString('slider');
+            var slider = getRandom(0,100);
             if (slider != null && slider != undefined){
                 $('#sliderB').html(slider);
             }
@@ -150,8 +140,9 @@
 
 
                 var postdata = {
-                    username: $("#user_tel").val(),
-                    password: $("#user_pwd").val()
+                    code: $('#input_code').val(),
+                    user_tel: $("#user_tel").val(),
+                    user_pwd: $("#pwd_one").val()
                 };
                 $.ajax({
                     method: "POST",
@@ -160,17 +151,26 @@
                     data: postdata,
                     success: function (data) {
                         if (data && data.success) {
+                            $.alert('祝贺您注册成功，请您继续完成实名验证，以便使用所有功能。',"提示");
                             window.location.href = "/index";
                         } else {
                             $.alert(data.msg,"提示");
+                            clear_data();
                         }
                     },
                     error: function (data) {
                         $.alert(data.responseText,'错误');
+                        clear_data();
+
                     }
                 });
             });
         })
+        function clear_data() {
+            $('#pwd_one').val('');
+            $('#pwd_two').val('');
+            $('#user_tel').val('');
+        }
     </script>
   </body>
 </html>

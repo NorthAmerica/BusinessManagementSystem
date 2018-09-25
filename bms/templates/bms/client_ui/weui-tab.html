@@ -1,0 +1,13 @@
+{% extends 'bms/client_ui/base.html' %}
+
+{% block main-content %}
+    <div id="subtab1" class="weui-tab__bd-item">
+      <h1>页面一</h1>
+    </div>
+      <div id="subtab2" class="weui-tab__bd-item weui-tab__bd-item--active">
+       {% include 'bms/client_ui/exchange.html' %}
+      </div>
+    <div id="subtab3" class="weui-tab__bd-item ">
+      {% include 'bms/client_ui/me.html' %}
+    </div>
+{% endblock main-content %}

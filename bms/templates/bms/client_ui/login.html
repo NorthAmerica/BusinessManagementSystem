@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="weui-cell">
-            <div class="weui-cell__hd"><label class="weui-label">滑动到<span id="sliderB"></span></label></div>
+            <div class="weui-cell__hd"><label class="weui-label">滑到<span id="sliderB"></span></label></div>
             <div class="weui-cell__bd weui-cell_primary">
 
                 <div class="weui-slider-box" id='slider2'>
@@ -73,20 +73,14 @@
       });
     </script>
     <script src="{% static 'jquery-weui/js/jquery-weui.js'%}"></script>
-
+    <script src="{% static 'jquery-weui/js/tool-kit.js'%}"></script>
     <script>
-        var slider_value = 0;
-        $('#slider2').slider(function (per) {
-            slider_value = per;
-          });
-        function getRandom(min, max){
-                var r = Math.random() * (max - min);
-                var re = Math.round(r + min);
-                re = Math.max(Math.min(re, max), min)
-
-                return re;
-            }
         $(function () {
+            var slider_value = 0;
+            $('#slider2').slider(function (per) {
+                slider_value = per;
+              });
+
             var slider = getRandom(0,100);
             if (slider != '' && slider != null && slider != undefined){
                 $('#sliderB').html(slider);
@@ -106,8 +100,8 @@
                 }
 
                 var postdata = {
-                    username: $("#user_tel").val(),
-                    password: $("#user_pwd").val()
+                    user_tel: $("#user_tel").val(),
+                    user_pwd: $("#user_pwd").val()
                 };
                 $.ajax({
                     method: "POST",

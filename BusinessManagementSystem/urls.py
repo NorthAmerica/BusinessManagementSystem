@@ -15,14 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from bms.client_views import index_views,login_views
+from bms.ui_views.client_views import index_views, my_views, login_views
 
 urlpatterns = [
-    path('index',index_views.index),
-    path('login',login_views.login),
-	path('register',login_views.register),
-	path('login_check',login_views.login_check),
-	path('reg_check',login_views.reg_check),
+    path('index', index_views.index),
+    path('login', login_views.login),
+	path('register', login_views.register),
+	path('login_check', login_views.login_check),
+	path('reg_check', login_views.reg_check),
+	path('my_account', my_views.my_account),
 
     path('bms/',include('bms.urls')),
     path('admin/', admin.site.urls),

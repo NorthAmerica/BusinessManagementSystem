@@ -1,13 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser,BaseUserManager
+from .choices_for_model import IDENTITY_CHOICE
 
 class User(AbstractUser):
 	"""后台用户"""
-	IDENTITY_CHOICE=(
-		('org','机构管理员'),
-		('agency','代理管理员'),
-		('admin','后台管理员'),
-	)
+
 	identity = models.CharField(choices=IDENTITY_CHOICE,max_length=10,default='admin',verbose_name='管理员身份')
 	position = models.CharField(blank=True, null=True, max_length=100, verbose_name='职位')
 	mobile_phone = models.CharField(blank=True, null=True, max_length=100, verbose_name='手机号码')

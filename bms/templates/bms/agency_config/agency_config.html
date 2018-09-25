@@ -83,16 +83,10 @@
         });
     }
 
-    function getRandom(min, max){
-            var r = Math.random() * (max - min);
-            var re = Math.round(r + min);
-            re = Math.max(Math.min(re, max), min)
 
-            return re;
-        }
 
     function formatUrl(val,row,index){
-            var url = "http://" + val+'&slider='+getRandom(0,100);
+            var url = "http://" + val;
             var returnString = '<a href='+url+' target="_blank">邀请链接</a>';
             return returnString;
         }

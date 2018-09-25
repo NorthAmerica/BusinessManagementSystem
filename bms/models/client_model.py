@@ -1,20 +1,11 @@
 from django.db import models
 from django.utils import timezone
+from multiselectfield import MultiSelectField
+from .choices_for_model import STATUS_CHOICES,WEB_APP_CHOICES,BUSINESS_TYPE
 
 class Client(models.Model):
 	"""客户"""
-	WEB_APP_CHOICES = (
-		('web', '网页申请'),
-		('app', '手机申请'),
-		('back','后台录入')
-	)
-	STATUS_CHOICES=(
-		('1','已开户待提审'),
-		('2','已提审待审核'),
-		('3','已审核待入金'),
-		('4','已入金待交易'),
-		('5','已交易')
-	)
+
 	name = models.CharField(max_length=100, verbose_name='用户名')
 	mobile_phone = models.CharField(max_length=100, verbose_name='手机号码')
 	mailbox = models.EmailField(verbose_name='邮箱地址')
@@ -29,6 +20,7 @@ class Client(models.Model):
 	agency = models.ForeignKey('Agency',blank=True, null=True,on_delete=models.SET_NULL, verbose_name='所属代理')
 	status = models.CharField(choices=STATUS_CHOICES,max_length=10,default='1',verbose_name='状态')
 	is_freeze = models.BooleanField(default=False,verbose_name='能否冻结')
+	allow_business = MultiSelectField(choices=BUSINESS_TYPE, blank=True, null=True,verbose_name='允许的业务类型')
 	web_app = models.CharField(choices=WEB_APP_CHOICES,max_length=32,default='app',verbose_name='申请端口')
 	last_login_time = models.DateTimeField(blank=True, null=True,verbose_name='最后登陆时间')
 	date_joined = models.DateTimeField( default=timezone.now,verbose_name='注册时间')

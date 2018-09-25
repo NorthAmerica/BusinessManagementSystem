@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from .choices_for_model import CHANGE_TYPE_CHOICES
 import time
 
 def random_key():
@@ -9,14 +10,7 @@ def random_key():
 
 class Fund_Detail(models.Model):
 	"""资金流水明细"""
-	CHANGE_TYPE_CHOICES = (
-		('in_online', '网银入金'),
-		('in_offline', '线下入金'),
-		('out_online', '网银出金'),
-		('out_offline', '线下出金'),
-		('order', '下单'),
-		('close', '结算'),
-	)
+
 	order_number = models.CharField(max_length=100,default=random_key,verbose_name='订单号')
 	client = models.ForeignKey('Menu',null=True,on_delete=models.SET_NULL, verbose_name='客户')
 	change_type = models.CharField(choices=CHANGE_TYPE_CHOICES,default='order',max_length=32,verbose_name='变更类型')

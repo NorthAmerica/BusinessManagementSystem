@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import Group,Permission
 from .user_model import User
+from multiselectfield import MultiSelectField
+from .choices_for_model import OPTION_TYPE,BUSINESS_TYPE
 
 
 def logo_path_handler(instance, filename):
@@ -18,6 +20,7 @@ class Organization(models.Model):
 	logo = models.ImageField(upload_to=logo_path_handler, verbose_name='logo')
 	cachet = models.ImageField(upload_to=cachet_path_handler, verbose_name='公章')
 	account = models.CharField(max_length=200, verbose_name='账户')
+	allow_business = MultiSelectField(choices=BUSINESS_TYPE, blank=True, null=True,verbose_name='允许的业务类型')
 	is_freeze = models.BooleanField(default=False, verbose_name='能否冻结')
 	is_open_commodity = models.BooleanField(default=False,verbose_name='是否开启商品费率')
 	is_open_stock = models.BooleanField(default=False,verbose_name='是否开启个股费率')
@@ -32,10 +35,7 @@ class Organization(models.Model):
 		verbose_name_plural = '机构'
 
 
-OPTION_TYPE = (
-		('commodity','商品期权'),
-		('stock','个股期权'),
-	)
+
 
 class Org_Rule(models.Model):
 	'''机构费率规则'''

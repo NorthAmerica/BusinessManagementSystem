@@ -6,7 +6,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
     <meta name="description" content="">
 
     <link rel="stylesheet" href="{% static 'jquery-weui/lib/weui.min.css'%}">
@@ -20,18 +19,10 @@
     </script>
   </head>
   <body ontouchstart>
-    <div class="weui-tab">
-      <div class="weui-tab__bd">
-        <div id="subtab1" class="weui-tab__bd-item">
-          <h1>页面一</h1>
-        </div>
-          <div id="subtab2" class="weui-tab__bd-item weui-tab__bd-item--active">
-{#              <h1>test</h1>#}
-           {% include 'bms/client_ui/exchange.html' %}
-          </div>
-        <div id="subtab3" class="weui-tab__bd-item">
-          {% include 'bms/client_ui/me.html' %}
-        </div>
+    <div class="weui-tab" id="bottom-tab">
+      <div class="weui-tab__bd for-bottom">
+        {% block main-content %}
+        {% endblock main-content %}
       </div>
 
       <div class="weui-tabbar">
@@ -61,15 +52,39 @@
     <script>
       $(function() {
         FastClick.attach(document.body);
-      });
+
+       });
+
+       var ITEM_ON = "weui-bar__item--on";
+
+      var showTab = function(a) {
+        var $a = $(a);
+        if($a.hasClass(ITEM_ON)) return;
+        var href = $a.attr("href");
+
+        if(!/^#/.test(href)) return ;
+
+        $a.parent().find("."+ITEM_ON).removeClass(ITEM_ON);
+        $a.addClass(ITEM_ON);
+        {#debugger;#}
+        var bd = $a.parents("#bottom-tab").find(".weui-tab__bd");
+        bd = bd.filter('.for-bottom');
+        bd.children(".weui-tab__bd-item--active").removeClass("weui-tab__bd-item--active");
+
+        $(href).addClass("weui-tab__bd-item--active");
+      };
+
+
+      $(document).on("click", "#bottom-tab .weui-tabbar__item", function(e) {
+            var $a = $(e.currentTarget);
+            var href = $a.attr("href");
+            if($a.hasClass(ITEM_ON)) return;
+            if(!/^#/.test(href)) return;
+
+            showTab($a);
+      })
     </script>
     <script src="{% static 'jquery-weui/js/jquery-weui.js'%}"></script>
-
-    <script>
-      $("#a").select({
-        title: "选择职业",
-        items: ["法官", "医生", "猎人", "学生", "记者", "其他"]
-      });
-    </script>
+    <script src="{% static 'jquery-weui/js/tool-kit.js'%}"></script>
   </body>
 </html>
