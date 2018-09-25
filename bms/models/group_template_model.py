@@ -1,17 +1,18 @@
 from django.db import models
 from django.utils import timezone
 from .choices_for_model import TYPE_CHOICE
+from django.contrib.auth.models import Group
 
-class Group_Template(models.Model):
+class Group_Template(Group):
 	'''组模板'''
 
-	name = models.CharField(blank=False, max_length=100, help_text='这个名称将作为正式名称的后缀', verbose_name='模板名称')
+	temp_name = models.CharField(blank=False, max_length=100, help_text='这个名称将作为正式名称的后缀,例如：定义为客服部 正式名称为广州金艮-客服部', verbose_name='模板名称')
 	type = models.CharField(choices=TYPE_CHOICE,max_length=50,blank=False,verbose_name='模板类型')
 	date_joined = models.DateTimeField(default=timezone.now, verbose_name='注册时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
 
 	def __str__(self):
-		return self.name
+		return self.temp_name
 
 	class Meta:
 		verbose_name = '组模板'

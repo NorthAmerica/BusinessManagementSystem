@@ -36,6 +36,7 @@
 
     function initUserGrid() {
         $('#UserGrid1').datagrid({
+            title: '已添加进组的用户',
             iconCls: 'icon-user',
             loadMsg: '数据加载中...',
             nowrap: true,
@@ -71,7 +72,14 @@
                 handler: function () {
                     DeleteUserRole();
                 }
-            }, '-']
+            }, '-', {
+                id: 'btnrefresh',
+                text: '刷新',
+                iconCls: 'icon-reload',
+                handler: function () {
+                    initUserGrid();
+                }
+            }]
         });
     }
 
@@ -84,7 +92,10 @@
         }
         $('#AddUserRoleDialog').dialog('open').dialog('setTitle', '添加用户');
         $('#AddUserGrid').datagrid('clearSelections');
-        $('#AddUserGrid').datagrid('reload');
+        $('#AddUserGrid').datagrid('loadData', { total: 0, rows: [] });
+        $('#AddUserGrid').datagrid('load', {
+            agency_id: $('#AgencyTree2').tree('getSelected').id
+        });
     }
 
     //添加用户列表
@@ -245,7 +256,7 @@
     </div>
     <div data-options="region:'center',title:'归属详情-选择左侧归属后自动更新'" style="padding:2px;background:#eee;height:400px;">
         <div class="easyui-layout" data-options="fit:true">
-            <div data-options="region:'west',collapsed:false,title:'所属组列表'" style="width:180px">
+            <div data-options="region:'west',split:true,collapsed:false,title:'所属组列表'" style="width:180px">
                 <ul id="GroupTree"></ul>
             </div>
             <div data-options="region:'center'">

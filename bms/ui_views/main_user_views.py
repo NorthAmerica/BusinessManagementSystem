@@ -30,6 +30,9 @@ def main_user_list(request):
 					#获取当前用户同机构下的用户
 					user_all = get_org_user_list(request)
 			elif request.user.identity=='agency': #归属管理员
+				if request.POST.get('group_id') is not None:
+					group = Group.objects.get(pk=request.POST.get('group_id'))
+					user_all = list(group.user_set.all())
 				if request.POST.get('agency_id') is not None:
 					agency = Agency.objects.get(pk=request.POST.get('agency_id'))
 					user_all =[agency_user_set.user for agency_user_set in agency.agency_user_set.all()]

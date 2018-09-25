@@ -6,6 +6,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm
 from multiselectfield import MultiSelectField
+from bms.ui_views.view_shortcuts import auto_add_permissions
 
 admin.site.site_header = '广州金艮-云平台管理后台'
 admin.site.site_title = '管理后台'
@@ -26,8 +27,8 @@ class UserAdmin(GuardedModelAdmin):
 	fieldsets = (
 		("基本信息", {'fields': ['username', 'first_name', 'last_name', 'password', 'mobile_phone', 'email', 'position']}),
 		("权限控制", {'fields': ['identity', 'user_permissions', 'groups', 'is_staff', 'is_active']})
-	)
-	filter_horizontal = ('user_permissions', 'groups')
+	) # 分组排列
+	filter_horizontal = ('user_permissions', 'groups') #生成多选框
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
@@ -80,23 +81,28 @@ class Agency_UserAdmin(GuardedModelAdmin):
 class OrganizationAdmin(admin.ModelAdmin):
 	'''机构'''
 	date_hierarchy = 'date_joined'
-	list_display = ('name', 'logo', 'cachet', 'account', 'is_freeze', 'date_joined')
+	list_display = ('name', 'logo', 'cachet', 'account','allow_business', 'is_freeze', 'date_joined')
 	readonly_fields = ('operator',)
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()
 		# 复制组模板
-		all_temp = Group_Template.objects.filter(type='org')
-
-		new_user = User.objects.create(username=obj.name + '总管理员',identity='org',password=make_password('686868'))
-		Org_User.objects.create(user=new_user, organization=obj, operator=request.user.username)
-		for temp in all_temp:
-			s_group = Special_Group.objects.create(name=obj.name+temp.name,org=obj,operator=request.user.username)
-			new_user.groups.add(s_group)
-
-
-
-
+		auto_add_permissions(obj,request,'org')
+		# # 新增管理员
+		# new_user = User.objects.create(username=obj.name + '总管理员',identity='org',password=make_password('686868'))
+		# Org_User.objects.create(user=new_user, organization=obj, operator=request.user.username)
+		# for temp in all_temp:
+		# 	all_perm = [perm for perm in temp.permissions.all()]
+		# 	all_object_perm = list(temp.groupobjectpermission_set.all())
+		#
+		# 	s_group = Special_Group.objects.create(name=obj.name+temp.temp_name,org=obj,operator=request.user.username)
+		# 	for perm in all_perm:
+		# 		s_group.permissions.add(perm)
+		# 	for object_perm in all_object_perm:
+		# 		codename = object_perm.permission.codename
+		# 		content_object = object_perm.content_object
+		# 		assign_perm(codename,s_group,content_object)
+		# 	new_user.groups.add(s_group)
 
 @admin.register(Org_Rule)
 class Org_RuleAdmin(admin.ModelAdmin):
@@ -139,13 +145,22 @@ class AgencyAdmin(admin.ModelAdmin):
 			obj.grade = obj.f_agency.grade+1
 		obj.save()
 		# 复制组模板
-		all_temp = Group_Template.objects.filter(type='agency')
-		new_user = User.objects.create(username=obj.name + '总管理员', identity='agency',password=make_password('686868'))
-		Agency_User.objects.create(user=new_user, agency=obj, operator=request.user.username)
-		for temp in all_temp:
-			s_group = Special_Group.objects.create(name=obj.name + temp.name, agency=obj,
-			                                       operator=request.user.username)
-			new_user.groups.add(s_group)
+		auto_add_permissions(obj, request, 'agency')
+		# new_user = User.objects.create(username=obj.name + '总管理员', identity='agency',password=make_password('686868'))
+		# Agency_User.objects.create(user=new_user, agency=obj, operator=request.user.username)
+		# for temp in all_temp:
+		# 	all_perm = [perm for perm in temp.permissions.all()]
+		# 	all_object_perm = list(temp.groupobjectpermission_set.all())
+		#
+		# 	s_group = Special_Group.objects.create(name=obj.name + temp.temp_name, agency=obj,
+		# 	                                       operator=request.user.username)
+		# 	for perm in all_perm:
+		# 		s_group.permissions.add(perm)
+		# 	for object_perm in all_object_perm:
+		# 		codename = object_perm.permission.codename
+		# 		content_object = object_perm.content_object
+		# 		assign_perm(codename,s_group,content_object)
+		# 	new_user.groups.add(s_group)
 
 
 
@@ -154,19 +169,23 @@ class Group_TemplateAdmin(admin.ModelAdmin):
 	'''组模板'''
 	date_hierarchy = 'date_joined'
 	list_display = ('name','type', 'operator', 'date_joined',)
+	filter_horizontal = ('permissions',) #生成多选框
 	readonly_fields = ('operator',)
+	def save_model(self, request, obj, form, change):
+		obj.operator = request.user.username
+		obj.save()
 
 
 @admin.register(Special_Group)
 class Special_GroupAdmin(admin.ModelAdmin):
 	date_hierarchy = 'date_joined'
 	list_display = ('name', 'operator', 'date_joined',)
+	filter_horizontal = ('permissions',)  # 生成多选框
+	readonly_fields = ('operator',)
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()
-
-	readonly_fields = ('operator',)
 
 
 admin.site.register(Client)
@@ -174,6 +193,9 @@ admin.site.register(Client)
 
 @admin.register(Menu)
 class MenuAdmin(GuardedModelAdmin):
+	date_hierarchy = 'date_joined'
+	list_display = ('menu_name', 'menu_url', 'order_num', 'f_menu', 'date_joined','operator')
+
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()

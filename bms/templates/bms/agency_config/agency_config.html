@@ -76,7 +76,14 @@
                 handler: function () {
                     UpdateAgencyDialog();
                 }
-            }, '-'],
+            }, '-', {
+                id: 'btnrefresh',
+                text: '刷新',
+                iconCls: 'icon-reload',
+                handler: function () {
+                    initAgencyGrid();
+                }
+            }],
             onDblClickRow: function (index, row) {
                 UpdateAgencyDialog();
             }
@@ -91,9 +98,14 @@
             return returnString;
         }
     function AddAgencyDialog(init_title) {
+        $('#AddAgencyForm').form('clear');
+        {% if  request.user.is_superuser  %}
+            $.messager.alert('警告', '超级管理员请在总后台新增归属');
+            return;
+        {% endif %}
         $('#AddAgencyDialog').dialog({title:init_title,
             width:650,
-            height:650,
+            height:500,
             buttons:[{
 				text:'保存',
 				handler:function(){
@@ -116,29 +128,43 @@
         if (valid == false) {
             return false;
         }
-        var CBEnable = 'True';
-        if ($("#is_freeze1").combobox('getValue') == "0") {
-            CBEnable = 'False';
-        }
+
 
         //创建传递的参数
-        {% if request.user.identity == 'org' %}
+        {% if request.user.identity == 'org'%}
+            var CBEnable = 'True';
+            if ($("#AddAgencyForm #is_freeze1").combobox('getValue') == "0") {
+                CBEnable = 'False';
+            }
             var postdata = {
-                name: $("#name1").val(),
-                rebate_x: $('#rebate_x1').numberbox('getValue'),
-                rebate_y: $('#rebate_y1').numberbox('getValue'),
-                rebate_z: $('#rebate_z1').numberbox('getValue'),
-                f_agency: $('#f_agency_combotree1').combotree('getValue'),
+                name: $("#AddAgencyForm #name1").val(),
+                rebate_x: $('#AddAgencyForm #rebate_x1').numberbox('getValue'),
+                rebate_y: $('#AddAgencyForm #rebate_y1').numberbox('getValue'),
+                rebate_z: $('#AddAgencyForm #rebate_z1').numberbox('getValue'),
+                f_agency: $('#AddAgencyForm #f_agency_combotree1').combotree('getValue'),
                 is_freeze: CBEnable
-            };
+        };
         {% else %}
-            var postdata = {
-                name: $("#name1").val(),
-                rebate_x: $('#rebate_x1').numberbox('getValue'),
-                rebate_y: $('#rebate_y1').numberbox('getValue'),
-                rebate_z: $('#rebate_z1').numberbox('getValue'),
-                is_freeze: CBEnable
-            };
+            var selectA = $('#AgencyGrid').datagrid('getSelected');
+            if (selectA == null || selectA == undefined) {
+                var postdata = {
+                    name: $("#AddAgencyForm #name1").val(),
+                    rebate_x: $('#AddAgencyForm #rebate_x1').numberbox('getValue'),
+                    rebate_y: $('#AddAgencyForm #rebate_y1').numberbox('getValue'),
+                    rebate_z: $('#AddAgencyForm #rebate_z1').numberbox('getValue'),
+                    f_agency: 'null'
+                };
+            }
+            else
+            {
+                var postdata = {
+                    name: $("#AddAgencyForm #name1").val(),
+                    rebate_x: $('#AddAgencyForm #rebate_x1').numberbox('getValue'),
+                    rebate_y: $('#AddAgencyForm #rebate_y1').numberbox('getValue'),
+                    rebate_z: $('#AddAgencyForm #rebate_z1').numberbox('getValue'),
+                    f_agency: selectA.id
+                };
+            }
         {% endif %}
         var passurl='../bms/add_agency';
         $.ajax({
@@ -175,14 +201,14 @@
             return;
         {% endif %}
         var selectA = $('#AgencyGrid').datagrid('getSelected');
-        if (selectA == null) {
+        if (selectA == null || selectA == undefined) {
             $.messager.alert("友情提示", "请先选择一个代理");
             return;
         }
         $('#UpdateAgencyDialog').dialog({
             title:'修改归属信息',
             width:650,
-            height:650,
+            height:500,
             buttons:[{
 				text:'保存',
 				handler:function(){
@@ -213,19 +239,30 @@
         if (valid == false) {
             return false;
         }
-        var CBEnable = 'True';
-        if ($("#is_freeze").combobox('getValue') == "0") {
-            CBEnable = 'False';
-        }
 
-        var postdata = {
-            name: $("#name").val(),
-            rebate_x: $('#rebate_x').numberbox('getValue'),
-            rebate_y: $('#rebate_y').numberbox('getValue'),
-            rebate_z: $('#rebate_z').numberbox('getValue'),
-            f_agency: $('#f_agency_combotree').combotree('getValue'),
-            is_freeze: CBEnable
-        }
+        {% if request.user.identity == 'org'%}
+            var CBEnable = 'True';
+            if ($("#UpdateAgencyForm #is_freeze").combobox('getValue') == "0") {
+                CBEnable = 'False';
+            }
+            var postdata = {
+                id:       $('#AgencyGrid').datagrid('getSelected').id,
+                name:     $('#UpdateAgencyForm #name').val(),
+                rebate_x: $('#UpdateAgencyForm #rebate_x').numberbox('getValue'),
+                rebate_y: $('#UpdateAgencyForm #rebate_y').numberbox('getValue'),
+                rebate_z: $('#UpdateAgencyForm #rebate_z').numberbox('getValue'),
+                f_agency: $('#UpdateAgencyForm #f_agency_combotree').combotree('getValue'),
+                is_freeze: CBEnable
+            }
+        {% else %}
+            var postdata = {
+                id:       $('#AgencyGrid').datagrid('getSelected').id,
+                name:     $('#UpdateAgencyForm #name').val(),
+                rebate_x: $('#UpdateAgencyForm #rebate_x').numberbox('getValue'),
+                rebate_y: $('#UpdateAgencyForm #rebate_y').numberbox('getValue'),
+                rebate_z: $('#UpdateAgencyForm #rebate_z').numberbox('getValue')
+            }
+        {% endif %}
         var passurl='../bms/update_agency';
         $.ajax({
             type: 'POST',
@@ -266,10 +303,10 @@
     </div>
     <div data-options="region:'center',title:'归属详情-选择左侧归属后自动更新'" style="padding:2px;background:#eee;height:400px;">
         <table id="AgencyGrid"></table>
+
     </div>
 </div>
-
- {#----------------------新增归属界面------------------------------------------------------------#}
+    {#----------------------新增归属界面------------------------------------------------------------#}
     <div id="AddAgencyDialog" class="easyui-dialog" style="padding:10px 20px"
      closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
         <form id="AddAgencyForm" method="post" novalidate="novalidate">
@@ -278,19 +315,20 @@
                     <td><label for="name">归属名：</label></td>
                     <td><input class="easyui-validatebox form-control" type="text" id="name1" name="name" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
                 </tr>
-                {% if request.user.identity == 'org' %}
-                    <tr>
-                        <td><label for="rebate_x">返佣参数X：</label></td>
-                        <td><input class="easyui-numberbox form-control" type="text" id="rebate_x1" name="rebate_x" data-options="validType:'length[1,32],precision:2'" style="width:350px;" /></td>
-                    </tr>
-                    <tr>
-                        <td><label for="rebate_y">返佣参数Y：</label></td>
-                        <td><input class="easyui-numberbox form-control" type="text" id="rebate_y1" name="rebate_y" data-options="validType:'length[1,32],precision:2'" style="width:350px;" /></td>
-                    </tr>
-                    <tr>
-                        <td><label for="rebate_z">返佣参数Z：</label></td>
-                        <td><input class="easyui-numberbox form-control" type="text" id="rebate_z1" name="rebate_z" data-options="validType:'length[1,32],precision:2'" style="width:350px;" /></td>
-                    </tr>
+
+                <tr>
+                    <td><label for="rebate_x">返佣参数X：</label></td>
+                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_x1" name="rebate_x" data-options="precision:2" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="rebate_y">返佣参数Y：</label></td>
+                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_y1" name="rebate_y" data-options="precision:2" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="rebate_z">返佣参数Z：</label></td>
+                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_z1" name="rebate_z" data-options="precision:2" style="width:350px;" /></td>
+                </tr>
+                {% if request.user.identity == 'org' or request.user.is_superuser %}
                     <tr>
                         <td><label for="f_agency">上级代理：</label></td>
                         <td>
@@ -323,36 +361,38 @@
                 </tr>
                 <tr>
                     <td><label for="rebate_x">返佣参数X：</label></td>
-                    <td><input class="easyui-validatebox form-control" type="text" id="rebate_x" name="rebate_x" data-options="validType:'length[1,32]'" style="width:350px;" /></td>
+                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_x" name="rebate_x" data-options="precision:2" style="width:350px;" /></td>
                 </tr>
                 <tr>
                     <td><label for="rebate_y">返佣参数Y：</label></td>
-                    <td><input class="easyui-validatebox form-control" type="text" id="rebate_y" name="rebate_y" data-options="validType:'length[1,32]'" style="width:350px;" /></td>
+                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_y" name="rebate_y" data-options="precision:2" style="width:350px;" /></td>
                 </tr>
                 <tr>
                     <td><label for="rebate_z">返佣参数Z：</label></td>
-                    <td><input class="easyui-validatebox form-control" type="text" id="rebate_z" name="rebate_z" data-options="validType:'length[1,32]'" style="width:350px;" /></td>
+                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_z" name="rebate_z" data-options="precision:2" style="width:350px;" /></td>
                 </tr>
-                <tr>
-                    <td><label for="f_agency">上级归属：(必须与上级归属同级)</label></td>
-                    <td>
-                        <select id="f_agency_combotree" class="easyui-combotree" style="width:200px;"
-                                data-options="url:'../bms/get_agency_tree',required:true"></select>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td><label for="is_freeze">能否冻结：</label></td>
-                    <td>
-                        <select id="is_freeze" name="is_freeze" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
-                            <option value="1">是</option>
-                            <option value="0">否</option>
-                        </select>
-                    </td>
-                </tr>
+                {% if request.user.identity == 'org' or request.user.is_superuser %}
+                    <tr>
+                        <td><label for="f_agency">上级归属：(必须与上级归属同级)</label></td>
+                        <td>
+                            <select id="f_agency_combotree" class="easyui-combotree" style="width:200px;"
+                                    data-options="url:'../bms/get_agency_tree',required:true"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="is_freeze">能否冻结：</label></td>
+                        <td>
+                            <select id="is_freeze" name="is_freeze" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
+                                <option value="1">是</option>
+                                <option value="0">否</option>
+                            </select>
+                        </td>
+                    </tr>
+                {% endif %}
             </table>
     </form>
-</div>
- {#----------------------更新归属界面结束------------------------------------------------------------#}
+    </div>
+   {#----------------------更新归属界面结束------------------------------------------------------------#}
+
 
 <a href="#" target="_blank"></a>

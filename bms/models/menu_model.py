@@ -16,10 +16,6 @@ class Menu(models.Model):
 		return Menu.objects.filter(f_menu=self.id).order_by('order_num')
 
 	class Meta:
-		permissions = (
-			('audit_menu', '测试一下'),
-			('org_menu','再增加一个权限'),
-		)
 		verbose_name = '菜单管理'
 		verbose_name_plural = '菜单管理'
 

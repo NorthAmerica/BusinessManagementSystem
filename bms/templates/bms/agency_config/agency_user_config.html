@@ -83,7 +83,7 @@
                 text: '刷新',
                 iconCls: 'icon-reload',
                 handler: function () {
-                    initTable();
+                    initAgencyUserGrid();
                 }
             }],
             onDblClickRow: function (index, row) {
@@ -160,20 +160,20 @@
 
             var CBEnable = '';
 
-            if ($("#is_active1").combobox('getValue') == "0"|| $("#is_active1").combobox('getValue') == "false") {
+            if ($("#UpdateUserForm #is_active1").combobox('getValue') == "0"|| $("#UpdateUserForm #is_active1").combobox('getValue') == "false") {
                 CBEnable = 'False';
-            }else if ($("#is_active1").combobox('getValue') == "1" || $("#is_active1").combobox('getValue') == "true") {
+            }else if ($("#UpdateUserForm #is_active1").combobox('getValue') == "1" || $("#UpdateUserForm #is_active1").combobox('getValue') == "true") {
                 CBEnable = 'True';
             }
 
 
             var postdata = {
                 id: userid,
-                username: $("#username1").val(),
-                last_name:$("#last_name1").val(),
-                email:    $("#email1").val(),
-                position: $("#position1").val(),
-                mobile_phone: $("#mobile_phone1").val(),
+                username: $("#UpdateUserForm #username1").val(),
+                last_name:$("#UpdateUserForm #last_name1").val(),
+                email:    $("#UpdateUserForm #email1").val(),
+                position: $("#UpdateUserForm #position1").val(),
+                mobile_phone: $("#UpdateUserForm #mobile_phone1").val(),
                 is_active: CBEnable
             };
             var passurl='../bms/update_main_user';
@@ -239,17 +239,17 @@
             if (valid == false) {
                 return false;
             }
-            if ($("#password1").val() != $("#PasswordOK1").val()) {
+            if ($("#ChangePwdForm #password1").val() != $("#ChangePwdForm #PasswordOK1").val()) {
                 $.messager.alert("友情提示", "两次输入的密码不一致，请重新输入。")
-                $("#password1").val("");
-                $("#PasswordOK1").val("");
+                $("#ChangePwdForm #password1").val("");
+                $("#ChangePwdForm #PasswordOK1").val("");
                 return;
             }
 
             //创建传递的参数
             var postdata = {
                 id: userid,
-                password: $("#password1").val(),
+                password: $("#ChangePwdForm #password1").val(),
             };
             var passurl='../bms/change_pwd_main_user';
             $.ajax({
@@ -287,26 +287,26 @@
                 return false;
             }
             var CBEnable = 'True';
-            if ($("#is_active").combobox('getValue') == "0") {
+            if ($("#AddUserForm #is_active").combobox('getValue') == "0") {
                 CBEnable = 'False';
             }
 
-            if ($("#password").val() != $("#PasswordOK").val()) {
+            if ($("#AddUserForm #password").val() != $("#AddUserForm #PasswordOK").val()) {
                 $.messager.alert("友情提示", "两次输入的密码不一致，请重新输入。")
-                $("#password").val("");
-                $("#PasswordOK").val("");
+                $("#AddUserForm #password").val("");
+                $("#AddUserForm #PasswordOK").val("");
                 return;
             }
 
             //创建传递的参数
             var postdata = {
                 agency_id: agencyid,
-                username: $("#username").val(),
-                password: $("#password").val(),
-                last_name:$("#last_name").val(),
-                email:    $("#email").val(),
-                position: $("#position").val(),
-                mobile_phone: $("#mobile_phone").val(),
+                username: $("#AddUserForm #username").val(),
+                password: $("#AddUserForm #password").val(),
+                last_name:$("#AddUserForm #last_name").val(),
+                email:    $("#AddUserForm #email").val(),
+                position: $("#AddUserForm #position").val(),
+                mobile_phone: $("#AddUserForm #mobile_phone").val(),
                 is_active: CBEnable
             };
             var passurl='../bms/add_main_user';

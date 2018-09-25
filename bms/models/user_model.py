@@ -15,8 +15,8 @@ class User(AbstractUser):
 		return self.username
 	class Meta:
 		# app_label = '用户组'
-		verbose_name = '后台用户'
-		verbose_name_plural = '后台用户'
+		verbose_name = '后台管理员'
+		verbose_name_plural = '后台管理员'
 
 class Org_User(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True,verbose_name='后台用户')
@@ -36,8 +36,8 @@ class Org_User(models.Model):
 
 	class Meta:
 		# app_label = '用户组'
-		verbose_name = '机构后台用户'
-		verbose_name_plural = '机构后台用户'
+		verbose_name = '机构后台管理员'
+		verbose_name_plural = '机构后台管理员'
 
 class Agency_User(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True,verbose_name='后台用户')
@@ -45,5 +45,5 @@ class Agency_User(models.Model):
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
 	class Meta:
 		# app_label = '用户组'
-		verbose_name = '归属后台用户'
-		verbose_name_plural = '归属后台用户'
+		verbose_name = '归属后台管理员'
+		verbose_name_plural = '归属后台管理员'
