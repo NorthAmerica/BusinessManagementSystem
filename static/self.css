@@ -1,0 +1,13 @@
+.self-input-table{
+    margin-top: 50px;
+
+}
+.self-input-table tr{
+    display: block;
+    margin-bottom: 20px;
+    margin-right: 5px;
+
+}
+.self-input-table tr td label{
+    width: 100px;
+}
