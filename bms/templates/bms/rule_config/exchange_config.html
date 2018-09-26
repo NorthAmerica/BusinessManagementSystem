@@ -22,7 +22,7 @@
             data: postdata,
             success: function (data) {
                 $('#ExchangeRuleForm').form('clear');
-                if (data.success=='true' || data.success==true) {
+                if (data&&data.success) {
                     if (data.org == '' || data.org == null || data.org == undefined)
                     {
                         $("#ExchangeRuleForm #org").textbox('setText','默认显示全局配置');
@@ -177,7 +177,7 @@
             cache: false,
             data: postdata,
             success: function (data) {
-                if (data.success == 'true' || data.success == true) {
+                if (data&&data.success) {
                     $.messager.show({
                         title: '我的消息',
                         msg: data.msg,
@@ -197,7 +197,7 @@
 </script>
 
 <div id="cc" class="easyui-layout" style="height:700px;" fit="true">
-    <div data-options="region:'west',title:'组列表',split:true,collapsible:false" style="width:200px;">
+    <div data-options="region:'west',title:'机构列表',split:true,collapsible:false" style="width:200px;">
         <ul id="OrgTree2"></ul>
     </div>
     <div data-options="region:'center',title:'交易询价时间设置-默认显示全局规则，选择机构后可对机构的规则进行个性化定制。'" style="padding:10px 10px;background:#eee;height:400px;width:100%">

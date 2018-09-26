@@ -36,7 +36,7 @@ def group_list(request):
 			# return HttpResponse(json.dumps(item))
 		except Exception as ex:
 			print(ex)
-			return JsonResponse(({'id': '0', 'text': '取角色异常'}))
+			return JsonResponse({'id': '0', 'text': '取角色异常'}, safe=False)
 
 
 def add_user_to_group(request):
@@ -52,10 +52,10 @@ def add_user_to_group(request):
 				for user_id in users:
 					user = User.objects.get(pk=user_id)
 					group.user_set.add(user)
-			return JsonResponse({'success':'true','msg':'用户添加组成功！'})
+			return JsonResponse({'success':True,'msg':'用户添加组成功！'}, safe=False)
 		except Exception as ex:
 			print(ex)
-			return  JsonResponse({'success':'false','msg':ex})
+			return  JsonResponse({'success':False,'msg':ex}, safe=False)
 
 def remove_user_from_group(request):
 	if request.method == 'POST':
@@ -69,7 +69,7 @@ def remove_user_from_group(request):
 				for user_id in users:
 					user = User.objects.get(pk=user_id)
 					group.user_set.remove(user)
-			return JsonResponse({'success':'true','msg':'用户添加组成功！'})
+			return JsonResponse({'success':True,'msg':'用户添加组成功！'}, safe=False)
 		except Exception as ex:
 			print(ex)
-			return  JsonResponse({'success':'false','msg':ex})
+			return  JsonResponse({'success':False,'msg':ex}, safe=False)

@@ -3,7 +3,6 @@
     $(function () {
         initAgencyTree();
         initAgencyGrid();
-
     });
 
     function initAgencyTree() {
@@ -41,13 +40,15 @@
                 { field: 'id', title: 'ID', width: 150, sortable: true,hidden:true },
                 { field: 'name', title: '归属名', width: 150, sortable: true },
                 { field: 'organization', title: '所属机构', width: 150, sortable: true },
-                { field: 'rebate_x', title: '返佣参数X', width: 150, sortable: true },
-                { field: 'rebate_y', title: '返佣参数Y', width: 150, sortable: true },
-                { field: 'rebate_z', title: '返佣参数Z', width: 150, sortable: true },
+                { field: 'rebate_x', title: '返佣参数X', width: 100, sortable: true },
+                { field: 'rebate_y', title: '返佣参数Y', width: 100, sortable: true },
+                { field: 'rebate_z', title: '返佣参数Z', width: 100, sortable: true },
                 { field: 'f_agency_id', title: '上级代理id', width: 150, sortable: true,hidden:true },
                 { field: 'f_agency', title: '上级代理', width: 150, sortable: true },
                 { field: 'invite_url',title: '邀请链接', width: 100, sortable: true,formatter:formatUrl },
                 { field: 'invite_num', title: '邀请码', width: 150, sortable: true },
+                { field: 'allow_business_id', title: '允许的业务id', width: 150, sortable: true,hidden:true},
+                { field: 'allow_business', title: '允许的业务', width: 150, sortable: true },
                 {
                     field: 'is_freeze',
                     title: "能否冻结",
@@ -90,8 +91,6 @@
         });
     }
 
-
-
     function formatUrl(val,row,index){
             var url = "http://" + val;
             var returnString = '<a href='+url+' target="_blank">邀请链接</a>';
@@ -105,7 +104,7 @@
         {% endif %}
         $('#AddAgencyDialog').dialog({title:init_title,
             width:650,
-            height:500,
+            height:550,
             buttons:[{
 				text:'保存',
 				handler:function(){
@@ -128,8 +127,6 @@
         if (valid == false) {
             return false;
         }
-
-
         //创建传递的参数
         {% if request.user.identity == 'org'%}
             var CBEnable = 'True';
@@ -142,6 +139,7 @@
                 rebate_y: $('#AddAgencyForm #rebate_y1').numberbox('getValue'),
                 rebate_z: $('#AddAgencyForm #rebate_z1').numberbox('getValue'),
                 f_agency: $('#AddAgencyForm #f_agency_combotree1').combotree('getValue'),
+                allow_business: $('#AddAgencyForm #allow_business1').combotree('getValues').toString(),
                 is_freeze: CBEnable
         };
         {% else %}
@@ -196,19 +194,19 @@
     }
 
     function UpdateAgencyDialog() {
-        {% if request.user.identity != 'org' and not request.user.is_superuser%}
-            alert('您没有修改归属的权限，如需要修改信息请联系机构管理员。')
-            return;
-        {% endif %}
+{#        {% if request.user.identity != 'org' and not request.user.is_superuser%}#}
+{#            alert('您没有修改归属的权限，如需要修改信息请联系机构管理员。')#}
+{#            return;#}
+{#        {% endif %}#}
         var selectA = $('#AgencyGrid').datagrid('getSelected');
         if (selectA == null || selectA == undefined) {
-            $.messager.alert("友情提示", "请先选择一个代理");
+            $.messager.alert("友情提示", "请先选择一个归属");
             return;
         }
         $('#UpdateAgencyDialog').dialog({
             title:'修改归属信息',
             width:650,
-            height:500,
+            height:550,
             buttons:[{
 				text:'保存',
 				handler:function(){
@@ -226,6 +224,7 @@
         if(selectA)
         {
 
+            $('#allow_business').combotree('setValues',selectA.allow_business_id);
             $('#f_agency_combotree').combotree('setValue', {
                 id: selectA.f_agency_id,
                 text: selectA.f_agency
@@ -245,6 +244,8 @@
             if ($("#UpdateAgencyForm #is_freeze").combobox('getValue') == "0") {
                 CBEnable = 'False';
             }
+            {#console.info($('#UpdateAgencyForm #allow_business').combotree('getValues').toString())#}
+
             var postdata = {
                 id:       $('#AgencyGrid').datagrid('getSelected').id,
                 name:     $('#UpdateAgencyForm #name').val(),
@@ -252,6 +253,7 @@
                 rebate_y: $('#UpdateAgencyForm #rebate_y').numberbox('getValue'),
                 rebate_z: $('#UpdateAgencyForm #rebate_z').numberbox('getValue'),
                 f_agency: $('#UpdateAgencyForm #f_agency_combotree').combotree('getValue'),
+                allow_business: $('#UpdateAgencyForm #allow_business').combotree('getValues').toString(),
                 is_freeze: CBEnable
             }
         {% else %}
@@ -282,7 +284,7 @@
                     $('#AgencyTree1').tree('reload');
                 }
                 else {
-                    alert("添加失败，请您重新检查");
+                    alert("更新失败，"+data.msg);
                 }
             },
             error: function (data) {
@@ -337,6 +339,13 @@
                         </td>
                     </tr>
                     <tr>
+                        <td><label for="allow_business1">允许的业务：</label></td>
+                        <td>
+                            <select id="allow_business1" class="easyui-combotree" style="width:200px;"
+                                    data-options="url:'../bms/get_allow_business',required:true,checkbox:true,multiple:true,"></select>
+                        </td>
+                    </tr>
+                    <tr>
                         <td><label for="is_freeze">能否冻结：</label></td>
                         <td>
                             <select id="is_freeze1" name="is_freeze" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
@@ -377,6 +386,13 @@
                         <td>
                             <select id="f_agency_combotree" class="easyui-combotree" style="width:200px;"
                                     data-options="url:'../bms/get_agency_tree',required:true"></select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="allow_business">允许的业务：</label></td>
+                        <td>
+                            <select id="allow_business" class="easyui-combotree" style="width:200px;"
+                                    data-options="url:'../bms/get_allow_business',required:true,multiple:true,"></select>
                         </td>
                     </tr>
                     <tr>

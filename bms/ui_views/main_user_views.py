@@ -63,7 +63,7 @@ def main_user_list(request):
 					'total':paginator.count,
 					'rows':eaList
 				}
-				return JsonResponse(json_data_list)
+				return JsonResponse(json_data_list,safe=False)
 			else:
 				#无分页
 				User_List = []
@@ -123,11 +123,11 @@ def add_main_user(request):
 					create_user = Agency_User.objects.create(**ag_user)
 					if create_user is not None:
 						#Change_Info.objects.create(initiator=request.user.username, receiver=create_user.user.username, event_type='ERROR', )
-						return JsonResponse({'success': 'true', 'msg': '新用户添加成功！'})
+						return JsonResponse({'success': True, 'msg': '新用户添加成功！'}, safe=False)
 					else:
-						return JsonResponse({'success': 'false', 'msg': '新用户没有添加成功，请您重新检查'})
+						return JsonResponse({'success': False, 'msg': '新用户没有添加成功，请您重新检查'}, safe=False)
 				else:
-					return JsonResponse({'success':'false','msg':'新用户没有添加成功，请您重新检查'})
+					return JsonResponse({'success':False,'msg':'新用户没有添加成功，请您重新检查'}, safe=False)
 			else:
 				# 新增机构管理员
 				dic = {
@@ -151,14 +151,14 @@ def add_main_user(request):
 					}
 					create_user = Org_User.objects.create(**org_user)
 					if  create_user is not None:
-						return JsonResponse({'success':'true','msg':'新用户添加成功！'})
+						return JsonResponse({'success':True,'msg':'新用户添加成功！'}, safe=False)
 					else:
-						return JsonResponse({'success': 'false', 'msg': '新用户没有添加成功，请您重新检查'})
+						return JsonResponse({'success': False, 'msg': '新用户没有添加成功，请您重新检查'}, safe=False)
 				else:
-					return JsonResponse({'success':'false','msg':'新用户没有添加成功，请您重新检查'})
+					return JsonResponse({'success':False,'msg':'新用户没有添加成功，请您重新检查'}, safe=False)
 		except Exception as ex:
 			print(ex)
-			return  JsonResponse({'success':'false','msg':ex})
+			return  JsonResponse({'success':False,'msg':ex}, safe=False)
 
 
 @login_required
@@ -187,12 +187,12 @@ def update_main_user(request):
 			if id is not None:
 				obj = User.objects.filter(id=id).update(**dic)
 				if  obj is not None:
-					return JsonResponse({'success':'true','msg':'用户更新成功！'})
+					return JsonResponse({'success':True,'msg':'用户更新成功！'}, safe=False)
 			else:
-				return JsonResponse({'success':'false','msg':'用户没有更新成功，请您重新检查'})
+				return JsonResponse({'success':False,'msg':'用户没有更新成功，请您重新检查'}, safe=False)
 		except Exception as ex:
 			print(ex)
-			return  JsonResponse({'success':'false','msg':ex})
+			return  JsonResponse({'success':False,'msg':ex}, safe=False)
 
 @login_required
 def change_pwd_main_user(request):
@@ -208,9 +208,9 @@ def change_pwd_main_user(request):
 			if id is not None:
 				obj = User.objects.filter(id=id).update(**dic)
 				if  obj is not None:
-					return JsonResponse({'success':'true','msg':'密码更新成功！'})
+					return JsonResponse({'success':True,'msg':'密码更新成功！'}, safe=False)
 			else:
-				return JsonResponse({'success':'false','msg':'密码没有更新成功，请您重新检查'})
+				return JsonResponse({'success':False,'msg':'密码没有更新成功，请您重新检查'}, safe=False)
 		except Exception as ex:
 			print(ex)
-			return  JsonResponse({'success':'false','msg':ex})
+			return  JsonResponse({'success':False,'msg':ex}, safe=False)

@@ -9,3 +9,5 @@ from .menu_model import Menu
 from .record_model import Change_Info
 from .rule_model import Fund_In_Rule,Fund_Out_Rule,Exchange_Rule,Notional_Principal
 from .group_template_model import Group_Template
+from .choices_for_model import WEB_APP_CHOICES,STATUS_CHOICES,CHANGE_TYPE_CHOICES,\
+	TYPE_CHOICE,BUSINESS_TYPE,OPTION_TYPE,EVENT_TYPE_CHOICES,EXCHANGE_TYPE,DAYS_CHOICE,IDENTITY_CHOICE

@@ -6,7 +6,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import Group
 from guardian.shortcuts import assign_perm
 from multiselectfield import MultiSelectField
-from bms.ui_views.view_shortcuts import auto_add_permissions
+from bms.ui_views.view_shortcuts import auto_add_permissions,get_multi_text
 
 admin.site.site_header = '广州金艮-云平台管理后台'
 admin.site.site_title = '管理后台'
@@ -81,8 +81,17 @@ class Agency_UserAdmin(GuardedModelAdmin):
 class OrganizationAdmin(admin.ModelAdmin):
 	'''机构'''
 	date_hierarchy = 'date_joined'
-	list_display = ('name', 'logo', 'cachet', 'account','allow_business', 'is_freeze', 'date_joined')
+	list_display = ('name', 'logo', 'cachet', 'account','get_allow_business', 'is_freeze', 'date_joined')
 	readonly_fields = ('operator',)
+
+	def get_allow_business(self, obj):
+		if  obj.allow_business:
+			return get_multi_text(obj.allow_business)
+			# return ",".join([obj.allow_business.choices.__getitem__(l) for l in obj.allow_business])
+		else:
+			return '无'
+
+	get_allow_business.short_description = '允许的业务类型'
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()
@@ -121,8 +130,18 @@ class AgencyAdmin(admin.ModelAdmin):
 	'''代理'''
 	date_hierarchy = 'date_joined'
 	list_display = (
-	'name', 'get_org_name', 'grade','is_freeze', 'rebate_x', 'rebate_y', 'rebate_z', 'get_f_name', 'invite_num', 'date_joined')
+	'name', 'get_org_name', 'grade','is_freeze','get_allow_business', 'rebate_x', 'rebate_y', 'rebate_z', 'get_f_name', 'invite_num', 'date_joined')
 	readonly_fields = ('invite_num', 'operator',)
+
+	def get_allow_business(self, obj):
+		if  obj.allow_business:
+			# return obj.allow_business.choices.values()
+			return get_multi_text(obj.allow_business)
+			# return ",".join([obj.allow_business.choices.__getitem__(l) for l in obj.allow_business])
+		else:
+			return '无'
+
+	get_allow_business.short_description = '允许的业务类型'
 
 	def get_org_name(self, obj):
 		return obj.organization.name
@@ -186,9 +205,6 @@ class Special_GroupAdmin(admin.ModelAdmin):
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()
-
-
-admin.site.register(Client)
 
 
 @admin.register(Menu)
@@ -267,3 +283,22 @@ class Notional_PrincipalAdmin(admin.ModelAdmin):
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()
+
+@admin.register(Client)
+class ClientAdmin(admin.ModelAdmin):
+	date_hierarchy = 'date_joined'
+	list_display = (
+		'mobile_phone', 'identity_card', 'organization','agency','status','is_freeze','get_allow_business','date_joined')
+	readonly_fields = ('operator',)
+	def save_model(self, request, obj, form, change):
+		obj.operator = request.user.username
+		obj.save()
+
+	def get_allow_business(self, obj):
+		if  obj.allow_business:
+			return get_multi_text(obj.allow_business)
+			# return ",".join([obj.allow_business.choices.__getitem__(l) for l in obj.allow_business])
+		else:
+			return '无'
+
+	get_allow_business.short_description = '允许的业务类型'

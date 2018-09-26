@@ -1,3 +1,109 @@
+{#客户列表#}
 <script>
+    $(function () {
+        initAgencyTree();
+        initTable();
+    });
+    function initAgencyTree() {
+        $('#AgencyTreeForClient').tree({
+            url: '../bms/get_agency_tree',
+            onClick: function (node) {
+                $('#ClientGrid').datagrid('uncheckAll');
+                // 在用户点击的时候提示
+                $('#ClientGrid').datagrid('loadData', { total: 0, rows: [] });
+                $('#ClientGrid').datagrid('load', {
+                    agency_id: node.id
+                });
+            }
+        })
+    }
+    function initTable() {
+        $('#ClientGrid').datagrid({
+            title: '客户列表',
+            iconCls: 'icon-user',
+            loadMsg: '数据加载中...',
+            nowrap: true,
+            autoRowHeight: true,
+            striped: true,
+            url: '../bms/get_client_list',
+            {#sortName: 'username',#}
+            {#sortOrder: 'asc',#}
+            border: true,
+            remoteSort: false,
+            idField: 'id',
+            pageSize: 10,
+            pagination: true,
+            rownumbers: true,
+            singleSelect: true,
+            fitColumns: true,
+            columns: [[
+                {field: 'ck', checkbox: true},
+                {field: 'id', title: 'ID', width: 80, hidden:true },
+                {field: 'name', title: '客户名称', width: 200, sortable: true},
+                {field: 'mobile_phone', title: "手机号码", width: 200, sortable: true},
+                {field: 'mailbox', title: '邮箱', width: 200, sortable: true},
+                {field: 'organization', title: '所属机构', width: 200, sortable: true},
+                {field: 'agency', title: '所属归属', width: 200, sortable: true},
+                {field: 'allow_business', title: '允许的业务类型', width: 200, sortable: true},
+                {field: 'status', title: '状态', width: 200, sortable: true},
+                {field: 'is_freeze', title: '能否冻结', width: 200, sortable: true},
+                {field: 'allow_business_id', title: 'allow_business_id', width: 200, sortable: true,hidden:true}
 
+                {#{#}
+                {#    field: 'is_active',#}
+                {#    title: "是否启用",#}
+                {#    width: 200,#}
+                {#    sortable: true,#}
+                {#    formatter: function (value, row, index) {#}
+                {#        if (value == true) {#}
+                {#            return value = '是';#}
+                {#        } else {#}
+                {#            return value = '否';#}
+                {#        }#}
+                {#    }#}
+                {# }#}
+            ]],
+            toolbar: [{
+                id: 'btnadd',
+                text: '添加用户',
+                iconCls: 'icon-add',
+                handler: function () {
+                    AddUserDialog('添加用户');
+                }
+            }, '-', {
+                id: 'btnedit',
+                text: '修改用户',
+                iconCls: 'icon-edit',
+                handler: function () {
+                    UpdateUserDialog('修改用户');
+                }
+            }, '-', {
+                id: 'btncut',
+                text: '修改密码',
+                iconCls: 'icon-lock-password',
+                handler: function () {
+                    ChangePwd();
+                }
+            }, '-', {
+                id: 'btnrefresh',
+                text: '刷新',
+                iconCls: 'icon-reload',
+                handler: function () {
+                    initTable();
+                }
+            }],
+            onDblClickRow: function (index, row) {
+                UpdateUserDialog('修改用户');
+            }
+        });
+    }
 </script>
+
+<div id="cc" class="easyui-layout" style="height:700px;" fit="true">
+    <div data-options="region:'west',title:'归属列表',split:true,collapsible:false" style="width:200px;">
+        <ul id="AgencyTreeForClient"></ul>
+    </div>
+    <div data-options="region:'center',title:'客户列表-选择左侧归属后自动更新'" style="padding:2px;background:#eee;height:400px;">
+        <table id="ClientGrid"></table>
+    </div>
+</div>

@@ -56,8 +56,8 @@ class Exchange_Rule(models.Model):
 
 class Notional_Principal(models.Model):
 	'''名义本金设置'''
-	org = models.ForeignKey(Organization,blank=True,null=True,on_delete=models.SET_NULL,verbose_name='所属机构')
-	option_type = models.CharField(choices=OPTION_TYPE, max_length=32, verbose_name='期权类型')
+	org = models.ForeignKey(Organization,blank=True,null=True,on_delete=models.SET_NULL,verbose_name='所属机构',help_text='暂时不需要设置')
+	option_type = models.CharField(choices=OPTION_TYPE, blank=True,null=True,max_length=32, verbose_name='期权类型',help_text='暂时不需要设置')
 	number = models.DecimalField(null=True,max_digits=12,decimal_places=2, verbose_name='名义本金数额')
 	date_joined = models.DateTimeField(default=timezone.now, verbose_name='操作时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')

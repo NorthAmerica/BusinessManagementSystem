@@ -24,7 +24,7 @@
             data: postdata,
             success: function (data) {
                 $('#FundInForm').form('clear');
-                if (data.success=='true' || data.success==true) {
+                if (data&&data.success) {
                     if (data.org == '' || data.org == null || data.org == undefined)
                     {
                         $("#FundInForm #org").textbox('setText','默认显示全局入金配置');
@@ -104,7 +104,7 @@
             cache: false,
             data: postdata,
             success: function (data) {
-                if (data.success == 'true' || data.success == true) {
+                if (data&&data.success) {
                     $.messager.show({
                         title: '我的消息',
                         msg: data.msg,

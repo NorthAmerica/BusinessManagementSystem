@@ -2,6 +2,7 @@ from ..models.user_model import  Org_User,Agency_User
 from ..models.agency_model import Agency
 from guardian.shortcuts import assign_perm
 from django.contrib.auth.hashers import make_password
+from multiselectfield.db.fields import MSFList
 from bms.models import *
 
 def get_org_user_list(request):
@@ -154,3 +155,18 @@ def auto_add_permissions(obj,request,org_agency):
 				content_object = object_perm.content_object
 				assign_perm(codename, s_group, content_object)
 			new_user.groups.add(s_group)
+
+
+def get_choices_text(CHOICES,value):
+	'''根据value获取选项的文本内容
+	单选！！！
+	'''
+	if isinstance(CHOICES,tuple):
+		for c in CHOICES:
+			if c[0]==value:
+				return c[1]
+
+def get_multi_text(obj):
+	'''返回多选框的文本内容'''
+	if isinstance(obj,MSFList):
+		return ','.join([text for text in obj.choices.values()])

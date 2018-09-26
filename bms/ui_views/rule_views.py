@@ -58,7 +58,7 @@ def get_global_fund_in(request):
 					}
 					return JsonResponse(json_ret, safe=False)
 				else:
-					return JsonResponse({'success':'false', 'msg': '没有满足条件的全局入金配置'})
+					return JsonResponse({'success':False, 'msg': '没有满足条件的全局入金配置'}, safe=False)
 			else:
 				Org = Organization.objects.get(pk=request.POST.get('org_id'))
 				global_fund_in = Fund_In_Rule.objects.filter(org=Org).first()
@@ -74,7 +74,7 @@ def get_global_fund_in(request):
 					}
 					return JsonResponse(json_ret, safe=False)
 				else:
-					return JsonResponse({'success': 'false', 'msg': '该机构没有满足条件的入金配置'})
+					return JsonResponse({'success': False, 'msg': '该机构没有满足条件的入金配置'}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return HttpResponseNotFound(ex)
@@ -101,11 +101,11 @@ def add_fund_in(request):
 				if Organization.objects.get(pk=org).fund_in_rule_set.all().count()==0:
 					c_obj = Fund_In_Rule.objects.create(**dic)
 					if c_obj is not None:
-						return JsonResponse({'success': 'true', 'msg': '入金规则添加成功！'})
+						return JsonResponse({'success': True, 'msg': '入金规则添加成功！'}, safe=False)
 				else:
 					row = Organization.objects.get(pk=org).fund_in_rule_set.all().update(**dic)
 					if row != 0:
-						return JsonResponse({'success': 'true', 'msg': '入金规则修改成功！'})
+						return JsonResponse({'success': True, 'msg': '入金规则修改成功！'}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return HttpResponseNotFound(ex)
@@ -129,7 +129,7 @@ def get_global_fund_out(request):
 					}
 					return JsonResponse(json_ret, safe=False)
 				else:
-					return JsonResponse({'success':'false', 'msg': '没有满足条件的全局出金配置'})
+					return JsonResponse({'success':False, 'msg': '没有满足条件的全局出金配置'}, safe=False)
 			else:
 				Org = Organization.objects.get(pk=request.POST.get('org_id'))
 				global_fund_out = Fund_Out_Rule.objects.filter(org=Org).first()
@@ -146,7 +146,7 @@ def get_global_fund_out(request):
 					}
 					return JsonResponse(json_ret, safe=False)
 				else:
-					return JsonResponse({'success': 'false', 'msg': '该机构没有满足条件的出金配置'})
+					return JsonResponse({'success': False, 'msg': '该机构没有满足条件的出金配置'}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return HttpResponseNotFound(ex)
@@ -175,11 +175,11 @@ def add_fund_out(request):
 				if Organization.objects.get(pk=org).fund_out_rule_set.all().count()==0:
 					c_obj = Fund_Out_Rule.objects.create(**dic)
 					if c_obj is not None:
-						return JsonResponse({'success': 'true', 'msg': '出金规则添加成功！'})
+						return JsonResponse({'success': True, 'msg': '出金规则添加成功！'}, safe=False)
 				else:
 					row = Organization.objects.get(pk=org).fund_out_rule_set.all().update(**dic)
 					if row != 0:
-						return JsonResponse({'success': 'true', 'msg': '出金规则修改成功！'})
+						return JsonResponse({'success': True, 'msg': '出金规则修改成功！'}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return HttpResponseNotFound(ex)
@@ -277,18 +277,28 @@ def add_exchange_rule(request):
 						org_obj.exchange_rule_set.filter(option_type=option_type).filter(
 							type=type).all().update(**insert_dict)
 
-				return JsonResponse({'success': 'true', 'msg': '交易询价时间设置添加成功！'})
+				return JsonResponse({'success': True, 'msg': '交易询价时间设置添加成功！'}, safe=False)
+	except Exception as ex:
+		print(ex)
+		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)
+
+def notional_principal_config(request):
+
+	return render(request,'./bms/rule_config/notional_principal_config.html')
+
+def get_notional_principal(request):
+	'''获取名义本金设置'''
+	try:
+		if request.method == 'POST':
+			# all = Notional_Principal.objects.all()
+			eaList = []
+			for np in Notional_Principal.objects.all():
+				eaList.append({
+					'id': np.id,
+					'number': np.number
+				})
+			return JsonResponse(eaList, safe=False)
 	except Exception as ex:
 		print(ex)
 		return HttpResponseNotFound(ex)
 
-def notional_principal_config(request):
-	'''获取名义本金设置'''
-	pass
-
-def get_notional_principal(request):
-	pass
-
-def add_notional_principal(request):
-	'''新增名义本金设置'''
-	pass

@@ -30,6 +30,7 @@ urlpatterns = [
 	path('get_agency_list', agency_views.get_agency_list, name='get_agency_list'),
 	path('add_agency',agency_views.add_agency,name='add_agency'),
 	path('update_agency',agency_views.update_agency,name='update_agency'),
+	path('get_allow_business',agency_views.get_allow_business,name='get_allow_business'),
 	# 配置管理
 	path('fund_in_config',rule_views.fund_in_config,name='fund_in_config'),
 	path('get_org_tree',rule_views.get_org_tree,name='get_org_tree'),
@@ -41,8 +42,11 @@ urlpatterns = [
 	path('exchange_config',rule_views.exchange_config,name='exchange_config'),
 	path('get_exchange_rule',rule_views.get_exchange_rule,name='get_exchange_rule'),
 	path('add_exchange_rule',rule_views.add_exchange_rule,name='add_exchange_rule'),
+	path('notional_principal_config',rule_views.notional_principal_config,name='notional_principal_config'),
+	path('get_notional_principal',rule_views.get_notional_principal,name='get_notional_principal'),
 	# 客户管理
 	path('client_list',client_config_views.client_list,name='client_list'),
+	path('get_client_list',client_config_views.get_client_list,name='get_client_list'),
 	# 订单管理
 	path('order_list',order_views.order_list,name='order_list'),
 ]
