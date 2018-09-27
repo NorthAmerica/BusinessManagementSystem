@@ -7,4 +7,16 @@ from bms.models import *
 
 
 def my_account(request):
-	return render(request,'bms/client_ui/my_account.html')
+	return render(request,'bms/client_ui/account/my_account.html')
+
+def authentication(request):
+	return render(request,'bms/client_ui/account/authentication.html')
+
+def update_authentication_info(request):
+	try:
+		if request.method=='POST':
+			myfile = request.FILES.get('bank_card', None)
+			return JsonResponse({'success': True, 'msg': '认证信息上传成功！'}, safe=False)
+	except Exception as ex:
+
+		pass

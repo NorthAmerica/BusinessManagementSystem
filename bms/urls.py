@@ -11,6 +11,8 @@ urlpatterns = [
 	path('logout',views.Logout_page,name='logout'),
 	path('login_check',views.login_check,name='login_check'),
 	path('index', views.index, name='index'),
+	path('change_pwd_page',views.change_pwd_page,name='change_pwd_page'),
+	path('change_pwd',views.change_pwd,name='change_pwd'),
 	# 管理员后台管理
 	path('main_user_list',main_user_views.main_user_list, name='main_user_list'),
 	path('add_main_user',main_user_views.add_main_user,name='add_main_user'),

@@ -50,14 +50,26 @@
 
     <script src="{% static 'jquery-weui/lib/fastclick.js'%}"></script>
     <script>
+
       $(function() {
         FastClick.attach(document.body);
 
+        var href = window.location.toString();
+        var str1 =href.split('#')[1];
+        $('.weui-tabbar__item').each(function(){
+                var href = $(this).attr('href');
+
+                if (href=='#'+str1) {
+                    showTab($(this))
+                }
+            })
        });
+
 
        var ITEM_ON = "weui-bar__item--on";
 
       var showTab = function(a) {
+          {#debugger;#}
         var $a = $(a);
         if($a.hasClass(ITEM_ON)) return;
         var href = $a.attr("href");
@@ -76,6 +88,9 @@
 
 
       $(document).on("click", "#bottom-tab .weui-tabbar__item", function(e) {
+          {#debugger;#}
+          {#console.info(e.currentTarget);#}
+          {#console.info($(e.currentTarget));#}
             var $a = $(e.currentTarget);
             var href = $a.attr("href");
             if($a.hasClass(ITEM_ON)) return;
@@ -85,6 +100,7 @@
       })
     </script>
     <script src="{% static 'jquery-weui/js/jquery-weui.min.js'%}"></script>
+    <script src="{% static 'jquery-weui/js/city-picker.js'%}"></script>
     <script src="{% static 'jquery-weui/js/tool-kit.js'%}"></script>
   </body>
 </html>

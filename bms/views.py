@@ -6,6 +6,7 @@ from django.middleware import csrf
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect, reverse
 from django.http import JsonResponse
+from django.contrib.auth.hashers import make_password
 from .ui_views.view_shortcuts import get_org_name
 
 
@@ -43,7 +44,7 @@ def login_check(request):
 
 		except Exception as ex:
 			print(ex)
-			return JsonResponse({'success': 'false', 'msg': ex})
+			return JsonResponse({'success': False, 'msg': ex})
 
 	return JsonResponse(ret_msg)
 
@@ -75,6 +76,25 @@ def index(request):
 
 	return render(request, 'bms/index.html', locals())
 
+
+def change_pwd_page(request):
+	return render(request,'bms/change_pwd.html')
+
+@login_required
+def change_pwd(request):
+	try:
+		if request.method == 'POST':
+			user_id = request.user.id
+			user_pwd = request.POST.get('password')
+			dic = {
+				"password": make_password(user_pwd),
+			}
+			obj = User.objects.filter(pk=user_id).update(**dic)
+			if obj is not None:
+				return JsonResponse({'success': True, 'msg': '密码更新成功！'}, safe=False)
+	except Exception as ex:
+		print(ex)
+		return JsonResponse({'success': False, 'msg': ex})
 
 def Logout_page(request):
 	# 注销用户，这个方法就会把我们的session跟cookie清理掉
