@@ -1,4 +1,32 @@
-{% extends 'bms/client_ui/base.html' %}
+{% extends 'bms/client_ui/base_no_tab.html' %}
 {% block main-content %}
-    <div>我的账户</div>
+    <header class='demos-header'>
+      <h1 class="demos-title">账户设置</h1>
+    </header>
+    <div class="weui-cells weui-cells_form">
+        <div class="userInfo">
+            <form id="authentication_form">
+                {% csrf_token %}
+                <!--手机号-->
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label for="" class="weui-label  validate-required">手机号</label></div>
+                    <div class="weui-cell__bd">
+                        <input type="text" class="weui-input" id="card_no" name="card_no" placeholder="请输入银行卡号">
+                    </div>
+                </div>
+                <!--姓名-->
+                <div class="weui-cell">
+                    <div class="weui-cell__hd"><label for="" class="weui-label  validate-required">姓名</label></div>
+                    <div class="weui-cell__bd">
+                        <input type="text" class="weui-input" id="id_no" name="id_no" placeholder="请输入身份证号">
+                    </div>
+                </div>
+
+                <div class='demos-content-padded'>
+                    <a href="javascript:;" class="weui-btn weui-btn_primary" id="upload_info">修改资料</a>
+                    <a href="javascript:window.history.back();" class="weui-btn weui-btn_plain-default">返回</a>
+                </div>
+            </form>
+        </div>
+    </div>
 {% endblock main-content %}

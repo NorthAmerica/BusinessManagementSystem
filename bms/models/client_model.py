@@ -3,6 +3,10 @@ from django.utils import timezone
 from multiselectfield import MultiSelectField
 from .choices_for_model import STATUS_CHOICES,WEB_APP_CHOICES,BUSINESS_TYPE
 
+def bank_path_handler(instance, filename):
+	return "bank/{id}/{file}".format(id=instance.mobile_phone, file=filename)  # 保存路径和格式
+
+
 class Client(models.Model):
 	"""客户"""
 
@@ -11,9 +15,9 @@ class Client(models.Model):
 	mailbox = models.EmailField(verbose_name='邮箱地址')
 	password = models.CharField(max_length=128, verbose_name='密码')
 	identity_card = models.CharField(blank=True, null=True,max_length=128,verbose_name='身份证')
+	bank_image = models.ImageField(upload_to=bank_path_handler,blank=True, null=True, verbose_name='银行卡照片')
 	bank_card = models.CharField(blank=True, null=True,max_length=128,verbose_name='银行卡号')
 	bank_name = models.CharField(blank=True,null=True,max_length=128,verbose_name='开户银行')
-	open_province = models.CharField(blank=True,null=True,max_length=128,verbose_name='开户省份')
 	open_city = models.CharField(blank=True,null=True,max_length=128,verbose_name='开户市')
 	bank_branch = models.CharField(blank=True,null=True,max_length=128,verbose_name='开户支行')
 	organization = models.ForeignKey('Organization',blank=True, null=True,on_delete=models.SET_NULL, verbose_name='所属机构')

@@ -23,9 +23,11 @@ urlpatterns = [
 	path('register', login_views.register),
 	path('login_check', login_views.login_check),
 	path('reg_check', login_views.reg_check),
+	path('logout',login_views.logout),
 	path('my_account', my_views.my_account),
 	path('authentication',my_views.authentication),
 	path('update_authentication_info',my_views.update_authentication_info),
+	path('checking',my_views.checking),
 
     path('bms/',include('bms.urls')),
     path('admin/', admin.site.urls),

@@ -6,9 +6,12 @@ from django.utils import timezone
 from bms.models import *
 
 def login(request):
+	# 登陆页面
+	request.session.flush()
 	return render(request, 'bms/client_ui/login.html')
 
 def login_check(request):
+	# 登陆验证
 	try:
 		if request.method == 'POST':
 			user_tel = request.POST.get('user_tel')
@@ -20,6 +23,14 @@ def login_check(request):
 					if client.is_freeze:
 						return JsonResponse({'success': False, 'msg': '您的账户已被冻结，暂时不能登陆系统，请与您的经纪人进行联系。'},safe=False)
 					else:
+						request.session['is_login'] = True
+						request.session['client_id'] = client.id
+						request.session['client_name'] = client.name
+						request.session['mobile_phone'] = client.mobile_phone
+						request.session['allow_business'] = client.allow_business
+						request.session['status'] = client.status
+						request.session['org_id'] = client.organization_id
+						request.session['agency_id'] = client.agency_id
 						find_client.update(last_login_time=timezone.now())
 						return JsonResponse({'success': True, 'msg': ''},safe=False)
 			else:
@@ -30,6 +41,7 @@ def login_check(request):
 
 
 def register(request):
+	# 注册页面
 	return render(request, 'bms/client_ui/register.html')
 
 def reg_check(request):
@@ -59,3 +71,7 @@ def reg_check(request):
 	except Exception as ex:
 		print(ex)
 		return JsonResponse({'success': False, 'msg': ex.__str__()},safe=False)
+
+def logout(request):
+	# 用户注销
+	return render(request,'bms/client_ui/login.html')

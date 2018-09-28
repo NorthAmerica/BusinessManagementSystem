@@ -1,7 +1,7 @@
 {% load staticfiles %}
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>jQuery WeUI</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,48 +11,64 @@
     <link rel="stylesheet" href="{% static 'jquery-weui/lib/weui.min.css'%}">
     <link rel="stylesheet" href="{% static 'jquery-weui/css/jquery-weui.min.css'%}">
     <link rel="stylesheet" href="{% static 'jquery-weui/css/demos.css'%}">
-      <script src="{% static 'jquery-weui/lib/jquery-2.1.4.js'%}"></script>
+    <script src="{% static 'jquery-weui/lib/jquery-2.1.4.js'%}"></script>
     <script>
         $.ajaxSetup({
             data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
         });
     </script>
-  </head>
-  <body ontouchstart>
-    <div class="weui-tab" id="bottom-tab">
-      <div class="weui-tab__bd for-bottom">
+</head>
+<body ontouchstart>
+<div class="weui-tab" id="bottom-tab">
+    <div class="weui-tab__bd for-bottom">
         {% block main-content %}
         {% endblock main-content %}
-      </div>
+    </div>
 
-      <div class="weui-tabbar">
+    <div class="weui-tabbar">
         <a href="#subtab1" class="weui-tabbar__item">
-{#          <span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">8</span>#}
-          <div class="weui-tabbar__icon">
-            <img src="{% static 'jquery-weui/images/icon_tab_1.png'%}" alt="">
-          </div>
-          <p class="weui-tabbar__label">行情</p>
+            {#          <span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">8</span>#}
+            <div class="weui-tabbar__icon">
+                <img src="{% static 'jquery-weui/images/icon_tab_1.png'%}" alt="">
+            </div>
+            <p class="weui-tabbar__label">行情</p>
         </a>
         <a href="#subtab2" class="weui-tabbar__item weui-bar__item--on">
-          <div class="weui-tabbar__icon">
-            <img src="{% static 'jquery-weui/images/icon_tab_2.png'%}" alt="">
-          </div>
-          <p class="weui-tabbar__label">交易</p>
+            <div class="weui-tabbar__icon">
+                <img src="{% static 'jquery-weui/images/icon_tab_2.png'%}" alt="">
+            </div>
+            <p class="weui-tabbar__label">交易</p>
         </a>
         <a href="#subtab3" class="weui-tabbar__item">
-          <div class="weui-tabbar__icon">
-            <img src="{% static 'jquery-weui/images/icon_tab_3.png'%}" alt="">
-          </div>
-          <p class="weui-tabbar__label">我的</p>
+            <div class="weui-tabbar__icon">
+                <img src="{% static 'jquery-weui/images/icon_tab_3.png'%}" alt="">
+            </div>
+            <p class="weui-tabbar__label">我的</p>
         </a>
-      </div>
     </div>
+</div>
 
     <script src="{% static 'jquery-weui/lib/fastclick.js'%}"></script>
     <script>
 
       $(function() {
         FastClick.attach(document.body);
+
+        {% if request.session.status == '1' %}
+          $.noti({
+              title: "恭喜您注册成功！",
+              text: "您已经注册成功，请继续到我的设置里面完成实名认证！",
+              {#media: "<img src='{% static 'jquery-weui/images/present.png' %}/>",#}
+              time: 6000
+            });
+        {% elif request.session.status == '2'%}
+            $.noti({
+              title: "您的实名认证已提交！",
+              text: "请您耐心等待实名认证审核，审核完成后即可开始交易！",
+              {#media: "<img src='{% static 'jquery-weui/images/icon_nav_icons.png' %}/>",#}
+              time: 6000
+            });
+        {% endif %}
 
         var href = window.location.toString();
         var str1 =href.split('#')[1];
@@ -64,7 +80,6 @@
                 }
             })
        });
-
 
        var ITEM_ON = "weui-bar__item--on";
 

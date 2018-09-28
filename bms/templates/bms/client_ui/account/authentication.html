@@ -1,23 +1,7 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>jQuery WeUI</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <meta name="description" content="">
+{% extends 'bms/client_ui/base_no_tab.html' %}
 
-    <link rel="stylesheet" href="{% static 'jquery-weui/lib/weui.min.css'%}">
-    <link rel="stylesheet" href="{% static 'jquery-weui/css/jquery-weui.min.css'%}">
-    <link rel="stylesheet" href="{% static 'jquery-weui/css/demos.css'%}">
-    <script src="{% static 'jquery-weui/lib/jquery-2.1.4.js'%}"></script>
-    <script>
-        {#$.ajaxSetup({#}
-        {#    data: {csrfmiddlewaretoken: '{{ csrf_token }}'},#}
-        {# });#}
-    </script>
-      <style>
+{% block main-content %}
+  <style>
   .hide{
    display: none;
   }
@@ -121,8 +105,7 @@
    display: none;
   }
  </style>
-  </head>
-  <body ontouchstart>
+
     <header class='demos-header'>
       <h1 class="demos-title">填些实名信息</h1>
     </header>
@@ -137,18 +120,11 @@
                         <ul>
                             <li imgNum="fidCardFile1">
                                 <div class="weui-uploader__input-box">
-                                    <input class="weui-uploader__input" isRequired="true" id="bank_card" name="bank_card" placeholder="请上传银行卡正面照片" type="file" accept="image/*">
+                                    <input type="file" class="weui-uploader__input" isRequired="true" id="bank_card" name="bank_card" placeholder="请上传银行卡正面照片" accept="image/*">
                                 </div>
                                 <div class="add_img weui-uploader__file hide"></div>
                                 <p class="validate-required">银行卡正面</p>
                             </li>
-                            {#                        <li imgNum="fidCardFile2">#}
-                            {#                            <div class="weui-uploader__input-box">#}
-                            {#                                <input class="weui-uploader__input" isRequired="true" placeholder="请上传银行卡反面照片" type="file" accept="image/*">#}
-                            {#                            </div>#}
-                            {#                            <div class="add_img weui-uploader__file hide"></div>#}
-                            {#                            <p class="validate-required">银行卡反面</p>#}
-                            {#                        </li>#}
                         </ul>
                     </div>
                 </div>
@@ -212,16 +188,49 @@
 <script>
     $(function () {
         $("#bank_city").cityPicker({
-        title: "选择目的地",
-        showDistrict: false,
-        onChange: function (picker, values, displayValues) {
-          console.log(values, displayValues);
-        }
-      });
+            title: "选择目的地",
+            showDistrict: false,
+            onChange: function (picker, values, displayValues) {
+                console.log(values, displayValues);
+            }
+        });
 
         $('#authentication_form #upload_info').click(function () {
+            if($('#bank_card').val()==''||$('#bank_card').val()==null||$('#bank_card').val()==undefined)
+            {
+                $.toptip('银行卡照片不能为空', 'error');
+                return;
+            }
+            if($('#card_no').val()==''||$('#card_no').val()==null||$('#card_no').val()==undefined)
+            {
+                $.toptip('银行卡号不能为空', 'error');
+                return;
+            }
+            if($('#id_no').val()==''||$('#id_no').val()==null||$('#id_no').val()==undefined)
+            {
+                $.toptip('身份证号不能为空', 'error');
+                return;
+            }
+            if($('#bank_name').val()==''||$('#bank_name').val()==null||$('#bank_name').val()==undefined)
+            {
+                $.toptip('开户银行不能为空', 'error');
+                return;
+            }
+            if($('#bank_city').val()==''||$('#bank_city').val()==null||$('#bank_city').val()==undefined)
+            {
+                $.toptip('城市不能为空', 'error');
+                return;
+            }
+            if($('#branch_name').val()==''||$('#branch_name').val()==null||$('#branch_name').val()==undefined)
+            {
+                $.toptip('开户支行不能为空', 'error');
+                return;
+            }
+
+
+
             var data = new FormData($('#authentication_form')[0]);
-            debugger;
+
             $.ajax({
                 url: '../update_authentication_info',
                 type: 'POST',
@@ -232,13 +241,13 @@
                 contentType: false,
                 success: function (data) {
                     if (data && data.success) {
-
+                        window.location.href='/checking'
                     } else {
-
+                        $.toptip("添加失败，请您重新检查"+data.msg, 'error');
                     }
                 },
                 error: function (data) {
-                    alert("网络错误");
+                    $.toptip('操作失败' + data.responseText, 'error');
                 }
             })
         });
@@ -387,12 +396,4 @@
         });
 
 </script>
-    <script src="{% static 'jquery-weui/js/jquery-weui.min.js'%}"></script>
-    <script src="{% static 'jquery-weui/js/city-picker.js'%}"></script>
-    <script src="{% static 'jquery-weui/js/tool-kit.js'%}"></script>
-  <script>
-
-
-    </script>
-  </body>
-</html>
+{% endblock main-content %}

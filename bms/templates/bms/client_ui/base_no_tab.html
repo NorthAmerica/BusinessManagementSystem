@@ -1,0 +1,29 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>jQuery WeUI</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="description" content="">
+
+    <link rel="stylesheet" href="{% static 'jquery-weui/lib/weui.min.css'%}">
+    <link rel="stylesheet" href="{% static 'jquery-weui/css/jquery-weui.min.css'%}">
+    <link rel="stylesheet" href="{% static 'jquery-weui/css/demos.css'%}">
+    <script src="{% static 'jquery-weui/lib/jquery-2.1.4.js'%}"></script>
+    <script>
+        $.ajaxSetup({
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
+        });
+    </script>
+</head>
+<body ontouchstart>
+    {% block main-content %}
+    {% endblock main-content %}
+<script src="{% static 'jquery-weui/lib/fastclick.js'%}"></script>
+<script src="{% static 'jquery-weui/js/jquery-weui.min.js'%}"></script>
+<script src="{% static 'jquery-weui/js/city-picker.js'%}"></script>
+<script src="{% static 'jquery-weui/js/tool-kit.js'%}"></script>
+</body>
+</html>
