@@ -1,5 +1,3 @@
-from ..models.user_model import  Org_User,Agency_User
-from ..models.agency_model import Agency
 from guardian.shortcuts import assign_perm
 from django.contrib.auth.hashers import make_password
 from multiselectfield.db.fields import MSFList
@@ -12,9 +10,7 @@ def get_org_user_list(request):
 		org_id = get_org_id(request)
 		list_org_user = list(Org_User.objects.filter(organization_id=org_id))
 		return [org_user.user for org_user in list_org_user]
-		# for org_user in list_org_user:
-		# 	all_org_user.append(org_user.user)
-		# return all_org_user
+
 	else:
 		return None
 
@@ -25,9 +21,7 @@ def get_agency_user_list(request):
 		agency_id = get_agency_id(request)
 		list_agency_user = list(Agency_User.objects.filter(agency_id=agency_id))
 		return [agency_user.user for agency_user in list_agency_user]
-		# for agency_user in list_agency_user:
-		# 	all_agency_user.append(agency_user.user)
-		# return all_agency_user
+
 	else:
 		return None
 

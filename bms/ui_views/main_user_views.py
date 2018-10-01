@@ -1,13 +1,13 @@
-from django.shortcuts import render, get_list_or_404
-from django.http import JsonResponse,HttpResponse
+from django.shortcuts import render
+from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from bms.models import *
 from bms.forms import *
 from django.contrib.auth.models import Group
-from bms.ui_views.view_shortcuts import get_org_user_list,get_org_id
+from bms.tool_kit.view_shortcuts import get_org_user_list
+
 
 @login_required
 def main_user_list(request):

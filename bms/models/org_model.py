@@ -24,13 +24,14 @@ class Organization(models.Model):
 	is_freeze = models.BooleanField(default=False, verbose_name='能否冻结')
 	is_open_commodity = models.BooleanField(default=False,verbose_name='是否开启商品费率')
 	is_open_stock = models.BooleanField(default=False,verbose_name='是否开启个股费率')
+	account_balance = models.DecimalField(blank=True, null=True, default=0, max_digits=12, decimal_places=2,
+	                                      verbose_name='账户余额')
 	date_joined = models.DateTimeField(default=timezone.now, verbose_name='添加时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
 	def __str__(self):
 		return self.name
 
 	class Meta:
-
 		verbose_name = '机构'
 		verbose_name_plural = '机构'
 
@@ -47,7 +48,7 @@ class Org_Rule(models.Model):
 	rebate_y = models.DecimalField(blank=True, null=True,max_digits=12, decimal_places=2, verbose_name='参数Y')
 	date_joined = models.DateTimeField(default=timezone.now, verbose_name='添加时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
-	class Meta:
 
+	class Meta:
 		verbose_name = '机构费率规则'
 		verbose_name_plural = '机构费率规则'

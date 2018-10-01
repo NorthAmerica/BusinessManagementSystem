@@ -12,16 +12,31 @@ STATUS_CHOICES=(
 	('5','已交易')
 )
 
-CHANGE_TYPE_CHOICES = (
-		('in_online', '网银入金'),
-		('in_offline', '线下入金'),
-		('out_online', '网银出金'),
-		('out_offline', '线下出金'),
-		('order', '下单'),
-		('close', '结算'),
+FUND_TYPE_CHOICES = (
+	('online','网银'),
+	('offline','线下'),
+	('deal','交易'),
+	('closing','结算'),
+	('rebate','返佣'),
+	('raise','加价'),
+	('redouble','加倍'),
+)
+
+FUND_STATE_CHOICES = (
+	 ('in','入金'),
+	 ('out','出金'),
+	 ('freeze','冻结'),
+	 ('unfreeze','解冻'),
+	 ('profit','盈利'),
+	 ('loss','亏损'),
 	)
 
-TYPE_CHOICE=(
+ORDER_STATUS_CHOICES = (
+	('hold','持有'),
+	('end','结束'),
+)
+
+TEMPLATE_TYPE_CHOICES=(
 		('org', '机构模板'),
 		('agency', '代理模板'),
 	)
@@ -36,6 +51,18 @@ OPTION_TYPE = (
 		('commodity','商品期权'),
 		('stock','个股期权'),
 	)
+
+CALL_OR_PUT = (
+	('call','看涨'),
+	('put','看跌'),
+)
+
+OPTION_PATTERN = (
+	('virtual','虚值'),
+	('flat','平值'),
+	('actual','实值'),
+)
+
 
 EVENT_TYPE_CHOICES = (
 		('DEBUG','调试'),

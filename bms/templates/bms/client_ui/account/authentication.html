@@ -243,7 +243,7 @@
                     if (data && data.success) {
                         window.location.href='/checking'
                     } else {
-                        $.toptip("添加失败，请您重新检查"+data.msg, 'error');
+                        $.toptip("数据上传失败，请您重新检查"+data.msg, 'error');
                     }
                 },
                 error: function (data) {

@@ -28,6 +28,13 @@ urlpatterns = [
 	path('authentication',my_views.authentication),
 	path('update_authentication_info',my_views.update_authentication_info),
 	path('checking',my_views.checking),
+	path('change_pwd_page',my_views.change_pwd_page),
+	path('change_pwd',my_views.change_pwd),
+	path('recharge_page',my_views.recharge_page),
+	path('recharge',my_views.recharge),
+	path('withdraw_page',my_views.withdraw_page),
+	path('withdraw',my_views.withdraw),
+	path('statement',my_views.statement),
 
     path('bms/',include('bms.urls')),
     path('admin/', admin.site.urls),

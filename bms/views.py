@@ -1,13 +1,11 @@
-from django.shortcuts import render
-from bms.models import menu_model
 from django.contrib.auth.decorators import login_required
 from bms.forms import *
 from django.middleware import csrf
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
-from .ui_views.view_shortcuts import get_org_name
+from bms.tool_kit.view_shortcuts import get_org_name
 
 
 # Create your views here.

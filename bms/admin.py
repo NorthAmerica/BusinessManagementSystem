@@ -1,12 +1,8 @@
-from django.contrib import admin, auth
+from django.contrib import admin
 from bms.models import *
-from django.forms import ModelForm
 from guardian.admin import GuardedModelAdmin
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import Group
-from guardian.shortcuts import assign_perm
-from multiselectfield import MultiSelectField
-from bms.ui_views.view_shortcuts import auto_add_permissions,get_multi_text
+from bms.tool_kit.view_shortcuts import auto_add_permissions,get_multi_text
 
 admin.site.site_header = '广州金艮-云平台管理后台'
 admin.site.site_title = '管理后台'
@@ -226,9 +222,9 @@ admin.site.register(Change_Info)
 class Fund_DetailAdmin(admin.ModelAdmin):
 	date_hierarchy = 'date_joined'
 	list_display = (
-		'order_number', 'client', 'change_type', 'balance_before', 'balance_after',
+		'serial_number', 'client','fund_type', 'fund_state', 'balance_before', 'balance_after',
 		'balance_change', 'frozen_balance', 'date_joined')
-	readonly_fields = ('order_number', 'operator',)
+	readonly_fields = ('serial_number', 'operator',)
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
@@ -302,3 +298,18 @@ class ClientAdmin(admin.ModelAdmin):
 			return '无'
 
 	get_allow_business.short_description = '允许的业务类型'
+
+
+@admin.register(Order_Detail)
+class Order_DetailAdmin(admin.ModelAdmin):
+	date_hierarchy = 'date_joined'
+	list_display = (
+		'serial_number', 'client', 'org', 'agency', 'option_type',
+		'call_put', 'option_pattern','option_code','option_rate',
+		'order_number','order_price','exercise_day','notional_principal'
+		,'date_joined')
+	readonly_fields = ('serial_number','operator',)
+
+	def save_model(self, request, obj, form, change):
+		obj.operator = request.user.username
+		obj.save()

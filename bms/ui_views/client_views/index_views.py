@@ -1,10 +1,6 @@
 from django.shortcuts import render, get_list_or_404
-from django.http import JsonResponse,HttpResponse
-from django.http import Http404
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.decorators import login_required
-from django.db import transaction
-from bms.models import *
+from bms.tool_kit.fund_shortcuts import get_client_balance
 
 def index(request):
-	return render(request, 'bms/client_ui/weui-tab.html')
+	client_balance = get_client_balance(request.session.get('client_id'))
+	return render(request, 'bms/client_ui/weui-tab.html',locals())

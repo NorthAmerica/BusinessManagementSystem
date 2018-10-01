@@ -1,25 +1,32 @@
 from django.db import models
 from django.utils import timezone
-from .choices_for_model import CHANGE_TYPE_CHOICES
+from .choices_for_model import FUND_STATE_CHOICES,FUND_TYPE_CHOICES
 import time
 
 def random_key():
 	'''订单号产生器'''
-	return time.strftime('%Y%m%d%H%M%S')+str(int(time.time()*1000))
+	return 'F'+time.strftime('%Y%m%d%H%M%S')+str(int(time.time()*1000))+str(int(time.clock()*1000000))
 
 
 class Fund_Detail(models.Model):
 	"""资金流水明细"""
-
-	order_number = models.CharField(max_length=100,default=random_key,verbose_name='订单号')
-	client = models.ForeignKey('Menu',null=True,on_delete=models.SET_NULL, verbose_name='客户')
-	change_type = models.CharField(choices=CHANGE_TYPE_CHOICES,default='order',max_length=32,verbose_name='变更类型')
-	balance_before = models.DecimalField(null=True,max_digits=12,decimal_places=3, verbose_name='交易前余额')
-	balance_after =  models.DecimalField(null=True,max_digits=12,decimal_places=3, verbose_name='交易后余额')
-	balance_change = models.DecimalField(null=True,max_digits=12,decimal_places=3, verbose_name='余额变化')
-	frozen_balance = models.DecimalField(null=True,max_digits=12,decimal_places=3, verbose_name='交易后冻结余额')
+	serial_number = models.CharField(max_length=100,default=random_key,verbose_name='资金流水号')
+	client = models.ForeignKey('Client',blank=True,null=True,on_delete=models.SET_NULL, verbose_name='客户')
+	org = models.ForeignKey('Organization',blank=True,null=True,on_delete=models.SET_NULL, verbose_name='机构')
+	agency = models.ForeignKey('Agency',blank=True,null=True,on_delete=models.SET_NULL, verbose_name='归属')
+	order = models.ForeignKey('Order_Detail',blank=True,null=True,on_delete=models.SET_NULL, verbose_name='订单号')
+	fund_state = models.CharField(choices=FUND_STATE_CHOICES,default='in',blank=True,null=True,max_length=32,verbose_name='资金状态')
+	fund_type = models.CharField(choices=FUND_TYPE_CHOICES,default='online',blank=True,null=True,max_length=32,verbose_name='资金渠道')
+	balance_before = models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='交易前余额')
+	balance_after =  models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='交易后余额')
+	balance_change = models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='交易金额')
+	frozen_balance = models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='冻结金额')
 	date_joined = models.DateTimeField(default=timezone.now,verbose_name='操作时间')
-	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
+	operator = models.CharField(max_length=50, blank=True,null=True, verbose_name='添加者')
+
+	def __str__(self):
+		return self.serial_number
+
 	class Meta:
 		verbose_name = '资金流水明细'
 		verbose_name_plural = '资金流水明细'

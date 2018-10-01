@@ -1,0 +1,79 @@
+{% extends 'bms/client_ui/base_no_tab.html' %}
+{% block main-content %}
+    <header class='demos-header'>
+      <h1 class="demos-title">用户登陆</h1>
+    </header>
+    <div class="weui-cells weui-cells_form">
+        <form id="change_pwd_form">
+            {% csrf_token %}
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">旧密码：</label></div>
+                <div class="weui-cell__bd weui-cell_primary">
+                    <input id="old_pwd" name="old_pwd" type="password" class="weui-input" placeholder="不少于6位"/>
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">新密码：</label></div>
+                <div class="weui-cell__bd weui-cell_primary">
+                    <input id="new_pwd" name="new_pwd" type="password" class="weui-input" placeholder="不少于6位"/>
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">确认密码：</label></div>
+                <div class="weui-cell__bd weui-cell_primary">
+                    <input id="new_pwd1" name="new_pwd_ag" type="password" class="weui-input" placeholder="不少于6位"/>
+                </div>
+            </div>
+            <div class='demos-content-padded'>
+                <a href="javascript:;" class="weui-btn weui-btn_primary" id="change_pwd">修改密码</a>
+                <a href="javascript:window.history.back();" class="weui-btn weui-btn_plain-default">返回</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+    $(function () {
+        $('#change_pwd_form #change_pwd').click(function () {
+            if ($('#new_pwd').val().length < 6 || $('#new_pwd').val().length > 16) {
+                    $.toptip('提交失败,密码长度请设置在6位到16位之间', 'error');
+                    return;
+                }
+            if ($('#new_pwd').val() != $('#new_pwd1').val()) {
+                    $.toptip('提交失败,两次输入的密码必须一致', 'error');
+                    return;
+                }
+
+            var data = new FormData($('#change_pwd_form')[0]);
+            $.ajax({
+                url: '../change_pwd',
+                type: 'POST',
+                data: data,
+                dataType: 'JSON',
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    if (data && data.success) {
+                        $.alert("密码修改完成，请使用新密码重新登陆！", "成功！");
+                        setTimeout("window.location.href='/login'",5000);
+
+                    } else {
+                        clear_form();
+                        $.toptip("修改失败，请您重新检查"+data.msg, 'error');
+                    }
+                },
+                error: function (data) {
+                    clear_form();
+                    $.toptip('操作失败' + data.responseText, 'error');
+                }
+            })
+        });
+    });
+
+    function clear_form() {
+        $('#old_pwd').val('');
+        $('#new_pwd').val('');
+        $('#new_pwd1').val('');
+    }
+    </script>
+{% endblock main-content %}

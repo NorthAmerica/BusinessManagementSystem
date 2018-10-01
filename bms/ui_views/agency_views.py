@@ -1,12 +1,8 @@
-from django.shortcuts import render, get_list_or_404
-from django.http import JsonResponse,HttpResponse
-from django.http import Http404
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.http import JsonResponse
 from django.db import transaction
 from bms.models import *
-from bms.ui_views.view_shortcuts import get_org_obj,get_all_son_agency,get_ageny_id,auto_add_permissions,get_multi_text
-import logging
+from bms.tool_kit.view_shortcuts import get_org_obj,get_all_son_agency,get_ageny_id,auto_add_permissions,get_multi_text
 
 
 def agency_config(request):

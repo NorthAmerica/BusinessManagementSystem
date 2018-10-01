@@ -14,6 +14,7 @@ def authentication(request):
 	return render(request,'bms/client_ui/account/authentication.html')
 
 def update_authentication_info(request):
+	'''上传实名认证信息'''
 	try:
 		if request.method=='POST':
 			bank_card = request.FILES.get('bank_card')
@@ -53,4 +54,55 @@ def update_authentication_info(request):
 		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)
 
 def checking(request):
+	'''等待审核通过页面'''
 	return render(request,'bms/client_ui/account/checking.html')
+
+
+def change_pwd_page(request):
+	'''修改密码页面'''
+	return render(request,'bms/client_ui/account/change_pwd.html')
+
+def change_pwd(request):
+	'''修改密码'''
+	try:
+		if request.method=='POST':
+			old_pwd = request.POST.get('old_pwd')
+			new_pwd = request.POST.get('new_pwd')
+
+			find_client = Client.objects.filter(pk=request.session.get('client_id'))
+			if find_client.exists():
+				client = find_client.first()
+				if check_password(old_pwd,client.password):
+					dic = {
+						'password': make_password(new_pwd)
+					}
+					update_count = Client.objects.filter(pk=request.session.get('client_id')).update(**dic)
+					if update_count != 0:
+						return JsonResponse({'success': True, 'msg': '密码更新成功！'}, safe=False)
+				else:
+					return JsonResponse({'success': False, 'msg': '旧密码不正确，请重新输入。'}, safe=False)
+			else:
+				return JsonResponse({'success': False, 'msg': '用户不存在。'}, safe=False)
+	except Exception as ex:
+		print(ex)
+		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)
+
+def recharge_page(request):
+	'''入金页面'''
+	return render(request,'bms/client_ui/account/recharge.html')
+
+def recharge(request):
+	'''入金操作'''
+	pass
+
+def withdraw_page(request):
+	'''出金页面'''
+	return render(request,'bms/client_ui/account/withdraw.html')
+
+def withdraw(request):
+	'''出金操作'''
+	pass
+
+def statement(request):
+	'''协议声明'''
+	return render(request,'bms/client_ui/account/statement.html')

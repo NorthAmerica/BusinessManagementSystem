@@ -1,13 +1,8 @@
-from django.shortcuts import render, get_list_or_404
-from django.http import JsonResponse,HttpResponse,HttpResponseNotFound
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from django.http import JsonResponse, HttpResponseNotFound
 from django.db import transaction
-from bms.models import *
 from bms.forms import *
-from django.contrib.auth.models import Group
-from bms.ui_views.view_shortcuts import get_org_obj
+from bms.tool_kit.view_shortcuts import get_org_obj
 
 def fund_in_config(request):
 
