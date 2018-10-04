@@ -1,0 +1,18 @@
+{% extends 'bms/client_ui/base_no_tab.html' %}
+
+{% block main-content %}
+    <header class='demos-header'>
+      <h1 class="demos-title">消息详情</h1>
+    </header>
+    <article class="weui-article">
+      <h1>{{ msg_detail_dict.title }}</h1>
+        <section>
+            <p>
+                {{ msg_detail_dict.msg }}
+            </p>
+        </section>
+    </article>
+    <div class='demos-content-padded'>
+        <a href="../redirect_pre_page/msg_center" class="weui-btn weui-btn_plain-default">返回</a>
+    </div>
+{% endblock main-content %}

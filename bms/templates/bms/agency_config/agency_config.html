@@ -241,7 +241,8 @@
 
         {% if request.user.identity == 'org'%}
             var CBEnable = 'True';
-            if ($("#UpdateAgencyForm #is_freeze").combobox('getValue') == "0") {
+
+            if ($("#UpdateAgencyForm #is_freeze").combobox('getValue') == "0" || $("#UpdateAgencyForm #is_freeze").combobox('getValue') == 'false' || $("#UpdateAgencyForm #is_freeze").combobox('getValue')==false) {
                 CBEnable = 'False';
             }
             {#console.info($('#UpdateAgencyForm #allow_business').combotree('getValues').toString())#}

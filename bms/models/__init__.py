@@ -1,5 +1,6 @@
 
 from .order_model import Order_Detail
+from .message_model import Message
 from .group_model import Special_Group
 from .org_model import Organization,Org_Rule,cachet_path_handler,logo_path_handler
 from .agency_model import Agency,invite_num_key

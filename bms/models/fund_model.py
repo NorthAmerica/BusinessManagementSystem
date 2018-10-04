@@ -15,7 +15,7 @@ class Fund_Detail(models.Model):
 	org = models.ForeignKey('Organization',blank=True,null=True,on_delete=models.SET_NULL, verbose_name='机构')
 	agency = models.ForeignKey('Agency',blank=True,null=True,on_delete=models.SET_NULL, verbose_name='归属')
 	order = models.ForeignKey('Order_Detail',blank=True,null=True,on_delete=models.SET_NULL, verbose_name='订单号')
-	fund_state = models.CharField(choices=FUND_STATE_CHOICES,default='in',blank=True,null=True,max_length=32,verbose_name='资金状态')
+	fund_state = models.CharField(choices=FUND_STATE_CHOICES,default='in',blank=True,null=True,max_length=32,verbose_name='资金类型')
 	fund_type = models.CharField(choices=FUND_TYPE_CHOICES,default='online',blank=True,null=True,max_length=32,verbose_name='资金渠道')
 	balance_before = models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='交易前余额')
 	balance_after =  models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='交易后余额')

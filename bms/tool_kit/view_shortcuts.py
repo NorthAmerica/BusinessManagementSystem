@@ -114,42 +114,44 @@ def auto_add_permissions(obj,request,org_agency):
 	自动创建管理员
 	'''
 	# 新增管理员
-	if org_agency=='org':
-		all_temp = Group_Template.objects.filter(type='org')
-		new_user = User.objects.create(username=obj.name + '总管理员', identity='org', password=make_password('686868'))
-		Org_User.objects.create(user=new_user, organization=obj, operator=request.user.username)
-		for temp in all_temp:
-			all_perm = [perm for perm in temp.permissions.all()]
-			all_object_perm = list(temp.groupobjectpermission_set.all())
+	try:
+		if org_agency=='org':
+			all_temp = Group_Template.objects.filter(type='org')
+			new_user = User.objects.create(username=obj.name + '总管理员', identity='org', password=make_password('686868'))
+			Org_User.objects.create(user=new_user, organization=obj, operator=request.user.username)
+			for temp in all_temp:
+				all_perm = [perm for perm in temp.permissions.all()]
+				all_object_perm = list(temp.groupobjectpermission_set.all())
 
-			s_group = Special_Group.objects.create(name=obj.name + temp.temp_name, org=obj,
-			                                       operator=request.user.username)
-			for perm in all_perm:
-				s_group.permissions.add(perm)
-			for object_perm in all_object_perm:
-				codename = object_perm.permission.codename
-				content_object = object_perm.content_object
-				assign_perm(codename, s_group, content_object)
-			new_user.groups.add(s_group)
+				s_group = Special_Group.objects.create(name=obj.name + temp.temp_name, org=obj,
+				                                       operator=request.user.username)
+				for perm in all_perm:
+					s_group.permissions.add(perm)
+				for object_perm in all_object_perm:
+					codename = object_perm.permission.codename
+					content_object = object_perm.content_object
+					assign_perm(codename, s_group, content_object)
+				new_user.groups.add(s_group)
 
-	elif org_agency=='agency':
-		all_temp = Group_Template.objects.filter(type='agency')
-		new_user = User.objects.create(username=obj.name + '总管理员', identity='agency', password=make_password('686868'))
-		Agency_User.objects.create(user=new_user, agency=obj, operator=request.user.username)
-		for temp in all_temp:
-			all_perm = [perm for perm in temp.permissions.all()]
-			all_object_perm = list(temp.groupobjectpermission_set.all())
+		elif org_agency=='agency':
+			all_temp = Group_Template.objects.filter(type='agency')
+			new_user = User.objects.create(username=obj.name + '总管理员', identity='agency', password=make_password('686868'))
+			Agency_User.objects.create(user=new_user, agency=obj, operator=request.user.username)
+			for temp in all_temp:
+				all_perm = [perm for perm in temp.permissions.all()]
+				all_object_perm = list(temp.groupobjectpermission_set.all())
 
-			s_group = Special_Group.objects.create(name=obj.name + temp.temp_name, agency=obj,
-			                                       operator=request.user.username)
-			for perm in all_perm:
-				s_group.permissions.add(perm)
-			for object_perm in all_object_perm:
-				codename = object_perm.permission.codename
-				content_object = object_perm.content_object
-				assign_perm(codename, s_group, content_object)
-			new_user.groups.add(s_group)
-
+				s_group = Special_Group.objects.create(name=obj.name + temp.temp_name, agency=obj,
+				                                       operator=request.user.username)
+				for perm in all_perm:
+					s_group.permissions.add(perm)
+				for object_perm in all_object_perm:
+					codename = object_perm.permission.codename
+					content_object = object_perm.content_object
+					assign_perm(codename, s_group, content_object)
+				new_user.groups.add(s_group)
+	except Exception as ex:
+		print(ex)
 
 def get_choices_text(CHOICES,value):
 	'''根据value获取选项的文本内容
@@ -164,3 +166,118 @@ def get_multi_text(obj):
 	'''返回多选框的文本内容'''
 	if isinstance(obj,MSFList):
 		return ','.join([text for text in obj.choices.values()])
+
+def send_msg_all_client(sender,title,msg):
+	'''给所有客户发送消息'''
+	try:
+		msg_dict = {
+			'title': title,
+			'msg' : msg,
+			'for_all_client': True,
+			'operator' : sender
+		}
+		send = Message.objects.create(**msg_dict)
+		if  send is not None:
+			return True
+		else:
+			return False
+	except Exception as ex:
+		print(ex)
+		return False
+
+def send_msg_all_org(sender,title,msg):
+	'''给所有机构发送消息'''
+	try:
+		msg_dict = {
+			'title': title,
+			'msg' : msg,
+			'for_all_org': True,
+			'operator' : sender
+		}
+		send = Message.objects.create(**msg_dict)
+		if  send is not None:
+			return True
+		else:
+			return False
+	except Exception as ex:
+		print(ex)
+		return False
+
+def send_msg_all_agency(sender,title,msg):
+	'''给所有归属发送消息'''
+	try:
+		msg_dict = {
+			'title': title,
+			'msg' : msg,
+			'for_all_agency': True,
+			'operator' : sender
+		}
+		send = Message.objects.create(**msg_dict)
+		if  send is not None:
+			return True
+		else:
+			return False
+	except Exception as ex:
+		print(ex)
+		return False
+
+def send_msg_to_client(sender,title,msg,clients_id):
+	'''给一些客户发送消息'''
+	try:
+		msg_dict = {
+			'title': title,
+			'msg': msg,
+			'operator': sender
+		}
+		Message.objects.create(**msg_dict).client.add(Client.objects.filter(id__in=str(clients_id).split(',')))
+	except Exception as ex:
+		print(ex)
+
+
+def send_msg_to_org(sender,title,msg,orgs_id):
+	'''给一部分机构发送消息'''
+	try:
+		msg_dict = {
+			'title': title,
+			'msg': msg,
+			'operator': sender
+		}
+		Message.objects.create(**msg_dict).org.add(Organization.objects.filter(id__in=str(orgs_id).split(',')))
+	except Exception as ex:
+		print(ex)
+
+
+def send_msg_to_agency(sender,title,msg,agencys_id):
+	'''给一部分归属发送消息'''
+	try:
+		msg_dict = {
+			'title': title,
+			'msg': msg,
+			'operator': sender
+		}
+		Message.objects.create(**msg_dict).agency.add(Agency.objects.filter(id__in=str(agencys_id).split(',')))
+	except Exception as ex:
+		print(ex)
+
+def get_msg_num(request):
+	'''得到消息中心的消息数量'''
+	try:
+		all_msg_num = 0
+		if request.user.identity == 'org':
+			all_org_msg = Message.objects.filter(for_all_org=True).exclude(
+				org_have_read__contains=str(request.user.id))
+			all_msg_num += all_org_msg.count()
+			org_id = get_org_id(request)
+			all_msg_num += Message.objects.filter(org__id=org_id).exclude(
+				org_have_read__contains=str(org_id)).count()
+		elif request.user.identity =='agency':
+			all_agency_msg = Message.objects.filter(for_all_agency=True).exclude(
+				agency_have_read__contains=str(request.user.id))
+			all_msg_num += all_agency_msg.count()
+			agency_id = get_agency_id(request)
+			all_msg_num += Message.objects.filter(agency__id=agency_id).exclude(
+				agency_have_read__contains=str(agency_id)).count()
+		return all_msg_num
+	except Exception as ex:
+		print(ex)
+		return 0

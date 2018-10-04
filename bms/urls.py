@@ -1,18 +1,22 @@
 from django.conf.urls import url
 from django.urls import path, include
 from . import views
-from bms.ui_views import main_user_views,user_group_view,agency_views,client_config_views,order_views,rule_views
+from bms.ui_views import main_user_views,user_group_view,agency_views,client_config_views,order_views,rule_views,msg_views
 
 app_name = 'bms'
 
 urlpatterns = [
-
+	# 首页
 	path('login',views.login_page,name='login'),
 	path('logout',views.Logout_page,name='logout'),
 	path('login_check',views.login_check,name='login_check'),
 	path('index', views.index, name='index'),
 	path('change_pwd_page',views.change_pwd_page,name='change_pwd_page'),
 	path('change_pwd',views.change_pwd,name='change_pwd'),
+	# 消息管理
+	path('show_msg_num',msg_views.show_msg_num,name='show_msg_num'),
+	path('msg_list',msg_views.msg_list,name='msg_list'),
+	path('msg_detail',msg_views.msg_detail,name='msg_detail'),
 	# 管理员后台管理
 	path('main_user_list',main_user_views.main_user_list, name='main_user_list'),
 	path('add_main_user',main_user_views.add_main_user,name='add_main_user'),

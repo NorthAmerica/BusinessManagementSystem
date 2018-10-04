@@ -1,0 +1,27 @@
+{% extends 'bms/client_ui/base_no_tab.html' %}
+
+{% block main-content %}
+    <header class='demos-header'>
+      <h1 class="demos-title">消息中心</h1>
+    </header>
+    <div class="weui-cells">
+        {% if msg_list is not None %}
+            {% for msg in msg_list %}
+
+                <a class="weui-cell weui-cell_access" href="../msg_detail/{{ msg.id }}">
+                    <div class="weui-cell__bd">{{ msg.title }}</div>
+                    <div class="weui-cell__ft" style="font-size: 0">
+                        <span style="vertical-align:middle; font-size: 17px;">详细信息</span>
+                        {% if not msg.client_have_read %}
+                            <span class="weui-badge weui-badge_dot" style="margin-left: 5px;margin-right: 5px;"></span>
+                        {% endif %}
+                    </div>
+                </a>
+
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div class='demos-content-padded'>
+        <a href="../redirect_pre_page/index#subtab3" class="weui-btn weui-btn_plain-default">返回</a>
+    </div>
+{% endblock main-content %}

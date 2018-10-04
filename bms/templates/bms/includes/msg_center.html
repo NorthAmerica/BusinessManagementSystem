@@ -1,0 +1,99 @@
+<script>
+
+    $(function () {
+        initMsgTable();
+    });
+    
+    function initMsgTable() {
+        $('#MsgGrid').datagrid({
+            title: '消息中心列表',
+            iconCls: 'icon-user',
+            loadMsg: '数据加载中...',
+            nowrap: true,
+            autoRowHeight: true,
+            striped: true,
+            url: '../bms/msg_list',
+            border: true,
+            remoteSort: false,
+            idField: 'id',
+            pageSize: 10,
+            pagination: true,
+            rownumbers: true,
+            singleSelect: true,
+            fitColumns: true,
+            columns: [[
+                {field: 'ck', checkbox: true},
+                {field: 'id', title: 'ID', width: 80, hidden:true },
+                {field: 'title', title: '标题', width: 200, sortable: true},
+                {field: 'operator', title: "发送人", width: 250, sortable: true},
+                {field: 'date_joined', title: '发送时间', width: 200, sortable: true},
+                {
+                    field: 'have_read',
+                    title: "是否已读",
+                    width: 200,
+                    sortable: true,
+                    formatter: function (value, row, index) {
+                        if (value == true) {
+                            return value = '是';
+                        } else {
+                            return value = '否';
+                        }
+                    }
+                }
+            ]],
+            toolbar: [{
+                id: 'btnread',
+                text: '查看信息',
+                iconCls: 'icon-ok',
+                handler: function () {
+                    ReadMsgDialog('查看信息');
+                }
+            }, '-', {
+                id: 'btnrefresh',
+                text: '刷新',
+                iconCls: 'icon-reload',
+                handler: function () {
+                    initMsgTable();
+                }
+            }],
+            onDblClickRow: function (index, row) {
+                ReadMsgDialog('查看信息');
+            }
+        });
+    }
+
+    function ReadMsgDialog(init_title) {
+        var ReadMsg = $("#MsgGrid").datagrid("getSelections");
+        if (ReadMsg.length == 0) {
+            $.messager.alert("友情提示", "请您先选择一行需要查看的信息");
+            return false;
+        }
+        $('#ReadMsgDialog').dialog({title:init_title,
+            width:650,
+            height:550,
+            buttons:[{
+				text:'保存',
+				handler:function(){
+				    UpdateUserEvent();
+				}
+			},{
+				text:'关闭',
+				handler:function(){
+				    $('#ReadMsgDialog').dialog('close')
+                }
+			}]
+        });
+        $('#ReadMsgDialog').dialog('open');
+        var row = $('#MsgGrid').datagrid('getSelected');
+        if(row)
+        {
+            $('#UpdateUserForm').form('load',row);
+        }
+    }
+</script>
+
+<div id="main-tab">
+    <div title="消息中心" style="padding:10px">
+        <table id="MsgGrid"></table>
+    </div>
+</div>

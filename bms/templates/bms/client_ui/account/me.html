@@ -57,10 +57,13 @@
         </a>
     {% endif %}
 
-    <a class="weui-cell weui-cell_access" href="javascript:;">
+    <a class="weui-cell weui-cell_access" href="../msg_center">
         <div class="weui-cell__hd"><img src="{% static 'jquery-weui/images/msg.png'%}" alt="" style="width:20px;margin-right:5px;display:block"></div>
         <div class="weui-cell__bd">
-            <p>消息中心</p>
+            <span style="vertical-align: middle">消息中心</span>
+            {% if client_msg_num != 0 %}
+                <span class="weui-badge" style="margin-left: 5px;">{{ client_msg_num }}</span>
+            {% endif %}
         </div>
         <div class="weui-cell__ft">进入查看</div>
     </a>

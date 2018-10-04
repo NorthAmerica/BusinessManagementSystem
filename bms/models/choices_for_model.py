@@ -92,3 +92,8 @@ IDENTITY_CHOICE=(
 		('agency','代理管理员'),
 		('admin','后台管理员'),
 	)
+
+MSG_TYPE_CHOICE=(
+	('public','公共消息'),
+	('private','私信'),
+)

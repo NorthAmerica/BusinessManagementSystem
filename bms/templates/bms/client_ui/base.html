@@ -40,6 +40,10 @@
             <p class="weui-tabbar__label">交易</p>
         </a>
         <a href="#subtab3" class="weui-tabbar__item">
+            {% if client_msg_num != 0 %}
+                <span class="weui-badge" style="position: absolute;top: -.4em;right: 1em;">{{ client_msg_num }}</span>
+            {% endif %}
+
             <div class="weui-tabbar__icon">
                 <img src="{% static 'jquery-weui/images/icon_tab_3.png'%}" alt="">
             </div>

@@ -19,6 +19,7 @@ from bms.ui_views.client_views import index_views, my_views, login_views
 
 urlpatterns = [
     path('index', index_views.index),
+	path('redirect_pre_page<path:path>',index_views.redirect_pre_page),
     path('login', login_views.login),
 	path('register', login_views.register),
 	path('login_check', login_views.login_check),
@@ -35,6 +36,8 @@ urlpatterns = [
 	path('withdraw_page',my_views.withdraw_page),
 	path('withdraw',my_views.withdraw),
 	path('statement',my_views.statement),
+	path('msg_center',my_views.msg_center),
+	path('msg_detail/<int:msg_id>',my_views.msg_detail),
 
     path('bms/',include('bms.urls')),
     path('admin/', admin.site.urls),

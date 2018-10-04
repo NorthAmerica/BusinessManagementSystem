@@ -313,3 +313,23 @@ class Order_DetailAdmin(admin.ModelAdmin):
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+	date_hierarchy = 'date_joined'
+	list_display = (
+		'title','msg_type','for_all_client',
+		'for_all_org','for_all_agency',
+		'date_joined','operator'
+	)
+	fieldsets = (
+		("消息内容", {'fields': ['title','msg', 'msg_type']}),
+		("发送个别人员", {'fields': ['client', 'org', 'agency']}),
+		("发送全体人员", {'fields': ['for_all_client', 'for_all_org', 'for_all_agency']})
+	)  # 分组排列
+
+	filter_horizontal = ('client','org','agency')  # 生成多选框
+	readonly_fields = ('client_have_read','org_have_read','agency_have_read','operator',)
+	def save_model(self, request, obj, form, change):
+		obj.operator = request.user.username
+		obj.save()
