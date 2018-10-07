@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.db import transaction
 from bms.models import *
-from bms.tool_kit.view_shortcuts import get_org_obj,get_all_son_agency,get_ageny_id,auto_add_permissions,get_multi_text
+from bms.tool_kit.view_shortcuts import get_org_obj,get_all_son_agency,get_agency_id,auto_add_permissions,get_multi_text
 
 
 def agency_config(request):
@@ -29,7 +29,7 @@ def get_agency_tree(request):
 				return JsonResponse(return_json,safe=False)
 			elif request.user.identity == 'agency': #如果是归属管理员
 
-				first1 = Agency.objects.filter(f_agency=get_ageny_id(request))#
+				first1 = Agency.objects.filter(f_agency=get_agency_id(request))#
 
 				return_json1 = [{
 					'id': '0',

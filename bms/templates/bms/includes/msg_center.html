@@ -25,6 +25,8 @@
                 {field: 'ck', checkbox: true},
                 {field: 'id', title: 'ID', width: 80, hidden:true },
                 {field: 'title', title: '标题', width: 200, sortable: true},
+                {field: 'msg', title: '内容', hidden:true},
+                {field: 'type', title: '消息类型', width: 200, sortable: true},
                 {field: 'operator', title: "发送人", width: 250, sortable: true},
                 {field: 'date_joined', title: '发送时间', width: 200, sortable: true},
                 {
@@ -69,31 +71,73 @@
             return false;
         }
         $('#ReadMsgDialog').dialog({title:init_title,
-            width:650,
-            height:550,
+            width:700,
+            height:650,
             buttons:[{
-				text:'保存',
-				handler:function(){
-				    UpdateUserEvent();
-				}
-			},{
 				text:'关闭',
 				handler:function(){
 				    $('#ReadMsgDialog').dialog('close')
                 }
 			}]
         });
-        $('#ReadMsgDialog').dialog('open');
-        var row = $('#MsgGrid').datagrid('getSelected');
-        if(row)
-        {
-            $('#UpdateUserForm').form('load',row);
-        }
+
+        var postdata = {
+                msg_id: ReadMsg[0].id,
+            };
+            var passurl='../bms/have_read_msg';
+            $.ajax({
+                type: 'POST',
+                url: passurl,
+                cache: false,
+                data:postdata,
+                success: function (data) {
+                    if (data && data.success) {
+                        $('#ReadMsgDialog').dialog('open');
+                        var row = $('#MsgGrid').datagrid('getSelected');
+                        if(row)
+                        {
+                            $('#MsgDetailForm').form('load',row);
+                        }
+                        $("#MsgGrid").datagrid("reload");
+                    }
+                    else {
+                        alert("添加已读信息，请您重新检查");
+                    }
+                },
+                error: function (data) {
+                    $.messager.alert('错误', data.responseText);
+                }
+            });
+
     }
 </script>
 
 <div id="main-tab">
     <div title="消息中心" style="padding:10px">
         <table id="MsgGrid"></table>
+
     </div>
+    <div id="ReadMsgDialog" class="easyui-dialog" style="padding:10px 20px"
+         closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="MsgDetailForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="title">标题：</label></td>
+                    <td><input class="easyui-textbox form-control" type="text" id="title" name="title" readonly="readonly" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="msg">内容：</label></td>
+                    <td><input class="easyui-textbox form-control" type="text" id="msg" name="msg" readonly="readonly" data-options="multiline:true" style="width:350px;height: 300px" /></td>
+                </tr>
+                <tr>
+                    <td><label for="operator">发送人：</label></td>
+                    <td><input class="easyui-textbox form-control" type="text" id="operator" name="operator" readonly="readonly" data-options="" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="date_joined">发送时间：</label></td>
+                    <td><input class="easyui-textbox form-control" type="text" id="date_joined" name="date_joined" data-options="" style="width:350px;" /></td>
+                </tr>
+            </table>
+        </form>
+        </div>
 </div>

@@ -1,4 +1,5 @@
 {#客户列表#}
+{% load staticfiles %}
 <script>
     $(function () {
         initAgencyTree();
@@ -47,42 +48,34 @@
                 {field: 'allow_business', title: '允许的业务类型', width: 200, sortable: true},
                 {field: 'status', title: '状态', width: 200, sortable: true},
                 {field: 'is_freeze', title: '能否冻结', width: 200, sortable: true},
-                {field: 'allow_business_id', title: 'allow_business_id', width: 200, sortable: true,hidden:true}
-
-                {#{#}
-                {#    field: 'is_active',#}
-                {#    title: "是否启用",#}
-                {#    width: 200,#}
-                {#    sortable: true,#}
-                {#    formatter: function (value, row, index) {#}
-                {#        if (value == true) {#}
-                {#            return value = '是';#}
-                {#        } else {#}
-                {#            return value = '否';#}
-                {#        }#}
-                {#    }#}
-                {# }#}
+                {field: 'allow_business_id', title: 'allow_business_id', width: 200, sortable: true,hidden:true},
+                {field: 'identity_card', title: 'identity_card', width: 200, sortable: true,hidden:true},
+                {field: 'bank_image', title: 'bank_image', width: 200, sortable: true,hidden:true},
+                {field: 'bank_card', title: 'bank_card', width: 200, sortable: true,hidden:true},
+                {field: 'bank_name', title: 'bank_name', width: 200, sortable: true,hidden:true},
+                {field: 'open_city', title: 'open_city', width: 200, sortable: true,hidden:true},
+                {field: 'bank_branch', title: 'bank_branch', width: 200, sortable: true,hidden:true}
             ]],
             toolbar: [{
-                id: 'btnadd',
-                text: '添加用户',
-                iconCls: 'icon-add',
-                handler: function () {
-                    AddUserDialog('添加用户');
-                }
-            }, '-', {
                 id: 'btnedit',
-                text: '修改用户',
+                text: '审核实名认证',
                 iconCls: 'icon-edit',
                 handler: function () {
-                    UpdateUserDialog('修改用户');
+                    CheckClientDialog('实名认证');
                 }
             }, '-', {
                 id: 'btncut',
                 text: '修改密码',
                 iconCls: 'icon-lock-password',
                 handler: function () {
-                    ChangePwd();
+                    ChangePwdDialog();
+                }
+            }, '-', {
+                id: 'btnedit',
+                text: '冻结与解冻',
+                iconCls: 'icon-repair',
+                handler: function () {
+                    FreezeClientDialog('冻结与解冻客户');
                 }
             }, '-', {
                 id: 'btnrefresh',
@@ -91,9 +84,216 @@
                 handler: function () {
                     initTable();
                 }
-            }],
-            onDblClickRow: function (index, row) {
-                UpdateUserDialog('修改用户');
+            }]
+        });
+    }
+
+    function FreezeClientDialog(init_title) {
+        var UpdateClient = $("#ClientGrid").datagrid("getSelections");
+        if (UpdateClient.length == 0) {
+            $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
+            return false;
+        }
+        $('#FreezeClientDialog').dialog({title:init_title,
+            width:650,
+            height:300,
+            buttons:[{
+				text:'保存',
+				handler:function(){
+				    FreezeClientEvent();
+				}
+			},{
+				text:'关闭',
+				handler:function(){
+				    $('#FreezeClientDialog').dialog('close')
+                }
+			}]
+        });
+        $('#FreezeClientDialog').dialog('open');
+        var row = $('#ClientGrid').datagrid('getSelected');
+        if(row)
+        {
+            $('#FreezeClientForm').form('load',row);
+        }
+    }
+
+    function FreezeClientEvent() {
+        var row = $('#ClientGrid').datagrid('getSelected');
+        var CBEnable = '';
+        if ($("#FreezeClientForm #is_freeze").combobox('getValue') == "0"|| $("#FreezeClientForm #is_freeze").combobox('getValue') == "false") {
+            CBEnable = 'False';
+        }else if ($("#FreezeClientForm #is_freeze").combobox('getValue') == "1" || $("#FreezeClientForm #is_freeze").combobox('getValue') == "true") {
+            CBEnable = 'True';
+        }
+        var postdata = {
+            client_id: row.id,
+            is_freeze: CBEnable
+        };
+        var passurl='../bms/freeze_client';
+        $.ajax({
+            type: 'POST',
+            url: passurl,
+            cache: false,
+            data:postdata,
+            success: function (data) {
+                if (data && data.success) {
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: data.msg,
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+                    $('#FreezeClientDialog').dialog('close');
+                    $("#ClientGrid").datagrid("reload");
+                }
+                else {
+                    alert("添加失败，请您重新检查");
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
+            }
+        });
+    }
+
+    function CheckClientDialog(init_title) {
+        var UpdateUser = $("#ClientGrid").datagrid("getSelections");
+        if (UpdateUser.length == 0) {
+            $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
+            return false;
+        }
+        $('#CheckClientDialog').dialog({title:init_title,
+            width:800,
+            height:650,
+            buttons:[{
+				text:'审核通过',
+				handler:function(){
+				    CheckClientEvent(true);
+
+				}
+			},{
+				text:'审核不通过',
+				handler:function(){
+				    CheckClientEvent(false);
+
+                }
+			}]
+        });
+        $('#CheckClientDialog').dialog('open');
+        var row = $('#ClientGrid').datagrid('getSelected');
+        if(row)
+        {
+            $('#CheckClientForm').form('load',row);
+            var url = "{% static '' %}";
+            url = url+'media/'+row.bank_image;
+            $("#CheckClientForm #bank_image").attr("src",url);
+
+         }
+    }
+
+    function CheckClientEvent(check) {
+        var row = $('#ClientGrid').datagrid('getSelected');
+
+        var postdata = {
+            client_id: row.id,
+            check: check,
+        };
+        var passurl='../bms/check_client';
+        $.ajax({
+            type: 'POST',
+            url: passurl,
+            cache: false,
+            data:postdata,
+            success: function (data) {
+                if (data && data.success) {
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: data.msg,
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+                    $('#CheckClientDialog').dialog('close');
+                    $("#ClientGrid").datagrid("reload");
+                }
+                else {
+                    alert("修改失败，"+data.msg);
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
+            }
+        });
+
+    }
+
+    function ChangePwdDialog() {
+        var UpdateClient = $("#ClientGrid").datagrid("getSelections");
+        if (UpdateClient.length == 0) {
+            $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
+            return false;
+        }
+        $('#ChangePwdDialog').dialog({title:'修改密码',
+            width:650,
+            height:300,
+            buttons:[{
+				text:'保存',
+				handler:function(){
+				    ChangePwdEvent();
+				}
+			},{
+				text:'关闭',
+				handler:function(){
+				    $('#ChangePwdDialog').dialog('close')
+                }
+			}]
+        });
+        $('#ChangePwdDialog').dialog('open');
+
+    }
+
+    function ChangePwdEvent() {
+        var valid = $('#ChangePwdForm').form('validate');
+        if (valid == false) {
+            return false;
+        }
+        if ($("#ChangePwdForm #password1").val() != $("#ChangePwdForm #PasswordOK1").val()) {
+            $.messager.alert("友情提示", "两次输入的密码不一致，请重新输入。");
+            $("#ChangePwdForm #password1").val("");
+            $("#ChangePwdForm #PasswordOK1").val("");
+            return;
+        }
+        if ($('#ChangePwdForm #password1').val().length < 6 || $('#ChangePwdForm #password1').val().length > 16) {
+            $.messager.alert("友情提示", "密码长度请设置在6位到16位之间，请重新输入。");
+            return;
+        }
+        var row = $('#ClientGrid').datagrid('getSelected');
+        var postdata = {
+            client_id: row.id,
+            password: $("#ChangePwdForm #password1").val(),
+        };
+        var passurl='../bms/change_client_pwd';
+        $.ajax({
+            type: 'POST',
+            url: passurl,
+            cache: false,
+            data:postdata,
+            success: function (data) {
+                if (data && data.success) {
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: data.msg,
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+                    $('#ChangePwdDialog').dialog('close');
+                    $("#ClientGrid").datagrid("reload");
+                }
+                else {
+                    alert("修改失败，"+data.msg);
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
             }
         });
     }
@@ -106,4 +306,72 @@
     <div data-options="region:'center',title:'客户列表-选择左侧归属后自动更新'" style="padding:2px;background:#eee;height:400px;">
         <table id="ClientGrid"></table>
     </div>
+    {#----------------------更新客户状态开始------------------------------------------------------------#}
+    <div id="FreezeClientDialog" class="easyui-dialog" style="padding:10px 20px"
+         closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="FreezeClientForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="is_freeze">是否冻结：</label></td>
+                    <td>
+                        <select id="is_freeze" name="is_freeze" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
+                            <option value="true">是</option>
+                            <option value="false">否</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    {#----------------------更新客户状态结束------------------------------------------------------------#}
+    {#----------------------更新客户密码开始------------------------------------------------------------#}
+    <div id="ChangePwdDialog" class="easyui-dialog" style="padding:10px 20px"
+         closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="ChangePwdForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="password">新密码：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="password" id="password1" name="password" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="PasswordOK">确认密码：</label></td>
+                    <td><input class="easyui-validatebox form-control" type="password" id="PasswordOK1" name="PasswordOK" data-options="required:true" validtype="equalTo['password']" invalidmessage="两次输入密码不匹配" style="width:350px;" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    {#----------------------更新客户密码结束------------------------------------------------------------#}
+    {#----------------------审核客户实名认证开始------------------------------------------------------------#}
+    <div id="CheckClientDialog" class="easyui-dialog" style="padding:10px 20px"
+         closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="CheckClientForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="bank_image">银行卡图片：</label></td>
+                    <td><img id="bank_image" name="bank_image" style="border: #0c80d7 solid 2px;"></td>
+                </tr>
+                <tr>
+                    <td><label for="identity_card">身份证：</label></td>
+                    <td><input class="easyui-textbox form-control" type="text" id="identity_card" name="identity_card" readonly="readonly" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="bank_card">银行卡号：</label></td>
+                    <td><input class="easyui-textbox form-control" type="text" id="bank_card" name="bank_card" readonly="readonly" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="bank_name">开户银行：</label></td>
+                    <td><input class="easyui-textbox form-control" type="text" id="bank_name" name="bank_name" readonly="readonly" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="open_city">开户市：</label></td>
+                    <td><input class="easyui-textbox form-control" type="text" id="open_city" name="open_city" readonly="readonly" style="width:350px;" /></td>
+                </tr>
+                <tr>
+                    <td><label for="bank_branch">开户支行：</label></td>
+                    <td><input class="easyui-textbox form-control" type="text" id="bank_branch" name="bank_branch" readonly="readonly" style="width:350px;" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    {#----------------------审核客户实名认证结束------------------------------------------------------------#}
 </div>

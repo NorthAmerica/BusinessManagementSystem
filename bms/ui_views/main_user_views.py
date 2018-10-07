@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from bms.forms import *
 from django.contrib.auth.models import Group
-from bms.tool_kit.view_shortcuts import get_org_user_list
+from bms.tool_kit.view_shortcuts import get_org_user_list,page_helper
 
 
 @login_required
@@ -39,16 +39,10 @@ def main_user_list(request):
 			#分页判断
 			if page is not None and rows is not None:
 				#有分页
-				paginator = Paginator(user_all, rows)
 
-				try:
-					users = paginator.page(page)
-				except PageNotAnInteger:
-					users = paginator.page(1)
-				except EmptyPage:
-					users = paginator.page(paginator.num_pages)
+				results,total =page_helper(user_all,rows,page)
 				eaList=[]
-				for user in users.object_list:
+				for user in results.object_list:
 					eaList.append({
 						'id':user.id,
 						"username":user.username,
@@ -60,7 +54,7 @@ def main_user_list(request):
 					})
 
 				json_data_list = {
-					'total':paginator.count,
+					'total':total,
 					'rows':eaList
 				}
 				return JsonResponse(json_data_list,safe=False)

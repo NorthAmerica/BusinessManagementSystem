@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from bms.models import *
 from django.contrib.auth.models import Group
-from bms.tool_kit.view_shortcuts import get_org_obj,get_ageny_obj
+from bms.tool_kit.view_shortcuts import get_org_obj,get_agency_obj
 
 def user_group(request):
 	return render(request, 'bms/user_config/user_group_config.html')
@@ -16,7 +16,7 @@ def group_list(request):
 			elif request.user.identity =='org':
 				all_group = Special_Group.objects.filter(org=get_org_obj(request))
 			elif request.user.identity=='agency':
-				all_group = Special_Group.objects.filter(agency=get_ageny_obj(request))
+				all_group = Special_Group.objects.filter(agency=get_agency_obj(request))
 			child = []
 			for group in all_group:
 				child.append(

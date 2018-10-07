@@ -15,8 +15,9 @@ urlpatterns = [
 	path('change_pwd',views.change_pwd,name='change_pwd'),
 	# 消息管理
 	path('show_msg_num',msg_views.show_msg_num,name='show_msg_num'),
+	path('msg_center',msg_views.msg_center,name='msg_center'),
 	path('msg_list',msg_views.msg_list,name='msg_list'),
-	path('msg_detail',msg_views.msg_detail,name='msg_detail'),
+	path('have_read_msg',msg_views.have_read_msg,name='have_read_msg'),
 	# 管理员后台管理
 	path('main_user_list',main_user_views.main_user_list, name='main_user_list'),
 	path('add_main_user',main_user_views.add_main_user,name='add_main_user'),
@@ -53,6 +54,9 @@ urlpatterns = [
 	# 客户管理
 	path('client_list',client_config_views.client_list,name='client_list'),
 	path('get_client_list',client_config_views.get_client_list,name='get_client_list'),
+	path('freeze_client',client_config_views.freeze_client,name='freeze_client'),
+	path('change_client_pwd',client_config_views.change_client_pwd,name='change_client_pwd'),
+	path('check_client',client_config_views.check_client,name='check_client'),
 	# 订单管理
 	path('order_list',order_views.order_list,name='order_list'),
 ]

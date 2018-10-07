@@ -1,6 +1,7 @@
 from guardian.shortcuts import assign_perm
 from django.contrib.auth.hashers import make_password
 from multiselectfield.db.fields import MSFList
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from bms.models import *
 
 def get_org_user_list(request):
@@ -53,13 +54,13 @@ def get_org_name(request):
 	else:
 		return '广州金艮投资有限公司'
 
-def get_ageny_id(request):
+def get_agency_id(request):
 	if  request.user is not None and request.user.identity == 'agency':
 		return request.user.agency_user.agency.id
 	else:
 		raise PermissionError()
 
-def get_ageny_obj(request):
+def get_agency_obj(request):
 	if  request.user is not None and request.user.identity == 'agency':
 		return request.user.agency_user.agency
 	else:
@@ -264,20 +265,59 @@ def get_msg_num(request):
 	try:
 		all_msg_num = 0
 		if request.user.identity == 'org':
-			all_org_msg = Message.objects.filter(for_all_org=True).exclude(
-				org_have_read__contains=str(request.user.id))
-			all_msg_num += all_org_msg.count()
 			org_id = get_org_id(request)
+			all_org_msg = Message.objects.filter(for_all_org=True).exclude(
+				org_have_read__contains=str(org_id))
+			all_msg_num += all_org_msg.count()
+
 			all_msg_num += Message.objects.filter(org__id=org_id).exclude(
 				org_have_read__contains=str(org_id)).count()
 		elif request.user.identity =='agency':
-			all_agency_msg = Message.objects.filter(for_all_agency=True).exclude(
-				agency_have_read__contains=str(request.user.id))
-			all_msg_num += all_agency_msg.count()
 			agency_id = get_agency_id(request)
+			all_agency_msg = Message.objects.filter(for_all_agency=True).exclude(
+				agency_have_read__contains=str(agency_id))
+			all_msg_num += all_agency_msg.count()
+
 			all_msg_num += Message.objects.filter(agency__id=agency_id).exclude(
 				agency_have_read__contains=str(agency_id)).count()
 		return all_msg_num
 	except Exception as ex:
 		print(ex)
 		return 0
+
+def page_helper(list,rows,page):
+	'''分页器'''
+	paginator = Paginator(list, rows)
+	total = paginator.count
+	try:
+		results = paginator.page(page)
+		return results,total
+	except PageNotAnInteger:
+		results = paginator.page(1)
+		return results,total
+	except EmptyPage:
+		results = paginator.page(paginator.num_pages)
+		return results, total
+
+
+def msg_have_read(request,msg_id):
+	'''设置消息已读'''
+	find_msg = Message.objects.filter(pk=msg_id)
+	if find_msg.exists():
+		msg_obj = find_msg.first()
+		if request.user.identity == 'org':
+			if msg_obj.org_have_read.split(',').count(
+					str(get_org_id(request))) == 0:
+				msg_obj.org_have_read += (',' + str(get_org_id(request)))
+				update_dict = {
+					'org_have_read': msg_obj.org_have_read
+				}
+				find_msg.update(**update_dict)
+		elif request.user.identity=='agency':
+			if msg_obj.agency_have_read.split(',').count(
+					str(get_agency_id(request))) == 0:
+				msg_obj.ageny_have_read += (',' + str(get_agency_id(request)))
+				update_dict = {
+					'ageny_have_read': msg_obj.ageny_have_read
+				}
+				find_msg.update(**update_dict)

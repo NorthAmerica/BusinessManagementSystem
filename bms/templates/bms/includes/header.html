@@ -7,8 +7,8 @@
         <span> 登陆用户：<b>{{ request.user.username }}</b></span>
         <ul class="nav navbar-nav navbar-right">
             <li><a href="/bms/index"><b>首页</b></a></li>
-            <li><a id="msg_center" href="#" onclick="newone('消息中心','notional_principal_config',this);"></a></li>
-            <li><a href="/bms/change_pwd_page"><b>修改密码</b></a></li>
+            <li><a id="msg_center" href="#" onclick="newone('消息中心','../bms/msg_center',this);"></a></li>
+            <li><a href="#" onclick="newone('修改密码','change_pwd_page',this);"><b>修改密码</b></a></li>
             <li><a href="/bms/logout"><b>注销</b></a></li>
         </ul>
     </div>

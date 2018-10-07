@@ -1,60 +1,57 @@
-{% extends 'bms/base.html' %}
 
-{% block main-content %}
-    <script>
-        function change_pwd() {
-            var valid = $('#ChangePwdForm').form('validate');
-            if (valid == false) {
-                return false;
-            }
-            if ($("#ChangePwdForm #password1").val() != $("#ChangePwdForm #PasswordOK1").val()) {
-                $.messager.alert("友情提示", "两次输入的密码不一致，请重新输入。");
-                $("#ChangePwdForm #password1").val("");
-                $("#ChangePwdForm #PasswordOK1").val("");
-                return;
-            }
-            var postdata = {
-                password: $("#ChangePwdForm #password1").val(),
-            };
-            var passurl='../bms/change_pwd';
-            $.ajax({
-                type: 'POST',
-                url: passurl,
-                cache: false,
-                data:postdata,
-                success: function (data) {
-                    if (data && data.success) {
-                        $.messager.show({
-                            title: '我的消息',
-                            msg: data.msg,
-                            timeout: 5000,
-                            showType: 'slide'
-                        });
-                        window.location.href='logout'
-                    }
-                    else {
-                        alert("修改失败，"+data.msg);
-                    }
-                },
-                error: function (data) {
-                    $.messager.alert('错误', data.responseText);
-                }
-            });
+<script>
+    function change_pwd() {
+        var valid = $('#ChangePwdForm').form('validate');
+        if (valid == false) {
+            return false;
         }
-    </script>
-    <div id="main-tab">
-        <form id="ChangePwdForm" method="post" novalidate="novalidate">
-            <table id="tblAdd" class="self-input-table">
-                <tr>
-                    <td><label for="password">新密码：</label></td>
-                    <td><input class="easyui-validatebox form-control" type="password" id="password1" name="password" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
-                </tr>
-                <tr>
-                    <td><label for="PasswordOK">确认密码：</label></td>
-                    <td><input class="easyui-validatebox form-control" type="password" id="PasswordOK1" name="PasswordOK" data-options="required:true" validtype="equalTo['password']" invalidmessage="两次输入密码不匹配" style="width:350px;" /></td>
-                </tr>
-            </table>
-            <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="change_pwd()">保存</a>
-        </form>
-    </div>
-{% endblock main-content %}
+        if ($("#ChangePwdForm #password1").val() != $("#ChangePwdForm #PasswordOK1").val()) {
+            $.messager.alert("友情提示", "两次输入的密码不一致，请重新输入。");
+            $("#ChangePwdForm #password1").val("");
+            $("#ChangePwdForm #PasswordOK1").val("");
+            return;
+        }
+        var postdata = {
+            password: $("#ChangePwdForm #password1").val(),
+        };
+        var passurl='../bms/change_pwd';
+        $.ajax({
+            type: 'POST',
+            url: passurl,
+            cache: false,
+            data:postdata,
+            success: function (data) {
+                if (data && data.success) {
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: data.msg,
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+                    window.location.href='logout'
+                }
+                else {
+                    alert("修改失败，"+data.msg);
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
+            }
+        });
+    }
+</script>
+<div id="main-tab">
+    <form id="ChangePwdForm" method="post" novalidate="novalidate">
+        <table id="tblAdd" class="self-input-table">
+            <tr>
+                <td><label for="password">新密码：</label></td>
+                <td><input class="easyui-validatebox form-control" type="password" id="password1" name="password" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="PasswordOK">确认密码：</label></td>
+                <td><input class="easyui-validatebox form-control" type="password" id="PasswordOK1" name="PasswordOK" data-options="required:true" validtype="equalTo['password']" invalidmessage="两次输入密码不匹配" style="width:350px;" /></td>
+            </tr>
+        </table>
+        <a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="change_pwd()">保存</a>
+    </form>
+</div>

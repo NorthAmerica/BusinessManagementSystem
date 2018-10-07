@@ -9,7 +9,6 @@ def bank_path_handler(instance, filename):
 
 class Client(models.Model):
 	"""客户"""
-
 	name = models.CharField(max_length=100, verbose_name='用户名')
 	mobile_phone = models.CharField(max_length=100, verbose_name='手机号码')
 	mailbox = models.EmailField(verbose_name='邮箱地址')
@@ -23,6 +22,8 @@ class Client(models.Model):
 	organization = models.ForeignKey('Organization',blank=True, null=True,on_delete=models.SET_NULL, verbose_name='所属机构')
 	agency = models.ForeignKey('Agency',blank=True, null=True,on_delete=models.SET_NULL, verbose_name='所属代理')
 	status = models.CharField(choices=STATUS_CHOICES,max_length=10,default='1',verbose_name='状态')
+	status_before = models.CharField(choices=STATUS_CHOICES, max_length=10, blank=True, null=True, verbose_name='之前的状态')
+	verifier = models.CharField(max_length=50, blank=True, verbose_name='审核者')
 	is_freeze = models.BooleanField(default=False,verbose_name='能否冻结')
 	allow_business = MultiSelectField(choices=BUSINESS_TYPE, blank=True, null=True,verbose_name='允许的业务类型')
 	web_app = models.CharField(choices=WEB_APP_CHOICES,max_length=32,default='app',verbose_name='申请端口')
