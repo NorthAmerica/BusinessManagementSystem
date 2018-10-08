@@ -57,6 +57,7 @@ urlpatterns = [
 	path('freeze_client',client_config_views.freeze_client,name='freeze_client'),
 	path('change_client_pwd',client_config_views.change_client_pwd,name='change_client_pwd'),
 	path('check_client',client_config_views.check_client,name='check_client'),
+	path('allow_business',client_config_views.allow_business,name='allow_business'),
 	# 订单管理
 	path('order_list',order_views.order_list,name='order_list'),
 ]

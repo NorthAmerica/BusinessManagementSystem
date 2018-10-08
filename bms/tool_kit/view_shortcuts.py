@@ -125,7 +125,7 @@ def auto_add_permissions(obj,request,org_agency):
 				all_object_perm = list(temp.groupobjectpermission_set.all())
 
 				s_group = Special_Group.objects.create(name=obj.name + temp.temp_name, org=obj,
-				                                       operator=request.user.username)
+													   operator=request.user.username)
 				for perm in all_perm:
 					s_group.permissions.add(perm)
 				for object_perm in all_object_perm:
@@ -143,7 +143,7 @@ def auto_add_permissions(obj,request,org_agency):
 				all_object_perm = list(temp.groupobjectpermission_set.all())
 
 				s_group = Special_Group.objects.create(name=obj.name + temp.temp_name, agency=obj,
-				                                       operator=request.user.username)
+													   operator=request.user.username)
 				for perm in all_perm:
 					s_group.permissions.add(perm)
 				for object_perm in all_object_perm:
@@ -166,7 +166,9 @@ def get_choices_text(CHOICES,value):
 def get_multi_text(obj):
 	'''返回多选框的文本内容'''
 	if isinstance(obj,MSFList):
-		return ','.join([text for text in obj.choices.values()])
+		# for test in obj:
+		# 	test
+		return ','.join([obj.choices[text] for text in obj])
 
 def send_msg_all_client(sender,title,msg):
 	'''给所有客户发送消息'''
@@ -228,9 +230,11 @@ def send_msg_to_client(sender,title,msg,clients_id):
 		msg_dict = {
 			'title': title,
 			'msg': msg,
+			'msg_type':'private',
 			'operator': sender
 		}
-		Message.objects.create(**msg_dict).client.add(Client.objects.filter(id__in=str(clients_id).split(',')))
+		Message.objects.create(**msg_dict).client.add(*Client.objects.filter(id__in=str(clients_id).split(',')))
+		# Message.save()
 	except Exception as ex:
 		print(ex)
 
@@ -241,9 +245,10 @@ def send_msg_to_org(sender,title,msg,orgs_id):
 		msg_dict = {
 			'title': title,
 			'msg': msg,
+			'msg_type': 'private',
 			'operator': sender
 		}
-		Message.objects.create(**msg_dict).org.add(Organization.objects.filter(id__in=str(orgs_id).split(',')))
+		Message.objects.create(**msg_dict).org.add(*Organization.objects.filter(id__in=str(orgs_id).split(',')))
 	except Exception as ex:
 		print(ex)
 
@@ -254,9 +259,10 @@ def send_msg_to_agency(sender,title,msg,agencys_id):
 		msg_dict = {
 			'title': title,
 			'msg': msg,
+			'msg_type': 'private',
 			'operator': sender
 		}
-		Message.objects.create(**msg_dict).agency.add(Agency.objects.filter(id__in=str(agencys_id).split(',')))
+		Message.objects.create(**msg_dict).agency.add(*Agency.objects.filter(id__in=str(agencys_id).split(',')))
 	except Exception as ex:
 		print(ex)
 

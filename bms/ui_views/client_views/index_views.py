@@ -2,7 +2,9 @@ from django.shortcuts import render, get_list_or_404
 from bms.tool_kit.fund_shortcuts import get_client_balance
 from bms.tool_kit.client_shortcuts import get_client_msg_num
 from django.http import HttpResponseRedirect
+from bms.tool_kit.views_decorator import Check_Login
 
+@Check_Login('/login')
 def index(request):
 	client_balance = get_client_balance(request.session.get('client_id'))
 	client_msg_num = get_client_msg_num(request.session.get('client_id'))

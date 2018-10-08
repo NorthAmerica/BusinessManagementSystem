@@ -4,15 +4,18 @@ from django.contrib.auth.hashers import make_password,check_password
 from django.utils import timezone
 from BusinessManagementSystem import settings
 from bms.models import *
+from bms.tool_kit.views_decorator import Check_Login
 import os
 
-
+@Check_Login('/login')
 def my_account(request):
 	return render(request,'bms/client_ui/account/my_account.html')
 
+@Check_Login('/login')
 def authentication(request):
 	return render(request,'bms/client_ui/account/authentication.html')
 
+@Check_Login('/login')
 def update_authentication_info(request):
 	'''上传实名认证信息'''
 	try:
@@ -53,15 +56,17 @@ def update_authentication_info(request):
 		print(ex)
 		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)
 
+@Check_Login('/login')
 def checking(request):
 	'''等待审核通过页面'''
 	return render(request,'bms/client_ui/account/checking.html')
 
-
+@Check_Login('/login')
 def change_pwd_page(request):
 	'''修改密码页面'''
 	return render(request,'bms/client_ui/account/change_pwd.html')
 
+@Check_Login('/login')
 def change_pwd(request):
 	'''修改密码'''
 	try:
@@ -87,6 +92,7 @@ def change_pwd(request):
 		print(ex)
 		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)
 
+@Check_Login('/login')
 def msg_center(request):
 	'''消息中心'''
 	try:
@@ -119,6 +125,7 @@ def msg_center(request):
 		print(ex)
 		return HttpResponseNotFound(ex)
 
+@Check_Login('/login')
 def msg_detail(request,msg_id):
 	'''消息明细'''
 	try:

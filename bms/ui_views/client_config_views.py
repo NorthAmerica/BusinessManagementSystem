@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from bms.models import *
 from django.contrib.auth.hashers import make_password
-from bms.tool_kit.view_shortcuts import get_org_obj, get_choices_text,get_multi_text,page_helper
+from bms.tool_kit.view_shortcuts import get_org_obj, send_msg_to_client,get_multi_text,page_helper
 
 def client_list(request):
 	return render(request, 'bms/client_config/client_list.html')
@@ -56,17 +56,16 @@ def freeze_client(request):
 	try:
 		is_freeze = request.POST.get("is_freeze")
 		client_id = request.POST.get("client_id")
-
-		find_client = Client.objects.filter(pk=client_id)
-		if find_client.exists():
-			update_data = {
-				'is_freeze': is_freeze == str(True)
-			}
-			rows = find_client.update(**update_data)
-			if rows!=0:
-				return JsonResponse({'success': True, 'msg': '更新完成。'}, safe=False)
-			else:
-				return JsonResponse({'success': False, 'msg': '更新数量为0。'}, safe=False)
+		if is_freeze is not None and client_id is not None:
+			find_client = Client.objects.filter(pk=client_id)
+			if find_client.exists():
+				update_data = {
+					'is_freeze': is_freeze == str(True)
+				}
+				rows = find_client.update(**update_data)
+				if rows!=0:
+					return JsonResponse({'success': True, 'msg': '更新完成。'}, safe=False)
+		return JsonResponse({'success': False, 'msg': '更新数量为0。'}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)
@@ -88,6 +87,7 @@ def change_client_pwd(request):
 		return JsonResponse({'success': False, 'msg': ex})
 
 def check_client(request):
+	'''审核实名认证'''
 	try:
 		if request.method == 'POST':
 			client_id = request.POST.get('client_id')
@@ -100,15 +100,37 @@ def check_client(request):
 						"status_before": find_clinet.first().status,
 						"verifier":request.user.username
 					}
+					msg='恭喜您，您的实名认证已通过！'
 				else:
 					dic = {
 						"status": STATUS_CHOICES[0][0],
 						"status_before":find_clinet.first().status,
 						"verifier":request.user.username
 					}
+					msg='非常遗憾的通知您，您的实名认证未能通过，请重新提交真实的认证信息。'
 				count = find_clinet.update(**dic)
 				if count != 0:
+					send_msg_to_client(request.user.username,'审批实名认证通知',msg,client_id)
 					return JsonResponse({'success': True, 'msg': '审核完成！'}, safe=False)
+		return JsonResponse({'success': False, 'msg': '未查询到相关数据！'}, safe=False)
+	except Exception as ex:
+		print(ex)
+		return JsonResponse({'success': False, 'msg': ex})
+
+def allow_business(request):
+	'''允许的业务'''
+	try:
+		if request.method == 'POST':
+			client_id = request.POST.get('client_id')
+			allow_business = request.POST.get('allow_business')
+			find_clinet = Client.objects.filter(pk=client_id)
+			if find_clinet.exists():
+				dic = {
+					"allow_business": allow_business
+				}
+				count = find_clinet.update(**dic)
+				if count != 0:
+					return JsonResponse({'success': True, 'msg': '更新完成！'}, safe=False)
 		return JsonResponse({'success': False, 'msg': '未查询到相关数据！'}, safe=False)
 	except Exception as ex:
 		print(ex)

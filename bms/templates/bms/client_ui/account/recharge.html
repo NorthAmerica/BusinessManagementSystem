@@ -5,9 +5,75 @@
     <header class='demos-header'>
       <h1 class="demos-title">充值</h1>
     </header>
+    <div class="weui-cells weui-cells_form">
+        <form id="recharge_form">
+            {% csrf_token %}
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label for="name" class="weui-label">充值类型</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" id="fund_type" type="text" value="">
+                </div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">充值金额</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" id="recharge_num" type="number" pattern="[0-9]*" placeholder="请输入金额">
+                </div>
+            </div>
+        </form>
+    </div>
 
     <div class='demos-content-padded'>
-        {#<a href="javascript:;" class="weui-btn weui-btn_primary" id="upload_info">修改资料</a>#}
+        <a href="javascript:;" class="weui-btn weui-btn_primary" id="recharge">充值</a>
         <a href="../redirect_pre_page/index#subtab3" class="weui-btn weui-btn_plain-default">返回</a>
     </div>
+
 {% endblock main-content %}
+
+{% block script-content %}
+    <script>
+        $(function () {
+            $('#recharge').click(function () {
+                if($('#fund_type').val()==''||$('#fund_type').val()==null||$('#fund_type').val()==undefined){
+                    $.toptip('充值类型必须选择', 'error');
+                    return;
+                }
+                if($('#recharge_num').val()==''||$('#recharge_num').val()==null||$('#recharge_num').val()==undefined)
+                {
+                    $.toptip('充值金额不能为空', 'error');
+                    return;
+                }
+                if($('#fund_type').attr('data-values')=='offline')
+                {
+                    {#线下充值#}
+
+                }else
+                {
+                    {#线上充值#}
+                }
+            });
+        });
+        $("#fund_type").select({
+            title: "选择充值类型",
+            items: [
+                {
+                    title: "网银充值",
+                    value: "online",
+                },
+                {
+                    title: "线下充值",
+                    value: "offline",
+                }
+            ],
+            onChange: function(d) {
+                console.log(d);
+            },
+            {#onClose: function() {#}
+            {#    console.log("close");#}
+            {# },#}
+            {#onOpen: function() {#}
+            {#    console.log("open");#}
+            {# },#}
+        });
+    </script>
+{% endblock script-content %}

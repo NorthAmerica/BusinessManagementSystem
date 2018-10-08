@@ -5,8 +5,70 @@
     <header class='demos-header'>
       <h1 class="demos-title">提现</h1>
     </header>
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label for="name" class="weui-label">提现类型</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" id="fund_type" type="text" value="">
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">提现金额</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" id="withdraw_num" type="number" pattern="[0-9]*" placeholder="请输入金额">
+            </div>
+        </div>
+    </div>
     <div class='demos-content-padded'>
-        {#<a href="javascript:;" class="weui-btn weui-btn_primary" id="upload_info">修改资料</a>#}
+        <a href="javascript:;" class="weui-btn weui-btn_primary" id="withdraw">提现</a>
         <a href="../redirect_pre_page/index#subtab3" class="weui-btn weui-btn_plain-default">返回</a>
     </div>
 {% endblock main-content %}
+
+{% block script-content %}
+    <script>
+        $(function () {
+            $('#withdraw').click(function () {
+                if($('#fund_type').val()==''||$('#fund_type').val()==null||$('#fund_type').val()==undefined){
+                    $.toptip('提现类型必须选择', 'error');
+                    return;
+                }
+                if($('#withdraw_num').val()==''||$('#withdraw_num').val()==null||$('#withdraw_num').val()==undefined)
+                {
+                    $.toptip('提现金额不能为空', 'error');
+                    return;
+                }
+                if($('#fund_type').attr('data-values')=='offline')
+                {
+                    {#线下提现#}
+                    alert('ok')
+                }else
+                {
+                    {#线上提现#}
+                }
+            });
+        });
+        $("#fund_type").select({
+            title: "选择提现类型",
+            items: [
+                {
+                    title: "网银提现",
+                    value: "online",
+                },
+                {
+                    title: "线下提现",
+                    value: "offline",
+                }
+            ],
+            onChange: function(d) {
+                console.log(this, d);
+            },
+            onClose: function() {
+                console.log("close");
+            },
+            onOpen: function() {
+                console.log("open");
+            },
+        });
+    </script>
+{% endblock script-content %}

@@ -77,6 +77,13 @@
                 handler: function () {
                     FreezeClientDialog('冻结与解冻客户');
                 }
+            },'-', {
+                id: 'btnedit',
+                text: '允许的业务',
+                iconCls: 'icon-repair',
+                handler: function () {
+                    AllowBusinessDialog('允许的业务');
+                }
             }, '-', {
                 id: 'btnrefresh',
                 text: '刷新',
@@ -88,12 +95,76 @@
         });
     }
 
-    function FreezeClientDialog(init_title) {
-        var UpdateClient = $("#ClientGrid").datagrid("getSelections");
-        if (UpdateClient.length == 0) {
+    function AllowBusinessDialog(init_title) {
+        var UpdateClient = $('#ClientGrid').datagrid('getSelected');
+        if (UpdateClient == null || UpdateClient == undefined) {
             $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
-            return false;
+            return;
         }
+
+        $('#AllowBusinessDialog').dialog({title:init_title,
+            width:650,
+            height:300,
+            buttons:[{
+				text:'保存',
+				handler:function(){
+				    AllowBusinessEvent();
+				}
+			},{
+				text:'关闭',
+				handler:function(){
+				    $('#AllowBusinessDialog').dialog('close')
+                }
+			}]
+        });
+        $('#AllowBusinessDialog').dialog('open');
+
+        if(UpdateClient)
+        {
+            $('#AllowBusinessForm #allow_business').combotree('setValues',UpdateClient.allow_business_id);
+        }
+    }
+
+    function AllowBusinessEvent() {
+        var row = $('#ClientGrid').datagrid('getSelected');
+        var postdata = {
+            client_id: row.id,
+            allow_business: $('#AllowBusinessForm #allow_business').combotree('getValues').toString()
+        };
+        var passurl='../bms/allow_business';
+        $.ajax({
+            type: 'POST',
+            url: passurl,
+            cache: false,
+            data:postdata,
+            success: function (data) {
+                if (data && data.success) {
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: data.msg,
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+                    $('#AllowBusinessDialog').dialog('close');
+                    $("#ClientGrid").datagrid("reload");
+                }
+                else {
+                    alert("添加失败，请您重新检查");
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
+            }
+        });
+    }
+
+    function FreezeClientDialog(init_title) {
+        var UpdateClient = $('#ClientGrid').datagrid('getSelected');
+        if (UpdateClient == null || UpdateClient == undefined) {
+            $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
+            return;
+        }
+
         $('#FreezeClientDialog').dialog({title:init_title,
             width:650,
             height:300,
@@ -110,10 +181,10 @@
 			}]
         });
         $('#FreezeClientDialog').dialog('open');
-        var row = $('#ClientGrid').datagrid('getSelected');
-        if(row)
+
+        if(UpdateClient)
         {
-            $('#FreezeClientForm').form('load',row);
+            $('#FreezeClientForm').form('load',UpdateClient);
         }
     }
 
@@ -147,7 +218,7 @@
                     $("#ClientGrid").datagrid("reload");
                 }
                 else {
-                    alert("添加失败，请您重新检查");
+                    alert(data.msg);
                 }
             },
             error: function (data) {
@@ -157,10 +228,14 @@
     }
 
     function CheckClientDialog(init_title) {
-        var UpdateUser = $("#ClientGrid").datagrid("getSelections");
-        if (UpdateUser.length == 0) {
+        var UpdateClient = $('#ClientGrid').datagrid('getSelected');
+        if (UpdateClient == null || UpdateClient == undefined) {
             $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
-            return false;
+            return;
+        }
+        if (UpdateClient.status!='已开户待提审' && UpdateClient.status!='已提审待审核' ) {
+            $.messager.alert("友情提示", "已经审批通过，不能重复审批。");
+            return;
         }
         $('#CheckClientDialog').dialog({title:init_title,
             width:800,
@@ -180,12 +255,12 @@
 			}]
         });
         $('#CheckClientDialog').dialog('open');
-        var row = $('#ClientGrid').datagrid('getSelected');
-        if(row)
+
+        if(UpdateClient)
         {
-            $('#CheckClientForm').form('load',row);
+            $('#CheckClientForm').form('load',UpdateClient);
             var url = "{% static '' %}";
-            url = url+'media/'+row.bank_image;
+            url = url+'media/'+UpdateClient.bank_image;
             $("#CheckClientForm #bank_image").attr("src",url);
 
          }
@@ -227,10 +302,10 @@
     }
 
     function ChangePwdDialog() {
-        var UpdateClient = $("#ClientGrid").datagrid("getSelections");
-        if (UpdateClient.length == 0) {
+        var UpdateClient = $('#ClientGrid').datagrid('getSelected');
+        if (UpdateClient == null || UpdateClient == undefined) {
             $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
-            return false;
+            return;
         }
         $('#ChangePwdDialog').dialog({title:'修改密码',
             width:650,
@@ -374,4 +449,20 @@
         </form>
     </div>
     {#----------------------审核客户实名认证结束------------------------------------------------------------#}
+    {#----------------------更新允许的业务界面------------------------------------------------------------#}
+    <div id="AllowBusinessDialog" class="easyui-dialog" style="width:560px;height:340px;padding:10px 20px"
+         closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="AllowBusinessForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="allow_business">允许的业务：</label></td>
+                    <td>
+                        <select id="allow_business" name="allow_business" class="easyui-combotree" style="width:200px;"
+                                data-options="url:'../bms/get_allow_business',required:true,multiple:true,"></select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+   {#----------------------更新允许的业务界面结束------------------------------------------------------------#}
 </div>
