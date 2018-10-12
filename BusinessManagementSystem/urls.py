@@ -31,10 +31,12 @@ urlpatterns = [
 	path('checking',my_views.checking),
 	path('change_pwd_page',my_views.change_pwd_page),
 	path('change_pwd',my_views.change_pwd),
+	# 出入金
 	path('recharge_page',my_views.recharge_page),
 	path('recharge',my_views.recharge),
 	path('withdraw_page',my_views.withdraw_page),
 	path('withdraw',my_views.withdraw),
+
 	path('statement',my_views.statement),
 	path('msg_center',my_views.msg_center),
 	path('msg_detail/<int:msg_id>',my_views.msg_detail),

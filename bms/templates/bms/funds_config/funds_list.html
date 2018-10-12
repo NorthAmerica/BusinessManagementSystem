@@ -1,3 +1,96 @@
 {#资金流水列表#}
 
-<script></script>
+<script>
+    $(function () {
+        initTable();
+    });
+
+    function initTable() {
+        $('#FundDetailGrid').datagrid({
+            title: '资金流水列表',
+            iconCls: 'icon-user',
+            loadMsg: '数据加载中...',
+            nowrap: true,
+            autoRowHeight: true,
+            striped: true,
+            url: '../bms/fund_detail_list',
+            {#sortName: 'username',#}
+            {#sortOrder: 'asc',#}
+            border: true,
+            remoteSort: false,
+            idField: 'id',
+            pageSize: 10,
+            pagination: true,
+            rownumbers: true,
+            singleSelect: true,
+            fitColumns: true,
+            columns: [[
+                {field: 'ck', checkbox: true},
+                {field: 'id', title: 'ID', width: 80, hidden:true },
+                {field: 'serial_number', title: '资金流水号', width: 200, sortable: true},
+                {field: 'client', title: '客户', width: 200, sortable: true},
+                {field: 'org', title: '机构', width: 200, sortable: true},
+                {field: 'agency', title: '归属', width: 200, sortable: true},
+                {field: 'balance_before', title: "交易前余额", width: 200, sortable: true},
+                {field: 'balance_after', title: '交易后余额', width: 200, sortable: true},
+                {field: 'balance_change', title: '交易金额', width: 200, sortable: true},
+                {field: 'fund_state', title: '资金类型', width: 200, sortable: true},
+                {field: 'fund_type', title: '资金渠道', width: 200, sortable: true},
+                {field: 'fund_audit', title: '资金审核', width: 200, sortable: true},
+                {field: 'date_joined', title: '产生时间', width: 200, sortable: true},
+                {field: 'auditor', title: '审核人', width: 200, sortable: true},
+                {field: 'audit_time', title: '审核时间', width: 200, sortable: true}
+            ]],
+            toolbar: [{
+                id: 'btnadd',
+                text: '入金操作',
+                iconCls: 'icon-add',
+                handler: function () {
+                    InBalanceDialog('入金');
+                }
+            }, '-', {
+                id: 'btnedit',
+                text: '出金操作',
+                iconCls: 'icon-edit',
+                handler: function () {
+                    OutBalanceDialog('出金');
+                }
+            }, '-', {
+                id: 'btncut',
+                text: '审批资金',
+                iconCls: 'icon-lock-password',
+                handler: function () {
+                    AuditBalanceDialog();
+                }
+            }, '-', {
+                id: 'btnrefresh',
+                text: '刷新',
+                iconCls: 'icon-reload',
+                handler: function () {
+                    initTable();
+                }
+            }],
+            onDblClickRow: function (index, row) {
+                UpdateUserDialog('修改用户');
+            }
+        });
+    }
+
+    function InBalanceDialog() {
+
+    }
+
+    function OutBalanceDialog() {
+
+    }
+
+    function AuditBalanceDialog() {
+
+    }
+</script>
+
+<div id="main-tab">
+    <div title="资金流水列表" style="padding:10px">
+        <table id="FundDetailGrid"></table>
+    </div>
+</div>

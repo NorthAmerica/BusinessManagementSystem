@@ -17,7 +17,7 @@ def get_client_list(request):
 			client_list = []
 			if request.POST.get('agency_id') is not None and request.POST.get('agency_id')!='0'and request.POST.get('agency_id')!=0:
 				#如果按归属查询归属下客户
-				client_list.extend(list(Client.objects.filter(agency=Agency.objects.get(pk=request.POST.get('agency_id')))))
+				client_list.extend(list(Client.objects.filter(agency=Agency.objects.get(pk=request.POST.get('agency_id',None)))))
 			else:
 				#默认查询机构下所有客户
 				client_list.extend(list(Client.objects.filter(organization=get_org_obj(request))))

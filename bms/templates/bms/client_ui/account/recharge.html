@@ -17,7 +17,7 @@
             <div class="weui-cell">
                 <div class="weui-cell__hd"><label class="weui-label">充值金额</label></div>
                 <div class="weui-cell__bd">
-                    <input class="weui-input" id="recharge_num" type="number" pattern="[0-9]*" placeholder="请输入金额">
+                    <input class="weui-input" id="recharge_num" name="recharge_num" type="number" pattern="[0-9]*" placeholder="请输入金额">
                 </div>
             </div>
         </form>
@@ -46,7 +46,26 @@
                 if($('#fund_type').attr('data-values')=='offline')
                 {
                     {#线下充值#}
-
+                    var data = new FormData($('#recharge_form')[0]);
+                    $.ajax({
+                        url: '../recharge',
+                        type: 'POST',
+                        data: data,
+                        dataType: 'JSON',
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        success: function (data) {
+                            if (data && data.success) {
+                                window.location.href='/checking'
+                            } else {
+                                $.toptip("线下充值失败，"+data.msg, 'error');
+                            }
+                        },
+                        error: function (data) {
+                            $.toptip('操作失败' + data.responseText, 'error');
+                        }
+                    })
                 }else
                 {
                     {#线上充值#}

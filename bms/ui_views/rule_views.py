@@ -70,6 +70,8 @@ def get_global_fund_in(request):
 					return JsonResponse(json_ret, safe=False)
 				else:
 					return JsonResponse({'success': False, 'msg': '该机构没有满足条件的入金配置'}, safe=False)
+		else:
+			return JsonResponse({'success': False, 'msg': 'POST only'}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return HttpResponseNotFound(ex)
@@ -101,6 +103,8 @@ def add_fund_in(request):
 					row = Organization.objects.get(pk=org).fund_in_rule_set.all().update(**dic)
 					if row != 0:
 						return JsonResponse({'success': True, 'msg': '入金规则修改成功！'}, safe=False)
+		else:
+			return JsonResponse({'success': False, 'msg': 'POST only'}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return HttpResponseNotFound(ex)
@@ -142,6 +146,8 @@ def get_global_fund_out(request):
 					return JsonResponse(json_ret, safe=False)
 				else:
 					return JsonResponse({'success': False, 'msg': '该机构没有满足条件的出金配置'}, safe=False)
+		else:
+			return JsonResponse({'success': False, 'msg': 'POST only'}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return HttpResponseNotFound(ex)
@@ -175,6 +181,8 @@ def add_fund_out(request):
 					row = Organization.objects.get(pk=org).fund_out_rule_set.all().update(**dic)
 					if row != 0:
 						return JsonResponse({'success': True, 'msg': '出金规则修改成功！'}, safe=False)
+		else:
+			return JsonResponse({'success': False, 'msg': 'POST only'}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return HttpResponseNotFound(ex)
@@ -234,6 +242,8 @@ def get_exchange_rule(request):
 				# 	return JsonResponse({'success': False, 'msg': '没有满足条件的全局出金配置'})
 				# else:
 				# 	return JsonResponse({'success': 'false', 'msg': '该机构没有满足条件的出金配置'})
+		else:
+			return JsonResponse({'success': False, 'msg': 'POST only'}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return render(request, './bms/404.html')
@@ -273,6 +283,8 @@ def add_exchange_rule(request):
 							type=type).all().update(**insert_dict)
 
 				return JsonResponse({'success': True, 'msg': '交易询价时间设置添加成功！'}, safe=False)
+		else:
+			return JsonResponse({'success': False, 'msg': 'POST only'}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)

@@ -31,6 +31,12 @@ FUND_STATE_CHOICES = (
 	 ('loss','亏损'),
 	)
 
+FUND_STATUS_CHOICES = (
+	('none','未审批'),
+	('reject','审批未通过'),
+	('agree','审核通过'),
+)
+
 ORDER_STATUS_CHOICES = (
 	('hold','持有'),
 	('end','结束'),

@@ -1,3 +1,5 @@
+from  decimal import Decimal
+
 from django.shortcuts import render, get_list_or_404
 from django.http import JsonResponse,HttpResponseNotFound
 from django.contrib.auth.hashers import make_password,check_password
@@ -5,6 +7,7 @@ from django.utils import timezone
 from BusinessManagementSystem import settings
 from bms.models import *
 from bms.tool_kit.views_decorator import Check_Login
+from bms.tool_kit.fund_shortcuts import offline_client_balance
 import os
 
 @Check_Login('/login')
@@ -150,22 +153,53 @@ def msg_detail(request,msg_id):
 		print(ex)
 		return HttpResponseNotFound(ex)
 
+@Check_Login('/login')
 def recharge_page(request):
 	'''入金页面'''
 	return render(request,'bms/client_ui/account/recharge.html')
 
+@Check_Login('/login')
 def recharge(request):
 	'''入金操作'''
-	pass
+	try:
+		client_id = request.session.get('client_id')
+		client_name = request.session.get('client_name')
+		recharge_num = request.POST.get('recharge_num')
+		if recharge_num is not None:
+			result = offline_client_balance(client_id,'in',Decimal(recharge_num),client_name)
+			if result:
+				return JsonResponse({'success': True, 'msg': '充值申请已提交。'}, safe=False)
+		return JsonResponse({'success': False, 'msg': '充值申请参数有误。'}, safe=False)
+	except Exception as ex:
+		print(ex)
+		return HttpResponseNotFound(ex)
 
+@Check_Login('/login')
 def withdraw_page(request):
 	'''出金页面'''
 	return render(request,'bms/client_ui/account/withdraw.html')
 
+@Check_Login('/login')
 def withdraw(request):
 	'''出金操作'''
-	pass
+	try:
+		client_id = request.session.get('client_id')
+		client_name = request.session.get('client_name')
+		withdraw_num = request.POST.get('withdraw_num')
+		if withdraw_num is not None:
+			find_client = Client.objects.filter(pk=client_id)
+			account_balance = find_client.first().account_balance if find_client.exists() else 0
+			if Decimal(withdraw_num) > account_balance:
+				return JsonResponse({'success': False, 'msg': '提现申请数额不能超过账户余额。'}, safe=False)
+			result = offline_client_balance(client_id,'out',Decimal(withdraw_num),client_name)
+			if result:
+				return JsonResponse({'success': True, 'msg': '提现申请已提交。'}, safe=False)
+		return JsonResponse({'success': False, 'msg': '提现申请参数有误。'}, safe=False)
+	except Exception as ex:
+		print(ex)
+		return HttpResponseNotFound(ex)
 
+@Check_Login('/login')
 def statement(request):
 	'''协议声明'''
 	return render(request,'bms/client_ui/account/statement.html')

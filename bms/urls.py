@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.urls import path, include
 from . import views
-from bms.ui_views import main_user_views,user_group_view,agency_views,client_config_views,order_views,rule_views,msg_views
+from bms.ui_views import main_user_views,user_group_view,agency_views,client_config_views,order_views,rule_views,msg_views,funds_views
 
 app_name = 'bms'
 
@@ -58,6 +58,9 @@ urlpatterns = [
 	path('change_client_pwd',client_config_views.change_client_pwd,name='change_client_pwd'),
 	path('check_client',client_config_views.check_client,name='check_client'),
 	path('allow_business',client_config_views.allow_business,name='allow_business'),
+	# 资金流水
+	path('funds_list',funds_views.funds_list,name='funds_list'),
+	path('fund_detail_list',funds_views.fund_detail_list,name='fund_detail_list'),
 	# 订单管理
 	path('order_list',order_views.order_list,name='order_list'),
 ]

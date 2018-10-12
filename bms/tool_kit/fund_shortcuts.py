@@ -21,7 +21,7 @@ def offline_client_balance(client_id,in_or_out,balance,operator):
                 old_balance = client.account_balance
                 client.account_balance+=balance
                 new_balance = client.account_balance
-                Client.objects.filter(pk=client_id).update(client)
+                # Client.objects.filter(pk=client_id).update(account_balance=new_balance)
                 fund_dic = {
                     'client':client,
                     'fund_state':'in',
@@ -38,7 +38,7 @@ def offline_client_balance(client_id,in_or_out,balance,operator):
                 old_balance = client.account_balance
                 client.account_balance -= balance
                 new_balance = client.account_balance
-                Client.objects.filter(pk=client_id).update(client)
+                # Client.objects.filter(pk=client_id).update(**client)
                 fund_dic = {
                     'client': client,
                     'fund_state': 'out',

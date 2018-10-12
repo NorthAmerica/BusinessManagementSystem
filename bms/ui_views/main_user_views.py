@@ -39,7 +39,6 @@ def main_user_list(request):
 			#分页判断
 			if page is not None and rows is not None:
 				#有分页
-
 				results,total =page_helper(user_all,rows,page)
 				eaList=[]
 				for user in results.object_list:
@@ -76,7 +75,7 @@ def main_user_list(request):
 			print(ex)
 			#Change_Info.objects.create(initiator=request.user.username,receiver='',event_type='ERROR',)
 	else:
-		return render(request, 'bms/user_config/org_user_config.html')
+		return JsonResponse({},safe=False)
 
 @login_required
 @transaction.atomic
@@ -153,6 +152,8 @@ def add_main_user(request):
 		except Exception as ex:
 			print(ex)
 			return  JsonResponse({'success':False,'msg':ex}, safe=False)
+	else:
+		return JsonResponse({'success':False,'msg':'POST only'}, safe=False)
 
 
 @login_required
@@ -187,6 +188,8 @@ def update_main_user(request):
 		except Exception as ex:
 			print(ex)
 			return  JsonResponse({'success':False,'msg':ex}, safe=False)
+	else:
+		return JsonResponse({'success': False, 'msg': 'POST only'}, safe=False)
 
 @login_required
 def change_pwd_main_user(request):
@@ -208,3 +211,5 @@ def change_pwd_main_user(request):
 		except Exception as ex:
 			print(ex)
 			return  JsonResponse({'success':False,'msg':ex}, safe=False)
+	else:
+		return JsonResponse({'success': False, 'msg': 'POST only'}, safe=False)

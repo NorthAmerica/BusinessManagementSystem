@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from .choices_for_model import FUND_STATE_CHOICES,FUND_TYPE_CHOICES
+from .choices_for_model import FUND_STATE_CHOICES,FUND_TYPE_CHOICES,FUND_STATUS_CHOICES
 import time
 
 def random_key():
@@ -17,6 +17,9 @@ class Fund_Detail(models.Model):
 	order = models.ForeignKey('Order_Detail',blank=True,null=True,on_delete=models.SET_NULL, verbose_name='订单号')
 	fund_state = models.CharField(choices=FUND_STATE_CHOICES,default='in',blank=True,null=True,max_length=32,verbose_name='资金类型')
 	fund_type = models.CharField(choices=FUND_TYPE_CHOICES,default='online',blank=True,null=True,max_length=32,verbose_name='资金渠道')
+	fund_audit = models.CharField(choices=FUND_STATUS_CHOICES,default='none',blank=True,null=True,max_length=32,verbose_name='资金审核')
+	auditor = models.CharField(max_length=50, blank=True, verbose_name='审核者')
+	audit_time = models.DateTimeField(blank=True,null=True,verbose_name='审核时间')
 	balance_before = models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='交易前余额')
 	balance_after =  models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='交易后余额')
 	balance_change = models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='交易金额')
