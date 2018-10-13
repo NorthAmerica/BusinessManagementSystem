@@ -11,6 +11,18 @@
     <link rel="stylesheet" href="{% static 'InsdepUI/iconfont/iconfont.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'self.css' %}">
+    <style>
+        .tabs li.tabs-selected a.tabs-inner {
+            font-weight: bold;
+            color: rgb(113, 120, 237);
+            outline: none;
+        }
+        .tree-node-hover, .tree-node-selected {
+            background: rgb(113, 120, 237);
+            color: antiquewhite;
+            border-radius: 5px;
+        }
+    </style>
     <script src="{% static 'InsdepUI/jquery.min.js' %}"></script>
     <script>
         $.ajaxSetup({
@@ -19,11 +31,11 @@
     </script>
 </head>
 <body class="easyui-layout">
-<div data-options="region:'north'" style="height:65px;overflow:hidden">
+<div data-options="region:'north'" style="height:90px;background-size:cover;background-image: url('{% static 'login/images/bg-01.jpg' %}');">
     {% include 'bms/includes/header.html' %}
 </div>
 
-<div data-options="region:'west',title:'菜单',split:true" style="width:260px;padding:0px; ">
+<div data-options="region:'west',title:'菜单',split:true" style="width:265px;padding:0px; ">
     {% include 'bms/includes/menu.html' %}
 </div>
 <div data-options="region:'center'" style="padding:5px;background:#eee;">

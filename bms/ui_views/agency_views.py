@@ -72,6 +72,10 @@ def get_agency_list(request):
 					'invite_url': request.get_host()+'/register?code='+agency.invite_num,
 					'invite_num': agency.invite_num,
 					'is_freeze': agency.is_freeze,
+					'bank_card': agency.bank_card,
+					'bank_name': agency.bank_name,
+					'bank_holder': agency.bank_holder,
+					'bank_branch': agency.bank_branch,
 					'allow_business_id': agency.allow_business,
 					'allow_business': get_multi_text(agency.allow_business)
 						# ','.join([agency.allow_business.choices.__getitem__(value) for value in agency.allow_business])
@@ -91,6 +95,10 @@ def add_agency(request):
 	try:
 		if request.method == 'POST':
 			name = request.POST.get('name')
+			bank_card = request.POST.get('bank_card')
+			bank_name = request.POST.get('bank_name')
+			bank_holder = request.POST.get('bank_holder')
+			bank_branch = request.POST.get('bank_branch')
 			rebate_x = request.POST.get('rebate_x') if request.POST.get('rebate_x') is not None and request.POST.get('rebate_x')!='' else 0
 			rebate_y = request.POST.get('rebate_y') if request.POST.get('rebate_y') is not None and request.POST.get('rebate_y')!='' else 0
 			rebate_z = request.POST.get('rebate_z') if request.POST.get('rebate_z') is not None and request.POST.get('rebate_z')!='' else 0
@@ -104,6 +112,10 @@ def add_agency(request):
 				if f_agency_id != 0 and f_agency_id != '0':
 					dic = {
 						"name": name,
+						'bank_card':bank_card,
+						'bank_name':bank_name,
+						'bank_holder':bank_holder,
+						'bank_branch':bank_branch,
 						"rebate_x": rebate_x,
 						"rebate_y": rebate_y,
 						"rebate_z": rebate_z,
@@ -117,6 +129,10 @@ def add_agency(request):
 				else:
 					dic = {
 						"name": name,
+						'bank_card': bank_card,
+						'bank_name': bank_name,
+						'bank_holder': bank_holder,
+						'bank_branch': bank_branch,
 						"rebate_x": rebate_x,
 						"rebate_y": rebate_y,
 						"rebate_z": rebate_z,
@@ -130,6 +146,10 @@ def add_agency(request):
 				# 如果是归属管理员新增归属
 				dic = {
 					"name": name,
+					'bank_card': bank_card,
+					'bank_name': bank_name,
+					'bank_holder': bank_holder,
+					'bank_branch': bank_branch,
 					"rebate_x": rebate_x,
 					"rebate_y": rebate_y,
 					"rebate_z": rebate_z,
@@ -156,6 +176,10 @@ def update_agency(request):
 		if request.method == 'POST':
 			id = request.POST.get('id')
 			name = request.POST.get('name')
+			bank_card = request.POST.get('bank_card')
+			bank_name = request.POST.get('bank_name')
+			bank_holder = request.POST.get('bank_holder')
+			bank_branch = request.POST.get('bank_branch')
 			rebate_x = request.POST.get('rebate_x') if request.POST.get('rebate_x') is not None and request.POST.get(
 				'rebate_x') != '' else 0
 			rebate_y = request.POST.get('rebate_y') if request.POST.get('rebate_y') is not None and request.POST.get(
@@ -179,6 +203,10 @@ def update_agency(request):
 
 					dic = {
 						"name": name,
+						'bank_card': bank_card,
+						'bank_name': bank_name,
+						'bank_holder': bank_holder,
+						'bank_branch': bank_branch,
 						"rebate_x": rebate_x,
 						"rebate_y": rebate_y,
 						"rebate_z": rebate_z,
@@ -190,6 +218,10 @@ def update_agency(request):
 				else:
 					dic = {
 						"name": name,
+						'bank_card': bank_card,
+						'bank_name': bank_name,
+						'bank_holder': bank_holder,
+						'bank_branch': bank_branch,
 						"rebate_x": rebate_x,
 						"rebate_y": rebate_y,
 						"rebate_z": rebate_z,
@@ -199,6 +231,10 @@ def update_agency(request):
 			elif request.user.identity=='agency':
 				dic = {
 					"name": name,
+					'bank_card': bank_card,
+					'bank_name': bank_name,
+					'bank_holder': bank_holder,
+					'bank_branch': bank_branch,
 					"rebate_x": rebate_x,
 					"rebate_y": rebate_y,
 					"rebate_z": rebate_z

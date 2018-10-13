@@ -8,6 +8,8 @@ from bms.forms import *
 from django.contrib.auth.models import Group
 from bms.tool_kit.view_shortcuts import get_org_user_list,page_helper
 
+def org_user_config(request):
+	return render(request,'bms/user_config/org_user_config.html')
 
 @login_required
 def main_user_list(request):

@@ -48,6 +48,10 @@
                 { field: 'invite_url',title: '邀请链接', width: 100, sortable: true,formatter:formatUrl },
                 { field: 'invite_num', title: '邀请码', width: 150, sortable: true },
                 { field: 'allow_business_id', title: '允许的业务id', width: 150, sortable: true,hidden:true},
+                { field: 'bank_card', title: '银行卡号', width: 150, sortable: true,hidden:true},
+                { field: 'bank_name', title: '开户银行名称', width: 150, sortable: true,hidden:true},
+                { field: 'bank_holder', title: '开户人姓名', width: 150, sortable: true,hidden:true},
+                { field: 'bank_branch', title: '开户支行名称', width: 150, sortable: true,hidden:true},
                 { field: 'allow_business', title: '允许的业务', width: 150, sortable: true },
                 {
                     field: 'is_freeze',
@@ -92,10 +96,10 @@
     }
 
     function formatUrl(val,row,index){
-            var url = "http://" + val;
-            var returnString = '<a href='+url+' target="_blank">邀请链接</a>';
-            return returnString;
-        }
+        var url = "http://" + val;
+        var returnString = '<a href='+url+' target="_blank">邀请链接</a>';
+        return returnString;
+    }
     function AddAgencyDialog(init_title) {
         $('#AddAgencyForm').form('clear');
         {% if  request.user.is_superuser  %}
@@ -104,18 +108,18 @@
         {% endif %}
         $('#AddAgencyDialog').dialog({title:init_title,
             width:650,
-            height:550,
+            height:650,
             buttons:[{
-				text:'保存',
-				handler:function(){
-				    AddAgencyEvent();
-				}
-			},{
-				text:'关闭',
-				handler:function(){
-				    $('#AddAgencyDialog').dialog('close')
+                text:'保存',
+                handler:function(){
+                    AddAgencyEvent();
                 }
-			}]
+            },{
+                text:'关闭',
+                handler:function(){
+                    $('#AddAgencyDialog').dialog('close')
+                }
+            }]
         });
         $('#AddAgencyDialog').dialog('open');
         ClearText();
@@ -135,18 +139,26 @@
             }
             var postdata = {
                 name: $("#AddAgencyForm #name1").val(),
+                bank_card:$("#AddAgencyForm #bank_card1").val(),
+                bank_name:$("#AddAgencyForm #bank_name1").val(),
+                bank_holder:$("#AddAgencyForm #bank_holder1").val(),
+                bank_branch:$("#AddAgencyForm #bank_branch1").val(),
                 rebate_x: $('#AddAgencyForm #rebate_x1').numberbox('getValue'),
                 rebate_y: $('#AddAgencyForm #rebate_y1').numberbox('getValue'),
                 rebate_z: $('#AddAgencyForm #rebate_z1').numberbox('getValue'),
                 f_agency: $('#AddAgencyForm #f_agency_combotree1').combotree('getValue'),
                 allow_business: $('#AddAgencyForm #allow_business1').combotree('getValues').toString(),
                 is_freeze: CBEnable
-        };
+            };
         {% else %}
             var selectA = $('#AgencyGrid').datagrid('getSelected');
             if (selectA == null || selectA == undefined) {
                 var postdata = {
                     name: $("#AddAgencyForm #name1").val(),
+                    bank_card:$("#AddAgencyForm #bank_card1").val(),
+                    bank_name:$("#AddAgencyForm #bank_name1").val(),
+                    bank_holder:$("#AddAgencyForm #bank_holder1").val(),
+                    bank_branch:$("#AddAgencyForm #bank_branch1").val(),
                     rebate_x: $('#AddAgencyForm #rebate_x1').numberbox('getValue'),
                     rebate_y: $('#AddAgencyForm #rebate_y1').numberbox('getValue'),
                     rebate_z: $('#AddAgencyForm #rebate_z1').numberbox('getValue'),
@@ -157,6 +169,10 @@
             {
                 var postdata = {
                     name: $("#AddAgencyForm #name1").val(),
+                    bank_card:$("#AddAgencyForm #bank_card1").val(),
+                    bank_name:$("#AddAgencyForm #bank_name1").val(),
+                    bank_holder:$("#AddAgencyForm #bank_holder1").val(),
+                    bank_branch:$("#AddAgencyForm #bank_branch1").val(),
                     rebate_x: $('#AddAgencyForm #rebate_x1').numberbox('getValue'),
                     rebate_y: $('#AddAgencyForm #rebate_y1').numberbox('getValue'),
                     rebate_z: $('#AddAgencyForm #rebate_z1').numberbox('getValue'),
@@ -194,10 +210,10 @@
     }
 
     function UpdateAgencyDialog() {
-{#        {% if request.user.identity != 'org' and not request.user.is_superuser%}#}
-{#            alert('您没有修改归属的权限，如需要修改信息请联系机构管理员。')#}
-{#            return;#}
-{#        {% endif %}#}
+        {#        {% if request.user.identity != 'org' and not request.user.is_superuser%}#}
+        {#            alert('您没有修改归属的权限，如需要修改信息请联系机构管理员。')#}
+        {#            return;#}
+        {#        {% endif %}#}
         var selectA = $('#AgencyGrid').datagrid('getSelected');
         if (selectA == null || selectA == undefined) {
             $.messager.alert("友情提示", "请先选择一个归属");
@@ -206,18 +222,18 @@
         $('#UpdateAgencyDialog').dialog({
             title:'修改归属信息',
             width:650,
-            height:550,
+            height:650,
             buttons:[{
-				text:'保存',
-				handler:function(){
-				    UpdateAgencyEvent();
-				}
-			},{
-				text:'关闭',
-				handler:function(){
-				    $('#UpdateAgencyDialog').dialog('close')
+                text:'保存',
+                handler:function(){
+                    UpdateAgencyEvent();
                 }
-			}]
+            },{
+                text:'关闭',
+                handler:function(){
+                    $('#UpdateAgencyDialog').dialog('close')
+                }
+            }]
         });
         $('#UpdateAgencyDialog').dialog('open');
 
@@ -250,6 +266,10 @@
             var postdata = {
                 id:       $('#AgencyGrid').datagrid('getSelected').id,
                 name:     $('#UpdateAgencyForm #name').val(),
+                bank_card:$("#UpdateAgencyForm #bank_card").val(),
+                bank_name:$("#UpdateAgencyForm #bank_name").val(),
+                bank_holder:$("#UpdateAgencyForm #bank_holder").val(),
+                bank_branch:$("#UpdateAgencyForm #bank_branch").val(),
                 rebate_x: $('#UpdateAgencyForm #rebate_x').numberbox('getValue'),
                 rebate_y: $('#UpdateAgencyForm #rebate_y').numberbox('getValue'),
                 rebate_z: $('#UpdateAgencyForm #rebate_z').numberbox('getValue'),
@@ -261,6 +281,10 @@
             var postdata = {
                 id:       $('#AgencyGrid').datagrid('getSelected').id,
                 name:     $('#UpdateAgencyForm #name').val(),
+                bank_card:$("#UpdateAgencyForm #bank_card").val(),
+                bank_name:$("#UpdateAgencyForm #bank_name").val(),
+                bank_holder:$("#UpdateAgencyForm #bank_holder").val(),
+                bank_branch:$("#UpdateAgencyForm #bank_branch").val(),
                 rebate_x: $('#UpdateAgencyForm #rebate_x').numberbox('getValue'),
                 rebate_y: $('#UpdateAgencyForm #rebate_y').numberbox('getValue'),
                 rebate_z: $('#UpdateAgencyForm #rebate_z').numberbox('getValue')
@@ -309,107 +333,135 @@
 
     </div>
 </div>
-    {#----------------------新增归属界面------------------------------------------------------------#}
-    <div id="AddAgencyDialog" class="easyui-dialog" style="padding:10px 20px"
+{#----------------------新增归属界面------------------------------------------------------------#}
+<div id="AddAgencyDialog" class="easyui-dialog" style="padding:10px 20px"
      closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
-        <form id="AddAgencyForm" method="post" novalidate="novalidate">
-            <table id="tblAdd" class="self-input-table">
+    <form id="AddAgencyForm" method="post" novalidate="novalidate">
+        <table id="tblAdd" class="self-input-table">
+            <tr>
+                <td><label for="name">归属名：</label></td>
+                <td><input class="easyui-validatebox form-control" type="text" id="name1" name="name" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="bank_name">开户银行名称：</label></td>
+                <td><input class="easyui-validatebox form-control" type="text" id="bank_name1" name="bank_name" data-options="required:true" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="bank_branch">开户支行名称：</label></td>
+                <td><input class="easyui-validatebox form-control" type="text" id="bank_branch1" name="bank_branch" data-options="required:true" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="bank_holder">开户人姓名：</label></td>
+                <td><input class="easyui-validatebox form-control" type="text" id="bank_holder1" name="bank_holder" data-options="required:true" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="bank_card">银行卡号：</label></td>
+                <td><input class="easyui-validatebox form-control" type="text" id="bank_card1" name="bank_card" data-options="required:true" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="rebate_x">返佣参数X：</label></td>
+                <td><input class="easyui-numberbox form-control" type="text" id="rebate_x1" name="rebate_x" data-options="precision:2" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="rebate_y">返佣参数Y：</label></td>
+                <td><input class="easyui-numberbox form-control" type="text" id="rebate_y1" name="rebate_y" data-options="precision:2" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="rebate_z">返佣参数Z：</label></td>
+                <td><input class="easyui-numberbox form-control" type="text" id="rebate_z1" name="rebate_z" data-options="precision:2" style="width:350px;" /></td>
+            </tr>
+            {% if request.user.identity == 'org' or request.user.is_superuser %}
                 <tr>
-                    <td><label for="name">归属名：</label></td>
-                    <td><input class="easyui-validatebox form-control" type="text" id="name1" name="name" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
-                </tr>
-
-                <tr>
-                    <td><label for="rebate_x">返佣参数X：</label></td>
-                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_x1" name="rebate_x" data-options="precision:2" style="width:350px;" /></td>
+                    <td><label for="f_agency">上级代理：</label></td>
+                    <td>
+                        <select id="f_agency_combotree1" class="easyui-combotree" style="width:200px;"
+                                data-options="url:'../bms/get_agency_tree',required:true"></select>
+                    </td>
                 </tr>
                 <tr>
-                    <td><label for="rebate_y">返佣参数Y：</label></td>
-                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_y1" name="rebate_y" data-options="precision:2" style="width:350px;" /></td>
+                    <td><label for="allow_business1">允许的业务：</label></td>
+                    <td>
+                        <select id="allow_business1" class="easyui-combotree" style="width:200px;"
+                                data-options="url:'../bms/get_allow_business',required:true,checkbox:true,multiple:true,"></select>
+                    </td>
                 </tr>
                 <tr>
-                    <td><label for="rebate_z">返佣参数Z：</label></td>
-                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_z1" name="rebate_z" data-options="precision:2" style="width:350px;" /></td>
+                    <td><label for="is_freeze">能否冻结：</label></td>
+                    <td>
+                        <select id="is_freeze1" name="is_freeze" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
+                    </td>
                 </tr>
-                {% if request.user.identity == 'org' or request.user.is_superuser %}
-                    <tr>
-                        <td><label for="f_agency">上级代理：</label></td>
-                        <td>
-                            <select id="f_agency_combotree1" class="easyui-combotree" style="width:200px;"
-                                    data-options="url:'../bms/get_agency_tree',required:true"></select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="allow_business1">允许的业务：</label></td>
-                        <td>
-                            <select id="allow_business1" class="easyui-combotree" style="width:200px;"
-                                    data-options="url:'../bms/get_allow_business',required:true,checkbox:true,multiple:true,"></select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="is_freeze">能否冻结：</label></td>
-                        <td>
-                            <select id="is_freeze1" name="is_freeze" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
-                                <option value="1">是</option>
-                                <option value="0">否</option>
-                            </select>
-                        </td>
-                    </tr>
-                {% endif %}
-            </table>
-        </form>
-    </div>
- {#----------------------新增归属界面结束------------------------------------------------------------#}
- {#----------------------更新归属界面-------必须机构用户-----------------------------------------------------#}
-    <div id="UpdateAgencyDialog" class="easyui-dialog" style="width:560px;height:340px;padding:10px 20px"
+            {% endif %}
+        </table>
+    </form>
+</div>
+{#----------------------新增归属界面结束------------------------------------------------------------#}
+{#----------------------更新归属界面-------必须机构用户-----------------------------------------------------#}
+<div id="UpdateAgencyDialog" class="easyui-dialog" style="padding:10px 20px"
      closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
     <form id="UpdateAgencyForm" method="post" novalidate="novalidate">
-            <table id="tblAdd" class="self-input-table">
+        <table id="tblAdd" class="self-input-table">
+            <tr>
+                <td><label for="name">归属名：</label></td>
+                <td><input class="easyui-validatebox form-control" type="text" id="name" name="name" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="bank_name">开户银行名称：</label></td>
+                <td><input class="easyui-validatebox form-control" type="text" id="bank_name" name="bank_name" data-options="required:true" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="bank_branch">开户支行名称：</label></td>
+                <td><input class="easyui-validatebox form-control" type="text" id="bank_branch" name="bank_branch" data-options="required:true" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="bank_holder">开户人姓名：</label></td>
+                <td><input class="easyui-validatebox form-control" type="text" id="bank_holder" name="bank_holder" data-options="required:true" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="bank_card">银行卡号：</label></td>
+                <td><input class="easyui-validatebox form-control" type="text" id="bank_card" name="bank_card" data-options="required:true" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="rebate_x">返佣参数X：</label></td>
+                <td><input class="easyui-numberbox form-control" type="text" id="rebate_x" name="rebate_x" data-options="precision:2" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="rebate_y">返佣参数Y：</label></td>
+                <td><input class="easyui-numberbox form-control" type="text" id="rebate_y" name="rebate_y" data-options="precision:2" style="width:350px;" /></td>
+            </tr>
+            <tr>
+                <td><label for="rebate_z">返佣参数Z：</label></td>
+                <td><input class="easyui-numberbox form-control" type="text" id="rebate_z" name="rebate_z" data-options="precision:2" style="width:350px;" /></td>
+            </tr>
+            {% if request.user.identity == 'org' or request.user.is_superuser %}
                 <tr>
-                    <td><label for="name">归属名：</label></td>
-                    <td><input class="easyui-validatebox form-control" type="text" id="name" name="name" data-options="required:true,validType:'length[1,32]'" style="width:350px;" /></td>
+                    <td><label for="f_agency">上级归属：(必须与上级归属同级)</label></td>
+                    <td>
+                        <select id="f_agency_combotree" class="easyui-combotree" style="width:200px;"
+                                data-options="url:'../bms/get_agency_tree',required:true"></select>
+                    </td>
                 </tr>
                 <tr>
-                    <td><label for="rebate_x">返佣参数X：</label></td>
-                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_x" name="rebate_x" data-options="precision:2" style="width:350px;" /></td>
+                    <td><label for="allow_business">允许的业务：</label></td>
+                    <td>
+                        <select id="allow_business" class="easyui-combotree" style="width:200px;"
+                                data-options="url:'../bms/get_allow_business',required:true,multiple:true,"></select>
+                    </td>
                 </tr>
                 <tr>
-                    <td><label for="rebate_y">返佣参数Y：</label></td>
-                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_y" name="rebate_y" data-options="precision:2" style="width:350px;" /></td>
+                    <td><label for="is_freeze">能否冻结：</label></td>
+                    <td>
+                        <select id="is_freeze" name="is_freeze" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
+                    </td>
                 </tr>
-                <tr>
-                    <td><label for="rebate_z">返佣参数Z：</label></td>
-                    <td><input class="easyui-numberbox form-control" type="text" id="rebate_z" name="rebate_z" data-options="precision:2" style="width:350px;" /></td>
-                </tr>
-                {% if request.user.identity == 'org' or request.user.is_superuser %}
-                    <tr>
-                        <td><label for="f_agency">上级归属：(必须与上级归属同级)</label></td>
-                        <td>
-                            <select id="f_agency_combotree" class="easyui-combotree" style="width:200px;"
-                                    data-options="url:'../bms/get_agency_tree',required:true"></select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="allow_business">允许的业务：</label></td>
-                        <td>
-                            <select id="allow_business" class="easyui-combotree" style="width:200px;"
-                                    data-options="url:'../bms/get_allow_business',required:true,multiple:true,"></select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="is_freeze">能否冻结：</label></td>
-                        <td>
-                            <select id="is_freeze" name="is_freeze" class="easyui-combobox" editable="false" panelheight='auto' style="width:100px;">
-                                <option value="1">是</option>
-                                <option value="0">否</option>
-                            </select>
-                        </td>
-                    </tr>
-                {% endif %}
-            </table>
+            {% endif %}
+        </table>
     </form>
-    </div>
-   {#----------------------更新归属界面结束------------------------------------------------------------#}
-
-
-<a href="#" target="_blank"></a>
+</div>
+{#----------------------更新归属界面结束------------------------------------------------------------#}

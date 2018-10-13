@@ -1,15 +1,15 @@
-<div class="theme-header-navigate" style="background-color: white;">
+<div class="theme-header-navigate">
     <div class="left"
-         style="width:auto;font-size:30px;color:dodgerblue;font-weight:bolder;margin-left:20px;margin-top:0px;">
+         style="width:auto;font-size:30px;color:white;font-weight:bolder;margin-left:20px;margin-top:0px;">
         {{ org_name }}
     </div>
-    <div class="right">
-        <span> 登陆用户：<b>{{ request.user.username }}</b></span>
+    <div class="right" style="width:auto;color:whitesmoke;">
+        <div><span>&rBarr; 登陆用户：<b>{{ request.user.username }}</b></span></div>
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="/bms/index"><b>首页</b></a></li>
+            <li><a href="/bms/index"><b style="font-size: medium; color:#3b5998">首页</b></a></li>
             <li><a id="msg_center" href="#" onclick="newone('消息中心','../bms/msg_center',this);"></a></li>
-            <li><a href="#" onclick="newone('修改密码','change_pwd_page',this);"><b>修改密码</b></a></li>
-            <li><a href="/bms/logout"><b>注销</b></a></li>
+            <li><a href="#" onclick="newone('修改密码','change_pwd_page',this);"><b style="font-size: medium; color:#3b5998">修改密码</b></a></li>
+            <li><a href="/bms/logout"><b style="font-size: medium; color:#3b5998">注销</b></a></li>
         </ul>
     </div>
 </div>
@@ -34,7 +34,7 @@
             data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
             success: function (data) {
                 $('#msg_center').children('#msg').remove();
-                $('#msg_center').append('<b id="msg">消息中心<span style="color:red">('+data.num+')</span></b>');
+                $('#msg_center').append('<b style="font-size: medium;color: #3b5998" id="msg">消息中心<span style="color:#3b5998">('+data.num+')</span></b>');
             },
             error: function (data) {
                 clearInterval(interval);

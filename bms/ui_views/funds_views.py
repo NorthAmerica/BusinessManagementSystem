@@ -4,6 +4,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from bms.models.choices_for_model import FUND_STATUS_CHOICES
 from bms.forms import *
 from django.contrib.auth.models import Group
 from bms.tool_kit.view_shortcuts import get_agency_obj,get_org_obj,get_agency_id,page_helper
@@ -14,6 +15,7 @@ def funds_list(request):
 
 @login_required
 def fund_detail_list(request):
+	'''资金明细列表'''
 	try:
 		if request.method == 'POST':
 			page = request.POST.get("page")
@@ -57,3 +59,49 @@ def fund_detail_list(request):
 			return JsonResponse({}, safe=False)
 	except Exception as ex:
 		print(ex)
+		return JsonResponse({}, safe=False)
+
+def get_fund_audit(request):
+	'''获取资金审核状态'''
+	try:
+		if request.method == 'POST':
+			return_json = []
+			for status in FUND_STATUS_CHOICES:
+				return_json.append({
+					'id': status[0],
+					'text': status[1]
+				})
+			return JsonResponse(return_json, safe=False)
+
+	except Exception as ex:
+		print(ex)
+		return_ex = [{
+			'id': '0',
+			'text': ex.__str__()
+		}]
+		return JsonResponse(return_ex, safe=False)
+
+@transaction.atomic
+def fund_audit(request):
+	'''资金状态审核'''
+	try:
+		if request.method=='POST':
+			fund_id = request.POST.get('fund_id',None)
+			fund_audit = request.POST.get('fund_audit',None)
+			if fund_id is not None and fund_audit is not None:
+				find_fund_detail = Fund_Detail.objects.filter(pk=fund_id)
+				if find_fund_detail.exists():
+					if fund_audit=='agree':
+						fund_detail = find_fund_detail.first()
+						if fund_detail.org is not None:
+							return JsonResponse({'success': False, 'msg': '不能对机构资金明细进行审核！'}, safe=False)
+						if fund_detail.client is not None:
+							Client.objects.filter(pk=fund_detail.client_id).update(account_balance=fund_detail.balance_after)
+						if fund_detail.agency is not None:
+							Agency.objects.filter(pk=fund_detail.agency_id).update(account_balance=fund_detail.balance_after)
+					find_fund_detail.update(fund_audit=fund_audit)
+					return JsonResponse({'success': True, 'msg': '更新成功！'}, safe=False)
+		return JsonResponse({'success': False, 'msg': '参数有误！'}, safe=False)
+	except Exception as ex:
+		print(ex)
+		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)

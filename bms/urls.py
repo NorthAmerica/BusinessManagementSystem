@@ -19,6 +19,7 @@ urlpatterns = [
 	path('msg_list',msg_views.msg_list,name='msg_list'),
 	path('have_read_msg',msg_views.have_read_msg,name='have_read_msg'),
 	# 管理员后台管理
+	path('org_user_config',main_user_views.org_user_config,name='org_user_config'),
 	path('main_user_list',main_user_views.main_user_list, name='main_user_list'),
 	path('add_main_user',main_user_views.add_main_user,name='add_main_user'),
 	path('update_main_user',main_user_views.update_main_user,name='update_main_user'),
@@ -61,6 +62,8 @@ urlpatterns = [
 	# 资金流水
 	path('funds_list',funds_views.funds_list,name='funds_list'),
 	path('fund_detail_list',funds_views.fund_detail_list,name='fund_detail_list'),
+	path('get_fund_audit',funds_views.get_fund_audit,name='get_fund_audit'),
+	path('fund_audit',funds_views.fund_audit,name='fund_audit'),
 	# 订单管理
 	path('order_list',order_views.order_list,name='order_list'),
 ]

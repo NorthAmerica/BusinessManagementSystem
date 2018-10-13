@@ -26,6 +26,10 @@ class Organization(models.Model):
 	is_open_stock = models.BooleanField(default=False,verbose_name='是否开启个股费率')
 	account_balance = models.DecimalField(blank=True, null=True, default=0, max_digits=12, decimal_places=2,
 	                                      verbose_name='账户余额')
+	bank_card = models.CharField(blank=True, null=True, max_length=128, verbose_name='银行卡号')
+	bank_name = models.CharField(blank=True, null=True, max_length=128, verbose_name='开户银行名称')
+	bank_holder = models.CharField(blank=True, null=True, max_length=128, verbose_name='开户人姓名')
+	bank_branch = models.CharField(blank=True, null=True, max_length=128, verbose_name='开户支行名称')
 	date_joined = models.DateTimeField(default=timezone.now, verbose_name='添加时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
 	def __str__(self):

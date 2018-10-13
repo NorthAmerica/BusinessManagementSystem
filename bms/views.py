@@ -33,11 +33,11 @@ def login_check(request):
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    ret_msg = {'success': 'true', 'msg': '登陆成功'}
+                    ret_msg = {'success': True, 'msg': '登陆成功'}
                 else:
-                    ret_msg = {'success': 'false', 'msg': '该用户未激活！'}
+                    ret_msg = {'success': False, 'msg': '该用户未激活！'}
             else:
-                ret_msg = {'success': 'false', 'msg': '用户名或密码错误'}
+                ret_msg = {'success': False, 'msg': '用户名或密码错误'}
         # return render(request, 'bms/login.html', context={})
 
         except Exception as ex:

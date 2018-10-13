@@ -25,6 +25,10 @@ class Agency(models.Model):
 	grade = models.IntegerField(blank=True, null=True,verbose_name='归属等级')
 	invite_num = models.CharField(max_length=100,default=invite_num_key,verbose_name='邀请码',help_text='作为邀请客户开户ID')
 	is_freeze = models.BooleanField(default=False, verbose_name='能否冻结',help_text='冻结情况下，归属不能出金或新开客户')
+	bank_card = models.CharField(blank=True, null=True, max_length=128, verbose_name='银行卡号')
+	bank_name = models.CharField(blank=True, null=True, max_length=128, verbose_name='开户银行名称')
+	bank_holder = models.CharField(blank=True, null=True, max_length=128, verbose_name='开户人姓名')
+	bank_branch = models.CharField(blank=True, null=True, max_length=128, verbose_name='开户支行名称')
 	date_joined = models.DateTimeField(default=timezone.now,verbose_name='添加时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
 	def __str__(self):

@@ -1,9 +1,21 @@
 {% load guardian_tags %}
+<style>
+    .nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+        color: #fff;
+        {#background-color: linear-gradient(180deg, rgb(255, 0, 0), rgb(43, 194, 255));#}
+        {#background-color: rgb(113, 120, 237);#}
+        background: rgb(113, 120, 237) linear-gradient(to right, rgba(0,255,0,0), rgba(218,6,228,.5));
+        transition: background-color .3s;
+    }
+    .nav-pills>li>a {
+        border-radius: 10px;
+    }
+</style>
 <div id="aa" class="easyui-accordion" style="width:260px;">
     {% if ls_menu %}
         {% for menu in ls_menu %}
-            {% get_obj_perms request.user for menu as "context_var" %}
-            {{ context_var }}
+{#            {% get_obj_perms request.user for menu as "context_var" %}#}
+{#            {{ context_var }}#}
             <div title="{{ menu.name }}" data-options="iconCls:'icon-scategorys',selected:true"
                  style="overflow:auto;padding:10px;">
                 <ul class="nav nav-pills nav-stacked">

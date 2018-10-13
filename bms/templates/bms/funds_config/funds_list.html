@@ -37,7 +37,7 @@
                 {field: 'fund_state', title: '资金类型', width: 200, sortable: true},
                 {field: 'fund_type', title: '资金渠道', width: 200, sortable: true},
                 {field: 'fund_audit', title: '资金审核', width: 200, sortable: true},
-                {field: 'date_joined', title: '产生时间', width: 200, sortable: true},
+                {field: 'date_joined', title: '提交时间', width: 200, sortable: true},
                 {field: 'auditor', title: '审核人', width: 200, sortable: true},
                 {field: 'audit_time', title: '审核时间', width: 200, sortable: true}
             ]],
@@ -51,7 +51,7 @@
             }, '-', {
                 id: 'btnedit',
                 text: '出金操作',
-                iconCls: 'icon-edit',
+                iconCls: 'icon-remove',
                 handler: function () {
                     OutBalanceDialog('出金');
                 }
@@ -60,7 +60,7 @@
                 text: '审批资金',
                 iconCls: 'icon-lock-password',
                 handler: function () {
-                    AuditBalanceDialog();
+                    AuditBalanceDialog('审批资金');
                 }
             }, '-', {
                 id: 'btnrefresh',
@@ -69,23 +69,127 @@
                 handler: function () {
                     initTable();
                 }
-            }],
-            onDblClickRow: function (index, row) {
-                UpdateUserDialog('修改用户');
-            }
+            }]
         });
     }
 
-    function InBalanceDialog() {
+    function InBalanceDialog(init_title) {
+        $('#InBalanceDialog').dialog({title:init_title,
+            width:650,
+            height:300,
+            buttons:[{
+                text:'保存',
+                handler:function(){
+                    InBalanceEvent();
+                }
+            },{
+                text:'关闭',
+                handler:function(){
+                    $('#InBalanceDialog').dialog('close')
+                }
+            }]
+        });
+        $('#InBalanceDialog').dialog('open');
+    }
+
+    function InBalanceEvent() {
 
     }
 
-    function OutBalanceDialog() {
+    function OutBalanceDialog(init_title) {
+        $('#OutBalanceDialog').dialog({title:init_title,
+            width:650,
+            height:300,
+            buttons:[{
+                text:'保存',
+                handler:function(){
+                    OutBalanceEvent();
+                }
+            },{
+                text:'关闭',
+                handler:function(){
+                    $('#OutBalanceDialog').dialog('close')
+                }
+            }]
+        });
+        $('#OutBalanceDialog').dialog('open');
+    }
+
+    function OutBalanceEvent() {
 
     }
 
-    function AuditBalanceDialog() {
+    function AuditBalanceDialog(init_title) {
+        var Update = $('#FundDetailGrid').datagrid('getSelected');
+        if (Update == null || Update == undefined) {
+            $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
+            return;
+        }
+        if(Update.fund_audit=='审核通过')
+        {
+            $.messager.alert("友情提示", "该资金明细已通过审核，不能修改状态");
+            return;
+        }
+        if(Update.org!=null && Update.org!=undefined && Update.org!='')
+        {
+            $.messager.alert("友情提示", "不能对机构资金明细进行审核");
+            return;
+        }
 
+        $('#AuditBalanceDialog').dialog({title:init_title,
+            width:650,
+            height:300,
+            buttons:[{
+                text:'保存',
+                handler:function(){
+                    AuditBalanceEvent();
+                }
+            },{
+                text:'关闭',
+                handler:function(){
+                    $('#AuditBalanceDialog').dialog('close')
+                }
+            }]
+        });
+        $('#AuditBalanceDialog').dialog('open');
+
+        if(Update)
+        {
+            $('#AuditBalanceForm').form('load',Update);
+        }
+    }
+
+    function AuditBalanceEvent() {
+        var row = $('#FundDetailGrid').datagrid('getSelected');
+        var postdata = {
+            fund_id: row.id,
+            fund_audit: $('#AuditBalanceForm #fund_audit').combobox('getValue'),
+        };
+        var passurl='../bms/fund_audit';
+        $.ajax({
+            type: 'POST',
+            url: passurl,
+            cache: false,
+            data:postdata,
+            success: function (data) {
+                if (data && data.success) {
+                    $.messager.show({
+                        title: '我的消息',
+                        msg: data.msg,
+                        timeout: 5000,
+                        showType: 'slide'
+                    });
+                    $('#AuditBalanceDialog').dialog('close');
+                    $("#FundDetailGrid").datagrid("reload");
+                }
+                else {
+                    alert("修改失败，"+data.msg);
+                }
+            },
+            error: function (data) {
+                $.messager.alert('错误', data.responseText);
+            }
+        });
     }
 </script>
 
@@ -93,4 +197,77 @@
     <div title="资金流水列表" style="padding:10px">
         <table id="FundDetailGrid"></table>
     </div>
+    {#----------------------入金界面开始------------------------------------------------------------#}
+    <div id="InBalanceDialog" class="easyui-dialog" style="padding:10px 20px"
+         closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="InBalanceForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="fund_type">资金类型：</label></td>
+                    <td>
+                        <select id="fund_type" name="fund_type" class="easyui-combobox"
+                                editable="false" panelheight='auto' style="width:200px;"
+                                data-options="required:true">
+                            <option value="online">网银</option>
+                            <option value="offline">线下</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="balance_change">资金数额：</label></td>
+                    <td>
+                        <input type="text" id="balance_change" name="balance_change" class="easyui-numberbox" data-options="min:0,precision:2">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    {#----------------------入金界面结束------------------------------------------------------------#}
+    {#----------------------出金界面开始------------------------------------------------------------#}
+    <div id="OutBalanceDialog" class="easyui-dialog" style="padding:10px 20px"
+         closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <form id="OutBalanceForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="fund_type">资金类型：</label></td>
+                    <td>
+                        <select id="fund_type" name="fund_type" class="easyui-combobox"
+                                editable="false" panelheight='auto' style="width:200px;"
+                                data-options="required:true">
+                            <option value="online">网银</option>
+                            <option value="offline">线下</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="balance_change">资金数额：</label></td>
+                    <td>
+                        <input type="text" id="balance_change" name="balance_change" class="easyui-numberbox" data-options="min:0,precision:2">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    {#----------------------出金界面结束------------------------------------------------------------#}
+    {#----------------------审批资金开始------------------------------------------------------------#}
+    <div id="AuditBalanceDialog" class="easyui-dialog" style="padding:10px 20px"
+         closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
+        <div class="alert alert-danger" role="alert">
+            <strong>提醒!</strong><br />审批通过后将完成资金划拨且不能再修改审批状态.
+        </div>
+        <form id="AuditBalanceForm" method="post" novalidate="novalidate">
+            <table id="tblAdd" class="self-input-table">
+                <tr>
+                    <td><label for="fund_audit">审批资金：</label></td>
+                    <td>
+                        <select id="fund_audit" name="fund_audit" class="easyui-combobox"
+                                editable="false" panelheight='auto' style="width:200px;"
+                                data-options="valueField:'id',textField:'text',url:'../bms/get_fund_audit',required:true">
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    {#----------------------审批资金结束------------------------------------------------------------#}
 </div>
