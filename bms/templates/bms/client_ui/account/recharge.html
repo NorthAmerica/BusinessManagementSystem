@@ -47,25 +47,11 @@
                 {
                     {#线下充值#}
                     var data = new FormData($('#recharge_form')[0]);
-                    $.ajax({
-                        url: '../recharge',
-                        type: 'POST',
-                        data: data,
-                        dataType: 'JSON',
-                        cache: false,
-                        processData: false,
-                        contentType: false,
-                        success: function (data) {
-                            if (data && data.success) {
-                                window.location.href='/checking'
-                            } else {
-                                $.toptip("线下充值失败，"+data.msg, 'error');
-                            }
-                        },
-                        error: function (data) {
-                            $.toptip('操作失败' + data.responseText, 'error');
-                        }
-                    })
+                    var post_url = '../recharge';
+                    client_ajax_post(post_url,data,function () {
+                        window.location.href='/checking'
+                    });
+
                 }else
                 {
                     {#线上充值#}

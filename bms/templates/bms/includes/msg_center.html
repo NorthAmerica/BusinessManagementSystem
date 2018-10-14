@@ -70,45 +70,22 @@
             $.messager.alert("友情提示", "请您先选择一行需要查看的信息");
             return false;
         }
-        $('#ReadMsgDialog').dialog({title:init_title,
-            width:700,
-            height:650,
-            buttons:[{
-				text:'关闭',
-				handler:function(){
-				    $('#ReadMsgDialog').dialog('close')
-                }
-			}]
-        });
+        common_dialog_only_close($('#ReadMsgDialog'),init_title);
 
+        function reflash() {
+            $('#ReadMsgDialog').dialog('open');
+            var row = $('#MsgGrid').datagrid('getSelected');
+            if(row)
+            {
+                $('#MsgDetailForm').form('load',row);
+            }
+            $("#MsgGrid").datagrid("reload");
+        }
         var postdata = {
                 msg_id: ReadMsg[0].id,
             };
             var passurl='../bms/have_read_msg';
-            $.ajax({
-                type: 'POST',
-                url: passurl,
-                cache: false,
-                data:postdata,
-                success: function (data) {
-                    if (data && data.success) {
-                        $('#ReadMsgDialog').dialog('open');
-                        var row = $('#MsgGrid').datagrid('getSelected');
-                        if(row)
-                        {
-                            $('#MsgDetailForm').form('load',row);
-                        }
-                        $("#MsgGrid").datagrid("reload");
-                    }
-                    else {
-                        alert("添加已读信息，请您重新检查");
-                    }
-                },
-                error: function (data) {
-                    $.messager.alert('错误', data.responseText);
-                }
-            });
-
+            common_ajax_post(passurl,postdata,false,reflash);
     }
 </script>
 

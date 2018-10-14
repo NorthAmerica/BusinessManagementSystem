@@ -228,26 +228,11 @@
             }
 
             var data = new FormData($('#authentication_form')[0]);
-
-            $.ajax({
-                url: '../update_authentication_info',
-                type: 'POST',
-                data: data,
-                dataType: 'JSON',
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function (data) {
-                    if (data && data.success) {
+            var post_url = '../update_authentication_info';
+            client_ajax_post(post_url,data,function () {
                         window.location.href='/checking'
-                    } else {
-                        $.toptip("数据上传失败，请您重新检查"+data.msg, 'error');
-                    }
-                },
-                error: function (data) {
-                    $.toptip('操作失败' + data.responseText, 'error');
-                }
-            })
+                    });
+
         });
     });
     {#"use strict"#}

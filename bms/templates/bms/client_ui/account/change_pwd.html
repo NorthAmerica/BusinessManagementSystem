@@ -44,29 +44,14 @@
                 }
 
             var data = new FormData($('#change_pwd_form')[0]);
-            $.ajax({
-                url: '../change_pwd',
-                type: 'POST',
-                data: data,
-                dataType: 'JSON',
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function (data) {
-                    if (data && data.success) {
-                        $.alert("密码修改完成，请使用新密码重新登陆！", "成功！");
-                        setTimeout("window.location.href='/login'",5000);
+            var post_url='../change_pwd';
+            client_ajax_post(post_url,data,function () {
+                $.alert("密码修改完成，请使用新密码重新登陆！", "成功！");
+                setTimeout("window.location.href='/login'",5000);
+            },function () {
+                clear_form();
+            });
 
-                    } else {
-                        clear_form();
-                        $.toptip("修改失败，请您重新检查"+data.msg, 'error');
-                    }
-                },
-                error: function (data) {
-                    clear_form();
-                    $.toptip('操作失败' + data.responseText, 'error');
-                }
-            })
         });
     });
 

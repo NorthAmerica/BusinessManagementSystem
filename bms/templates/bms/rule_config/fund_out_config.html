@@ -17,50 +17,36 @@
         var postdata = {
             org_id:org_id
         };
-        $.ajax({
-            type: 'POST',
-            url: '../bms/get_global_fund_out',
-            cache: false,
-            data: postdata,
-            success: function (data) {
-                $('#FundOutForm').form('clear');
-                if (data&&data.success) {
-                    if (data.org == '' || data.org == null || data.org == undefined)
-                    {
-                        $("#FundOutForm #org").textbox('setText','默认显示全局出金配置');
-                        $("#FundOutForm #org").textbox('readonly');
-                    }
-                    else
-                    {
-                        $("#FundOutForm #org").textbox('setText',data.org);
-                        $("#FundOutForm #org").textbox('readonly');
-                    }
-                    $("#FundOutForm #begin_time").timespinner('setValue', data.begin_time);
-                    $("#FundOutForm #end_time").timespinner('setValue', data.end_time);
-                    $("#FundOutForm #max_count_each_day").numberbox('setValue', data.max_count_each_day);
-                    $("#FundOutForm #max_money_each_day").numberbox('setValue', data.max_money_each_day);
-                    $("#FundOutForm #max_money_each_time").numberbox('setValue', data.max_money_each_time);
-                    for (var i = 0; i < data.week.length; i++) {
-                        $("#FundOutForm").find("input:checkbox[value=" + data.week[i].toString() + "]").prop('checked', true);
-                    }
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: '出金配置加载成功',
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-
-                }
-                else {
-                    $('#FundOutForm').form('clear');
-                    alert("出金配置加载失败，" + data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
+        var post_url = '../bms/get_global_fund_out';
+        common_ajax_post(post_url,postdata,false,function (data) {
+            $('#FundOutForm').form('clear');
+            if (data.org == '' || data.org == null || data.org == undefined)
+            {
+                $("#FundOutForm #org").textbox('setText','默认显示全局出金配置');
+                $("#FundOutForm #org").textbox('readonly');
             }
+            else
+            {
+                $("#FundOutForm #org").textbox('setText',data.org);
+                $("#FundOutForm #org").textbox('readonly');
+            }
+            $("#FundOutForm #begin_time").timespinner('setValue', data.begin_time);
+            $("#FundOutForm #end_time").timespinner('setValue', data.end_time);
+            $("#FundOutForm #max_count_each_day").numberbox('setValue', data.max_count_each_day);
+            $("#FundOutForm #max_money_each_day").numberbox('setValue', data.max_money_each_day);
+            $("#FundOutForm #max_money_each_time").numberbox('setValue', data.max_money_each_time);
+            for (var i = 0; i < data.week.length; i++) {
+                $("#FundOutForm").find("input:checkbox[value=" + data.week[i].toString() + "]").prop('checked', true);
+            }
+            $.messager.show({
+                title: '我的消息',
+                msg: '出金配置加载成功',
+                timeout: 5000,
+                showType: 'slide'
+            });
+        },function () {
+            $('#FundOutForm').form('clear');
         });
-
     }
     function FundOutEvent() {
         var valid = $('#FundOutForm').form('validate');
@@ -100,28 +86,9 @@
             max_money_each_day:$("#FundOutForm #max_money_each_day").numberbox('getValue'),
             max_money_each_time:$("#FundOutForm #max_money_each_time").numberbox('getValue')
         };
-        $.ajax({
-            type: 'POST',
-            url: '../bms/add_fund_out',
-            cache: false,
-            data: postdata,
-            success: function (data) {
-                if (data&&data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: data.msg,
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                }
-                else {
-                    alert("更新出金配置失败，请检查" + data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
-        });
+        var post_url='../bms/add_fund_out';
+        common_ajax_post(post_url,postdata,true);
+
     }
 </script>
 

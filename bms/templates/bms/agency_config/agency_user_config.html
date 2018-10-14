@@ -98,22 +98,10 @@
                 $.messager.alert('提示', '请先在左边归属列表选择一个需要添加人员的归属');
                 return false
             }
-        $('#AddUserDialog').dialog({title:init_title,
-            width:650,
-            height:650,
-            buttons:[{
-				text:'保存',
-				handler:function(){
-				    AddUserEvent();
-				}
-			},{
-				text:'关闭',
-				handler:function(){
-				    $('#AddUserDialog').dialog('close')
-                }
-			}]
-        });
-        $('#AddUserDialog').dialog('open');
+
+        common_dialog($('#AddUserDialog'),init_title,650,650,true,AddUserEvent);
+
+
         ClearText();
     }
 
@@ -123,22 +111,8 @@
             $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
             return false;
         }
-        $('#UpdateUserDialog').dialog({title:init_title,
-            width:650,
-            height:550,
-            buttons:[{
-				text:'保存',
-				handler:function(){
-				    UpdateUserEvent();
-				}
-			},{
-				text:'关闭',
-				handler:function(){
-				    $('#UpdateUserDialog').dialog('close')
-                }
-			}]
-        });
-        $('#UpdateUserDialog').dialog('open');
+        common_dialog($('#UpdateUserDialog'),init_title,650,550,true,UpdateUserEvent);
+
         var row = $('#AgencyUserGrid').datagrid('getSelected');
         if(row)
         {
@@ -177,31 +151,11 @@
                 is_active: CBEnable
             };
             var passurl='../bms/update_main_user';
-            $.ajax({
-                type: 'POST',
-                url: passurl,
-                cache: false,
-                data:postdata,
-                success: function (data) {
-                    if (data && data.success) {
-                        $.messager.show({
-                            title: '我的消息',
-                            msg: data.msg,
-                            timeout: 5000,
-                            showType: 'slide'
-                        });
-                        $('#UpdateUserDialog').dialog('close');
-                        $("#AgencyUserGrid").datagrid("reload");
-                    }
-                    else {
-                        alert("添加失败，请您重新检查");
-                    }
-                },
-                error: function (data) {
-                    $.messager.alert('错误', data.responseText);
-                }
-            });
 
+            common_ajax_post(passurl,postdata,true,function () {
+                    $('#UpdateUserDialog').dialog('close');
+                    $("#AgencyUserGrid").datagrid("reload");
+            });
         }
 
     function ChangePwd() {
@@ -210,22 +164,8 @@
             $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
             return false;
         }
-        $('#ChangePwdDialog').dialog({title:'修改密码',
-            width:550,
-            height:300,
-            buttons:[{
-				text:'保存',
-				handler:function(){
-				    ChangePwdEvent();
-				}
-			},{
-				text:'关闭',
-				handler:function(){
-				    $('#ChangePwdDialog').dialog('close')
-                }
-			}]
-        });
-        $('#ChangePwdDialog').dialog('open');
+        common_dialog($('#ChangePwdDialog'),'修改密码',550,300,true,ChangePwdEvent);
+
     }
     function ChangePwdEvent() {
             //验证所有的文本框是否通过用户的验证
@@ -252,31 +192,11 @@
                 password: $("#ChangePwdForm #password1").val(),
             };
             var passurl='../bms/change_pwd_main_user';
-            $.ajax({
-                type: 'POST',
-                url: passurl,
-                cache: false,
-                data:postdata,
-                success: function (data) {
-                    if (data && data.success) {
-                        $.messager.show({
-                            title: '我的消息',
-                            msg: data.msg,
-                            timeout: 5000,
-                            showType: 'slide'
-                        });
-                        $('#ChangePwdDialog').dialog('close');
-                        $("#AgencyUserGrid").datagrid("reload");
-                    }
-                    else {
-                        alert("添加失败，请您重新检查");
-                    }
-                },
-                error: function (data) {
-                    $.messager.alert('错误', data.responseText);
-                }
-            });
 
+            common_ajax_post(passurl,postdata,true,function () {
+                    $('#ChangePwdDialog').dialog('close');
+                    $("#AgencyUserGrid").datagrid("reload");
+            });
         }
     function AddUserEvent() {
             var agencyid = $("#AgencyTree").tree("getSelected").id;
@@ -310,31 +230,11 @@
                 is_active: CBEnable
             };
             var passurl='../bms/add_main_user';
-            $.ajax({
-                type: 'POST',
-                url: passurl,
-                cache: false,
-                data:postdata,
-                success: function (data) {
-                    if (data && data.success) {
-                        $.messager.show({
-                            title: '我的消息',
-                            msg: data.msg,
-                            timeout: 5000,
-                            showType: 'slide'
-                        });
-                        $('#AddUserDialog').dialog('close');
-                        $("#AgencyUserGrid").datagrid("reload");
-                    }
-                    else {
-                        alert("添加失败，请您重新检查");
-                    }
-                },
-                error: function (data) {
-                    $.messager.alert('错误', data.responseText);
-                }
-            });
 
+            common_ajax_post(passurl,postdata,true,function () {
+                    $('#AddUserDialog').dialog('close');
+                    $("#AgencyUserGrid").datagrid("reload");
+            });
         }
     function ClearText() {
         $('#AddUserForm').form('clear');

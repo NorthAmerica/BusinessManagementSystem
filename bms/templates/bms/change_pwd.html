@@ -15,29 +15,11 @@
             password: $("#ChangePwdForm #password1").val(),
         };
         var passurl='../bms/change_pwd';
-        $.ajax({
-            type: 'POST',
-            url: passurl,
-            cache: false,
-            data:postdata,
-            success: function (data) {
-                if (data && data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: data.msg,
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                    window.location.href='logout'
-                }
-                else {
-                    alert("修改失败，"+data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
+
+        common_ajax_post(passurl,postdata,true,function () {
+            window.location.href='logout'
         });
+
     }
 </script>
 <div id="main-tab">

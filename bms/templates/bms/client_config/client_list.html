@@ -101,23 +101,8 @@
             $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
             return;
         }
+        common_dialog($('#AllowBusinessDialog'),init_title,650,300,true,AllowBusinessEvent);
 
-        $('#AllowBusinessDialog').dialog({title:init_title,
-            width:650,
-            height:300,
-            buttons:[{
-				text:'保存',
-				handler:function(){
-				    AllowBusinessEvent();
-				}
-			},{
-				text:'关闭',
-				handler:function(){
-				    $('#AllowBusinessDialog').dialog('close')
-                }
-			}]
-        });
-        $('#AllowBusinessDialog').dialog('open');
 
         if(UpdateClient)
         {
@@ -131,31 +116,13 @@
             client_id: row.id,
             allow_business: $('#AllowBusinessForm #allow_business').combotree('getValues').toString()
         };
-        var passurl='../bms/allow_business';
-        $.ajax({
-            type: 'POST',
-            url: passurl,
-            cache: false,
-            data:postdata,
-            success: function (data) {
-                if (data && data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: data.msg,
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                    $('#AllowBusinessDialog').dialog('close');
-                    $("#ClientGrid").datagrid("reload");
-                }
-                else {
-                    alert("添加失败，请您重新检查");
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
-        });
+        var post_url='../bms/allow_business';
+
+        common_ajax_post(post_url,postdata,true,function () {
+                $('#AllowBusinessDialog').dialog('close');
+                $("#ClientGrid").datagrid("reload");
+            });
+
     }
 
     function FreezeClientDialog(init_title) {
@@ -165,22 +132,8 @@
             return;
         }
 
-        $('#FreezeClientDialog').dialog({title:init_title,
-            width:650,
-            height:300,
-            buttons:[{
-				text:'保存',
-				handler:function(){
-				    FreezeClientEvent();
-				}
-			},{
-				text:'关闭',
-				handler:function(){
-				    $('#FreezeClientDialog').dialog('close')
-                }
-			}]
-        });
-        $('#FreezeClientDialog').dialog('open');
+        common_dialog($('#FreezeClientDialog'),init_title,650,300,true,FreezeClientEvent);
+
 
         if(UpdateClient)
         {
@@ -200,31 +153,13 @@
             client_id: row.id,
             is_freeze: CBEnable
         };
-        var passurl='../bms/freeze_client';
-        $.ajax({
-            type: 'POST',
-            url: passurl,
-            cache: false,
-            data:postdata,
-            success: function (data) {
-                if (data && data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: data.msg,
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                    $('#FreezeClientDialog').dialog('close');
-                    $("#ClientGrid").datagrid("reload");
-                }
-                else {
-                    alert(data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
-        });
+        var post_url='../bms/freeze_client';
+
+        common_ajax_post(post_url,postdata,true,function () {
+                $('#FreezeClientDialog').dialog('close');
+                $("#ClientGrid").datagrid("reload");
+            });
+
     }
 
     function CheckClientDialog(init_title) {
@@ -237,6 +172,8 @@
             $.messager.alert("友情提示", "已经审批通过，不能重复审批。");
             return;
         }
+
+        {#common_dialog($('#CheckClientDialog'),init_title,800,650,true,InBalanceEvent);#}
         $('#CheckClientDialog').dialog({title:init_title,
             width:800,
             height:650,
@@ -273,31 +210,13 @@
             client_id: row.id,
             check: check,
         };
-        var passurl='../bms/check_client';
-        $.ajax({
-            type: 'POST',
-            url: passurl,
-            cache: false,
-            data:postdata,
-            success: function (data) {
-                if (data && data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: data.msg,
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                    $('#CheckClientDialog').dialog('close');
-                    $("#ClientGrid").datagrid("reload");
-                }
-                else {
-                    alert("修改失败，"+data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
-        });
+        var post_url='../bms/check_client';
+
+        common_ajax_post(post_url,postdata,true,function () {
+                $('#CheckClientDialog').dialog('close');
+                $("#ClientGrid").datagrid("reload");
+            });
+
     }
 
     function ChangePwdDialog() {
@@ -306,22 +225,9 @@
             $.messager.alert("友情提示", "请您先选择一行需要修改的数据");
             return;
         }
-        $('#ChangePwdDialog').dialog({title:'修改密码',
-            width:650,
-            height:300,
-            buttons:[{
-				text:'保存',
-				handler:function(){
-				    ChangePwdEvent();
-				}
-			},{
-				text:'关闭',
-				handler:function(){
-				    $('#ChangePwdDialog').dialog('close')
-                }
-			}]
-        });
-        $('#ChangePwdDialog').dialog('open');
+
+        common_dialog($('#ChangePwdDialog'),init_title,650,300,true,ChangePwdEvent);
+
 
     }
 
@@ -345,31 +251,12 @@
             client_id: row.id,
             password: $("#ChangePwdForm #password1").val(),
         };
-        var passurl='../bms/change_client_pwd';
-        $.ajax({
-            type: 'POST',
-            url: passurl,
-            cache: false,
-            data:postdata,
-            success: function (data) {
-                if (data && data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: data.msg,
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                    $('#ChangePwdDialog').dialog('close');
-                    $("#ClientGrid").datagrid("reload");
-                }
-                else {
-                    alert("修改失败，"+data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
-        });
+        var post_url='../bms/change_client_pwd';
+
+        common_ajax_post(post_url,postdata,true,function () {
+                $('#ChangePwdDialog').dialog('close');
+                $("#ClientGrid").datagrid("reload");
+            });
     }
 </script>
 

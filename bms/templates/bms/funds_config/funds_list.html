@@ -74,49 +74,34 @@
     }
 
     function InBalanceDialog(init_title) {
-        $('#InBalanceDialog').dialog({title:init_title,
-            width:650,
-            height:300,
-            buttons:[{
-                text:'保存',
-                handler:function(){
-                    InBalanceEvent();
-                }
-            },{
-                text:'关闭',
-                handler:function(){
-                    $('#InBalanceDialog').dialog('close')
-                }
-            }]
-        });
-        $('#InBalanceDialog').dialog('open');
+        common_dialog($('#InBalanceDialog'),init_title,650,300,true,InBalanceEvent);
     }
 
     function InBalanceEvent() {
+        if ($('#InBalanceForm #fund_type').combobox('getValue')=='offline')
+        {
+            var postdata = {
+                fund_id: row.id,
+                fund_audit: $('#AuditBalanceForm #fund_audit').combobox('getValue'),
 
+           };
+            var post_url='../bms/fund_audit';
+
+            common_ajax_post(post_url,postdata,true,function () {
+                $('#AuditBalanceDialog').dialog('close');
+                $("#FundDetailGrid").datagrid("reload");
+            });
+
+        }
     }
 
     function OutBalanceDialog(init_title) {
-        $('#OutBalanceDialog').dialog({title:init_title,
-            width:650,
-            height:300,
-            buttons:[{
-                text:'保存',
-                handler:function(){
-                    OutBalanceEvent();
-                }
-            },{
-                text:'关闭',
-                handler:function(){
-                    $('#OutBalanceDialog').dialog('close')
-                }
-            }]
-        });
-        $('#OutBalanceDialog').dialog('open');
+        common_dialog($('#OutBalanceDialog'),init_title,650,300,true,OutBalanceEvent);
+
     }
 
     function OutBalanceEvent() {
-
+        var row = $('#FundDetailGrid').datagrid('getSelected');
     }
 
     function AuditBalanceDialog(init_title) {
@@ -135,23 +120,23 @@
             $.messager.alert("友情提示", "不能对机构资金明细进行审核");
             return;
         }
-
-        $('#AuditBalanceDialog').dialog({title:init_title,
-            width:650,
-            height:300,
-            buttons:[{
-                text:'保存',
-                handler:function(){
-                    AuditBalanceEvent();
-                }
-            },{
-                text:'关闭',
-                handler:function(){
-                    $('#AuditBalanceDialog').dialog('close')
-                }
-            }]
-        });
-        $('#AuditBalanceDialog').dialog('open');
+        common_dialog($('#AuditBalanceDialog'),init_title,null,null,true,AuditBalanceEvent,null);
+        {#$('#AuditBalanceDialog').dialog({title:init_title,#}
+        {#    width:650,#}
+        {#    height:300,#}
+        {#    buttons:[{#}
+        {#        text:'保存',#}
+        {#        handler:function(){#}
+        {#            AuditBalanceEvent();#}
+        {#        }#}
+        {#    },{#}
+        {#        text:'关闭',#}
+        {#        handler:function(){#}
+        {#            $('#AuditBalanceDialog').dialog('close')#}
+        {#        }#}
+        {#    }]#}
+        {# });#}
+        {#$('#AuditBalanceDialog').dialog('open');#}
 
         if(Update)
         {
@@ -166,30 +151,12 @@
             fund_audit: $('#AuditBalanceForm #fund_audit').combobox('getValue'),
         };
         var passurl='../bms/fund_audit';
-        $.ajax({
-            type: 'POST',
-            url: passurl,
-            cache: false,
-            data:postdata,
-            success: function (data) {
-                if (data && data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: data.msg,
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                    $('#AuditBalanceDialog').dialog('close');
-                    $("#FundDetailGrid").datagrid("reload");
-                }
-                else {
-                    alert("修改失败，"+data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
-        });
+        function reflash(){
+            $('#AuditBalanceDialog').dialog('close');
+            $("#FundDetailGrid").datagrid("reload");
+        }
+        common_ajax_post(passurl,postdata,true,reflash);
+
     }
 </script>
 

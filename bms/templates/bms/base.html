@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{% static 'InsdepUI/icon.css' %}">
     <link rel="stylesheet" href="{% static 'InsdepUI/iconfont/iconfont.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'self.css' %}">
+{#    <link rel="stylesheet" href="{% static 'self.css' %}">#}
     <style>
         .tabs li.tabs-selected a.tabs-inner {
             font-weight: bold;
@@ -29,6 +29,7 @@
             data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
         });
     </script>
+    <script src="{% static 'js_shortcuts.js' %}"></script>
 </head>
 <body class="easyui-layout">
 <div data-options="region:'north'" style="height:90px;background-size:cover;background-image: url('{% static 'login/images/bg-01.jpg' %}');">
@@ -47,6 +48,7 @@
 
 <script src="{% static 'InsdepUI/jquery.easyui.min.js' %}"></script>
 <script src="{% static 'InsdepUI/insdep.extend.min.js' %}"></script>
+
 <script>
     $(function () {
         $('#main-tab').tabs({

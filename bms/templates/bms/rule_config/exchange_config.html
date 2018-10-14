@@ -15,51 +15,46 @@
         var postdata = {
             org_id:org_id
         };
-        $.ajax({
-            type: 'POST',
-            url: '../bms/get_exchange_rule',
-            cache: false,
-            data: postdata,
-            success: function (data) {
-                $('#ExchangeRuleForm').form('clear');
-                if (data&&data.success) {
-                    if (data.org == '' || data.org == null || data.org == undefined)
-                    {
-                        $("#ExchangeRuleForm #org").textbox('setText','默认显示全局配置');
-                        $("#ExchangeRuleForm #org").textbox('readonly');
-                    }
-                    else
-                    {
-                        $("#ExchangeRuleForm #org").textbox('setText',data.org);
-                        $("#ExchangeRuleForm #org").textbox('readonly');
-                    }
-                    if(data.enquiry_stock != '' && data.enquiry_stock != null && data.enquiry_stock != undefined)
-                    {
-                        insertContact(data.enquiry_stock,'enquiry_stock')
-                    }
-                    if(data.enquiry_commodity != '' && data.enquiry_commodity != null && data.enquiry_commodity != undefined)
-                    {
-                        insertContact(data.enquiry_commodity,'enquiry_commodity')
-                    }
-                    if(data.order_stock != '' && data.order_stock != null && data.order_stock != undefined)
-                    {
-                        insertContact(data.order_stock,'order_stock')
-                    }
-                    if(data.order_commodity != '' && data.order_commodity != null && data.order_commodity != undefined)
-                    {
-                        insertContact(data.order_commodity,'order_commodity')
-                    }
-                    if(data.close_stock != '' && data.close_stock != null && data.close_stock != undefined)
-                    {
-                        insertContact(data.close_stock,'close_stock')
-                    }
-                    if(data.close_commodity != '' && data.close_commodity != null && data.close_commodity != undefined)
-                    {
-                        insertContact(data.close_commodity,'close_commodity')
-                    }
-                }
+        var passurl = '../bms/get_exchange_rule';
+
+
+        common_ajax_post(passurl,postdata,false,function (data) {
+            $('#ExchangeRuleForm').form('clear');
+            if (data.org == '' || data.org == null || data.org == undefined)
+            {
+                $("#ExchangeRuleForm #org").textbox('setText','默认显示全局配置');
+                $("#ExchangeRuleForm #org").textbox('readonly');
             }
-        })
+            else
+            {
+                $("#ExchangeRuleForm #org").textbox('setText',data.org);
+                $("#ExchangeRuleForm #org").textbox('readonly');
+            }
+            if(data.enquiry_stock != '' && data.enquiry_stock != null && data.enquiry_stock != undefined)
+            {
+                insertContact(data.enquiry_stock,'enquiry_stock')
+            }
+            if(data.enquiry_commodity != '' && data.enquiry_commodity != null && data.enquiry_commodity != undefined)
+            {
+                insertContact(data.enquiry_commodity,'enquiry_commodity')
+            }
+            if(data.order_stock != '' && data.order_stock != null && data.order_stock != undefined)
+            {
+                insertContact(data.order_stock,'order_stock')
+            }
+            if(data.order_commodity != '' && data.order_commodity != null && data.order_commodity != undefined)
+            {
+                insertContact(data.order_commodity,'order_commodity')
+            }
+            if(data.close_stock != '' && data.close_stock != null && data.close_stock != undefined)
+            {
+                insertContact(data.close_stock,'close_stock')
+            }
+            if(data.close_commodity != '' && data.close_commodity != null && data.close_commodity != undefined)
+            {
+                insertContact(data.close_commodity,'close_commodity')
+            }
+        });
     }
     function insertContact(idata,type) {
         $("#ExchangeRuleForm ."+type+" #begin_time").timespinner('setValue', idata.begin_time);
@@ -171,28 +166,9 @@
             },
 
         };
-        $.ajax({
-            type: 'POST',
-            url: '../bms/add_exchange_rule',
-            cache: false,
-            data: postdata,
-            success: function (data) {
-                if (data&&data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: data.msg,
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                }
-                else {
-                    alert("更新配置失败，请检查" + data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
-        });
+        var post_url = '../bms/add_exchange_rule';
+        common_ajax_post(post_url,postdata,true);
+
     }
 </script>
 

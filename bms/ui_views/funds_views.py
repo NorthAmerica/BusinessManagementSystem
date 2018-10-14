@@ -105,3 +105,10 @@ def fund_audit(request):
 	except Exception as ex:
 		print(ex)
 		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)
+
+def offline_in_balance(request):
+	try:
+		pass
+	except Exception as ex:
+		print(ex)
+		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)

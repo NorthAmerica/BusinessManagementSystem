@@ -17,47 +17,34 @@
         var postdata = {
             org_id:org_id
         };
-        $.ajax({
-            type: 'POST',
-            url: '../bms/get_global_fund_in',
-            cache: false,
-            data: postdata,
-            success: function (data) {
-                $('#FundInForm').form('clear');
-                if (data&&data.success) {
-                    if (data.org == '' || data.org == null || data.org == undefined)
-                    {
-                        $("#FundInForm #org").textbox('setText','默认显示全局入金配置');
-                        $("#FundInForm #org").textbox('readonly');
-                    }
-                    else
-                    {
-                        $("#FundInForm #org").textbox('setText',data.org);
-                        $("#FundInForm #org").textbox('readonly');
-                    }
-                    $("#FundInForm #begin_time").timespinner('setValue', data.begin_time);
-                    $("#FundInForm #end_time").timespinner('setValue', data.end_time);
-                    $("#FundInForm #min_gateway").numberbox('setValue', data.min_gateway);
-                    $("#FundInForm #min_shortcut").numberbox('setValue', data.min_shortcut);
-                    for (var i = 0; i < data.week.length; i++) {
-                        $("#FundInForm").find("input:checkbox[value=" + data.week[i].toString() + "]").prop('checked', true);
-                    }
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: '入金配置加载成功',
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-
-                }
-                else {
-                    $('#FundInForm').form('clear');
-                    alert("入金配置加载失败，" + data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
+        var post_url='../bms/get_global_fund_in';
+        common_ajax_post(post_url,postdata,false,function (data) {
+            $('#FundInForm').form('clear');
+            if (data.org == '' || data.org == null || data.org == undefined)
+            {
+                $("#FundInForm #org").textbox('setText','默认显示全局入金配置');
+                $("#FundInForm #org").textbox('readonly');
             }
+            else
+            {
+                $("#FundInForm #org").textbox('setText',data.org);
+                $("#FundInForm #org").textbox('readonly');
+            }
+            $("#FundInForm #begin_time").timespinner('setValue', data.begin_time);
+            $("#FundInForm #end_time").timespinner('setValue', data.end_time);
+            $("#FundInForm #min_gateway").numberbox('setValue', data.min_gateway);
+            $("#FundInForm #min_shortcut").numberbox('setValue', data.min_shortcut);
+            for (var i = 0; i < data.week.length; i++) {
+                $("#FundInForm").find("input:checkbox[value=" + data.week[i].toString() + "]").prop('checked', true);
+            }
+            $.messager.show({
+                title: '我的消息',
+                msg: '入金配置加载成功',
+                timeout: 5000,
+                showType: 'slide'
+            });
+        },function () {
+            $('#FundInForm').form('clear');
         });
 
     }
@@ -98,28 +85,9 @@
             min_gateway: $('#FundInForm #min_gateway').numberbox('getValue'),
             min_shortcut: $('#FundInForm #min_shortcut').numberbox('getValue')
         };
-        $.ajax({
-            type: 'POST',
-            url: '../bms/add_fund_in',
-            cache: false,
-            data: postdata,
-            success: function (data) {
-                if (data&&data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: data.msg,
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                }
-                else {
-                    alert("更新入金配置失败，请检查" + data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
-        });
+        var post_url = '../bms/add_fund_in';
+        common_ajax_post(post_url,postdata,true);
+
     }
 </script>
 

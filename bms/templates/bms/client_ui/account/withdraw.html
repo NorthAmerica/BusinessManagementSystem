@@ -42,25 +42,11 @@
                 {
                     {#线下提现#}
                     var data = new FormData($('#withdraw_form')[0]);
-                    $.ajax({
-                        url: '../withdraw',
-                        type: 'POST',
-                        data: data,
-                        dataType: 'JSON',
-                        cache: false,
-                        processData: false,
-                        contentType: false,
-                        success: function (data) {
-                            if (data && data.success) {
-                                window.location.href='/checking'
-                            } else {
-                                $.toptip("线下提现失败，"+data.msg, 'error');
-                            }
-                        },
-                        error: function (data) {
-                            $.toptip('操作失败' + data.responseText, 'error');
-                        }
-                    })
+                    var post_url = '../withdraw';
+                    client_ajax_post(post_url,data,function () {
+                        window.location.href='/checking'
+                    });
+
                 }else
                 {
                     {#线上提现#}

@@ -165,32 +165,12 @@
             RoleID: RoleID,
             UserIDs: UserIDs.slice(0, UserIDs.length-1)
         };
+        var post_url ='../bms/add_user_to_group';
+        common_ajax_post(post_url,postdata,true,function () {
+                $("#AddUserRoleDialog").dialog('close');
+                $("#UserGrid1").datagrid('reload');
+            });
 
-        $.ajax({
-            type: 'POST',
-            url: '../bms/add_user_to_group',
-            cache: false,
-            {#headers: headers,#}
-            data: postdata,
-            success: function (data) {
-                if (data && data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: '添加用户组成功。',
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                    $("#AddUserRoleDialog").dialog('close');
-                    $("#UserGrid1").datagrid('reload');
-                }
-                else {
-                    alert("添加失败，请检查"+data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
-        });
     }
 
     //删除用户角色关系
@@ -219,32 +199,11 @@
         };
         $.messager.confirm("删除信息", "您确认删除这些用户角色关系吗？", function (DeleteUserInfo) {
             if (DeleteUserInfo) {
+                var post_url ='../bms/remove_user_from_group';
+                common_ajax_post(post_url,postdata,true,function () {
+                    $("#UserGrid1").datagrid('reload');
+                 });
 
-                $.ajax({
-                    type: 'POST',
-                    url: '../bms/remove_user_from_group',
-                    cache: false,
-                    {#headers: headers,#}
-                    data: postdata,
-                    success: function (data) {
-                        if (data && data.success) {
-                            $.messager.show({
-                                title: '我的消息',
-                                msg: '删除用户角色成功。',
-                                timeout: 5000,
-                                showType: 'slide'
-                            });
-
-                            $("#UserGrid1").datagrid('reload');
-                        }
-                        else {
-                            alert("删除失败，请检查"+data.msg);
-                        }
-                    },
-                    error: function (data) {
-                        $.messager.alert('错误', data.responseText);
-                    }
-                });
             }
         });
     }

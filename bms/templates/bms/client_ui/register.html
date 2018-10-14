@@ -144,28 +144,16 @@
                     user_tel: $("#user_tel").val(),
                     user_pwd: $("#pwd_one").val()
                 };
-                $.ajax({
-                    method: "POST",
-                    url: '/reg_check',
-                    cache: false,
-                    data: postdata,
-                    success: function (data) {
-                        if (data && data.success) {
-                            $.alert('祝贺您注册成功，请您继续完成实名验证，以便使用所有功能。',"提示");
-                            window.location.href = "/index";
-                        } else {
-                            $.alert(data.msg,"提示");
-                            clear_data();
-                        }
-                    },
-                    error: function (data) {
-                        $.alert(data.responseText,'错误');
-                        clear_data();
-
-                    }
+                var post_url = '/reg_check';
+                client_ajax_post(post_url,postdata,function () {
+                    $.alert('祝贺您注册成功，请您继续完成实名验证，以便使用所有功能。',"提示");
+                    window.location.href = "/index";
+                },function () {
+                    clear_data();
                 });
+
             });
-        })
+        });
         function clear_data() {
             $('#pwd_one').val('');
             $('#pwd_two').val('');

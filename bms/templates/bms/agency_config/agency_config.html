@@ -106,22 +106,9 @@
             $.messager.alert('警告', '超级管理员请在总后台新增归属');
             return;
         {% endif %}
-        $('#AddAgencyDialog').dialog({title:init_title,
-            width:650,
-            height:650,
-            buttons:[{
-                text:'保存',
-                handler:function(){
-                    AddAgencyEvent();
-                }
-            },{
-                text:'关闭',
-                handler:function(){
-                    $('#AddAgencyDialog').dialog('close')
-                }
-            }]
-        });
-        $('#AddAgencyDialog').dialog('open');
+
+        common_dialog($('#AddAgencyDialog'),init_title,650,650,true,AddAgencyEvent);
+
         ClearText();
     }
     function AddAgencyEvent() {
@@ -181,31 +168,11 @@
             }
         {% endif %}
         var passurl='../bms/add_agency';
-        $.ajax({
-            type: 'POST',
-            url: passurl,
-            cache: false,
-            data:postdata,
-            success: function (data) {
-                if (data && data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: data.msg,
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                    $('#AddAgencyDialog').dialog('close');
-                    $("#AgencyGrid").datagrid("reload");
-                    $('#AgencyTree1').tree('reload');
-                }
-                else {
-                    alert("添加失败，请您重新检查");
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
-        });
+        common_ajax_post(passurl,postdata,true,function () {
+                $('#AddAgencyDialog').dialog('close');
+                $("#AgencyGrid").datagrid("reload");
+                $('#AgencyTree1').tree('reload');
+            });
 
     }
 
@@ -219,23 +186,8 @@
             $.messager.alert("友情提示", "请先选择一个归属");
             return;
         }
-        $('#UpdateAgencyDialog').dialog({
-            title:'修改归属信息',
-            width:650,
-            height:650,
-            buttons:[{
-                text:'保存',
-                handler:function(){
-                    UpdateAgencyEvent();
-                }
-            },{
-                text:'关闭',
-                handler:function(){
-                    $('#UpdateAgencyDialog').dialog('close')
-                }
-            }]
-        });
-        $('#UpdateAgencyDialog').dialog('open');
+
+        common_dialog($('#UpdateAgencyDialog'),init_title,650,650,true,UpdateAgencyEvent);
 
         if(selectA)
         {
@@ -291,31 +243,12 @@
             }
         {% endif %}
         var passurl='../bms/update_agency';
-        $.ajax({
-            type: 'POST',
-            url: passurl,
-            cache: false,
-            data:postdata,
-            success: function (data) {
-                if (data && data.success) {
-                    $.messager.show({
-                        title: '我的消息',
-                        msg: data.msg,
-                        timeout: 5000,
-                        showType: 'slide'
-                    });
-                    $('#UpdateAgencyDialog').dialog('close');
-                    $("#AgencyGrid").datagrid("reload");
-                    $('#AgencyTree1').tree('reload');
-                }
-                else {
-                    alert("更新失败，"+data.msg);
-                }
-            },
-            error: function (data) {
-                $.messager.alert('错误', data.responseText);
-            }
-        });
+        common_ajax_post(passurl,postdata,true,function () {
+                $('#UpdateAgencyDialog').dialog('close');
+                $("#AgencyGrid").datagrid("reload");
+                $('#AgencyTree1').tree('reload');
+            });
+
     }
 
     function ClearText() {

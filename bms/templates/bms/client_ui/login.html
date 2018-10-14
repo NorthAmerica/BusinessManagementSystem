@@ -103,22 +103,11 @@
                     user_tel: $("#user_tel").val(),
                     user_pwd: $("#user_pwd").val()
                 };
-                $.ajax({
-                    method: "POST",
-                    url: '/login_check',
-                    cache: false,
-                    data: postdata,
-                    success: function (data) {
-                        if (data && data.success) {
-                            window.location.href = "/index";
-                        } else {
-                            $.alert(data.msg,"提示");
-                        }
-                    },
-                    error: function (data) {
-                        $.alert(data.responseText,'错误');
-                    }
+                var post_url = '/login_check';
+                client_ajax_post(post_url,postdata,function () {
+                    window.location.href = "/index";
                 });
+
             });
     });
     </script>
