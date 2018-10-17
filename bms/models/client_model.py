@@ -30,6 +30,8 @@ class Client(models.Model):
 	web_app = models.CharField(choices=WEB_APP_CHOICES,max_length=32,default='app',verbose_name='申请端口')
 	account_balance = models.DecimalField(blank=True, null=True, default=0, max_digits=12, decimal_places=2,
 	                                      verbose_name='账户余额')
+	frozen_balance = models.DecimalField(blank=True, null=True, max_digits=12, decimal_places=2,default=0, verbose_name='冻结金额',
+	                                     help_text='在冻结解冻操作时使用')
 	last_login_time = models.DateTimeField(blank=True, null=True,verbose_name='最后登陆时间')
 	date_joined = models.DateTimeField( default=timezone.now,verbose_name='注册时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')

@@ -103,7 +103,6 @@
         }
         common_dialog($('#AllowBusinessDialog'),init_title,650,300,true,AllowBusinessEvent);
 
-
         if(UpdateClient)
         {
             $('#AllowBusinessForm #allow_business').combotree('setValues',UpdateClient.allow_business_id);
@@ -226,7 +225,7 @@
             return;
         }
 
-        common_dialog($('#ChangePwdDialog'),init_title,650,300,true,ChangePwdEvent);
+        common_dialog($('#ChangePwdDialog'),'修改客户密码',650,300,true,ChangePwdEvent);
 
 
     }
@@ -268,7 +267,7 @@
         <table id="ClientGrid"></table>
     </div>
     {#----------------------更新客户状态开始------------------------------------------------------------#}
-    <div id="FreezeClientDialog" class="easyui-dialog" style="padding:10px 20px"
+    <div id="FreezeClientDialog" class="easyui-dialog" style="padding:20px 20px"
          closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
         <form id="FreezeClientForm" method="post" novalidate="novalidate">
             <table id="tblAdd" class="self-input-table">
@@ -286,7 +285,7 @@
     </div>
     {#----------------------更新客户状态结束------------------------------------------------------------#}
     {#----------------------更新客户密码开始------------------------------------------------------------#}
-    <div id="ChangePwdDialog" class="easyui-dialog" style="padding:10px 20px"
+    <div id="ChangePwdDialog" class="easyui-dialog" style="padding:20px 20px"
          closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
         <form id="ChangePwdForm" method="post" novalidate="novalidate">
             <table id="tblAdd" class="self-input-table">
@@ -303,7 +302,7 @@
     </div>
     {#----------------------更新客户密码结束------------------------------------------------------------#}
     {#----------------------审核客户实名认证开始------------------------------------------------------------#}
-    <div id="CheckClientDialog" class="easyui-dialog" style="padding:10px 20px"
+    <div id="CheckClientDialog" class="easyui-dialog" style="padding:20px 20px"
          closed="true" resizable="true" modal="true" buttons="#dlg-buttons" align="center">
         <form id="CheckClientForm" method="post" novalidate="novalidate">
             <table id="tblAdd" class="self-input-table">

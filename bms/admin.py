@@ -1,17 +1,16 @@
-from django.contrib import admin
+from decimal import Decimal
+
+from django.contrib import admin,messages
+from django.http import HttpResponseRedirect
+
 from bms.models import *
 from guardian.admin import GuardedModelAdmin
 from django.contrib.auth.hashers import make_password
 from bms.tool_kit.view_shortcuts import auto_add_permissions,get_multi_text
+from bms.tool_kit.fund_shortcuts import change_client_account_balance,change_org_account_balance,change_agency_account_balance,unfrozen_client_balance,frozen_client_balance
 
 admin.site.site_header = '广州金艮-云平台管理后台'
 admin.site.site_title = '管理后台'
-
-
-# Register your models here.
-
-
-
 
 @admin.register(User)
 class UserAdmin(GuardedModelAdmin):
@@ -33,7 +32,7 @@ class UserAdmin(GuardedModelAdmin):
 			obj.password = make_password(form.data['password'])
 		obj.save()
 
-	readonly_fields = ('operator',)
+	readonly_fields = ('operator','date_joined')
 
 
 @admin.register(Org_User)
@@ -77,8 +76,8 @@ class Agency_UserAdmin(GuardedModelAdmin):
 class OrganizationAdmin(admin.ModelAdmin):
 	'''机构'''
 	date_hierarchy = 'date_joined'
-	list_display = ('name', 'logo', 'cachet', 'account','get_allow_business', 'is_freeze', 'date_joined')
-	readonly_fields = ('operator',)
+	list_display = ('name', 'logo', 'cachet', 'account','account_balance','get_allow_business', 'is_freeze', 'date_joined')
+	readonly_fields = ('operator','date_joined')
 
 	def get_allow_business(self, obj):
 		if  obj.allow_business:
@@ -93,21 +92,7 @@ class OrganizationAdmin(admin.ModelAdmin):
 		obj.save()
 		# 复制组模板
 		auto_add_permissions(obj,request,'org')
-		# # 新增管理员
-		# new_user = User.objects.create(username=obj.name + '总管理员',identity='org',password=make_password('686868'))
-		# Org_User.objects.create(user=new_user, organization=obj, operator=request.user.username)
-		# for temp in all_temp:
-		# 	all_perm = [perm for perm in temp.permissions.all()]
-		# 	all_object_perm = list(temp.groupobjectpermission_set.all())
-		#
-		# 	s_group = Special_Group.objects.create(name=obj.name+temp.temp_name,org=obj,operator=request.user.username)
-		# 	for perm in all_perm:
-		# 		s_group.permissions.add(perm)
-		# 	for object_perm in all_object_perm:
-		# 		codename = object_perm.permission.codename
-		# 		content_object = object_perm.content_object
-		# 		assign_perm(codename,s_group,content_object)
-		# 	new_user.groups.add(s_group)
+
 
 @admin.register(Org_Rule)
 class Org_RuleAdmin(admin.ModelAdmin):
@@ -118,7 +103,7 @@ class Org_RuleAdmin(admin.ModelAdmin):
 		obj.operator = request.user.username
 		obj.save()
 
-	readonly_fields = ('operator',)
+	readonly_fields = ('operator','date_joined')
 
 
 @admin.register(Agency)
@@ -126,8 +111,8 @@ class AgencyAdmin(admin.ModelAdmin):
 	'''代理'''
 	date_hierarchy = 'date_joined'
 	list_display = (
-	'name', 'get_org_name', 'grade','is_freeze','get_allow_business', 'rebate_x', 'rebate_y', 'rebate_z', 'get_f_name', 'invite_num', 'date_joined')
-	readonly_fields = ('invite_num', 'operator',)
+	'name', 'get_org_name', 'grade','is_freeze','account_balance','get_allow_business', 'rebate_x', 'rebate_y', 'rebate_z', 'get_f_name', 'invite_num', 'date_joined')
+	readonly_fields = ('invite_num', 'operator','date_joined')
 
 	def get_allow_business(self, obj):
 		if  obj.allow_business:
@@ -161,21 +146,7 @@ class AgencyAdmin(admin.ModelAdmin):
 		obj.save()
 		# 复制组模板
 		auto_add_permissions(obj, request, 'agency')
-		# new_user = User.objects.create(username=obj.name + '总管理员', identity='agency',password=make_password('686868'))
-		# Agency_User.objects.create(user=new_user, agency=obj, operator=request.user.username)
-		# for temp in all_temp:
-		# 	all_perm = [perm for perm in temp.permissions.all()]
-		# 	all_object_perm = list(temp.groupobjectpermission_set.all())
-		#
-		# 	s_group = Special_Group.objects.create(name=obj.name + temp.temp_name, agency=obj,
-		# 	                                       operator=request.user.username)
-		# 	for perm in all_perm:
-		# 		s_group.permissions.add(perm)
-		# 	for object_perm in all_object_perm:
-		# 		codename = object_perm.permission.codename
-		# 		content_object = object_perm.content_object
-		# 		assign_perm(codename,s_group,content_object)
-		# 	new_user.groups.add(s_group)
+
 
 
 
@@ -185,7 +156,7 @@ class Group_TemplateAdmin(admin.ModelAdmin):
 	date_hierarchy = 'date_joined'
 	list_display = ('name','type', 'operator', 'date_joined',)
 	filter_horizontal = ('permissions',) #生成多选框
-	readonly_fields = ('operator',)
+	readonly_fields = ('operator','date_joined')
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()
@@ -196,7 +167,7 @@ class Special_GroupAdmin(admin.ModelAdmin):
 	date_hierarchy = 'date_joined'
 	list_display = ('name', 'operator', 'date_joined',)
 	filter_horizontal = ('permissions',)  # 生成多选框
-	readonly_fields = ('operator',)
+	readonly_fields = ('operator','date_joined')
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
@@ -212,7 +183,7 @@ class MenuAdmin(GuardedModelAdmin):
 		obj.operator = request.user.username
 		obj.save()
 
-	readonly_fields = ('operator',)
+	readonly_fields = ('operator','date_joined')
 
 
 admin.site.register(Change_Info)
@@ -222,13 +193,152 @@ admin.site.register(Change_Info)
 class Fund_DetailAdmin(admin.ModelAdmin):
 	date_hierarchy = 'date_joined'
 	list_display = (
-		'serial_number', 'client','fund_type', 'fund_state', 'balance_before', 'balance_after',
-		'balance_change', 'frozen_balance', 'date_joined')
-	readonly_fields = ('serial_number', 'operator',)
+		'serial_number', 'org','agency','client','fund_type', 'fund_state', 'balance_before', 'balance_after',
+		'balance_change', 'fund_audit', 'date_joined')
+	fieldsets = (
+		("资金申请对象(三个中只能选择其中一种)", {'fields': ['org', 'agency', 'client']}),
+		("资金情况", {'fields': ['fund_type', 'fund_state', 'balance_before', 'balance_after', 'balance_change']}),
+		("审核状态", {'fields': ['fund_audit']}),
+		("其他信息", {'fields': ['serial_number','audit_time','auditor','operator','date_joined']})
+	)
+	readonly_fields = ('balance_before', 'balance_after','audit_time','auditor','serial_number', 'operator','date_joined')
+
+	def response_add(self, request, obj, post_url_continue=None):
+		"""
+		@des:这里可以自定义 创建对象后的 出错信息-----修改对象用response_change, 删除对象用resonse_delete
+		"""
+		# 如果有出错消息
+		if messages.get_messages(request):
+			return HttpResponseRedirect(".")
+		# end--如果没有出错消息
+		return super(Fund_DetailAdmin, self).response_add(request, obj, post_url_continue)
+
+	def response_change(self, request, obj):
+		"""
+		@des:这里可以自定义 创建对象后的 出错信息-----修改对象用response_change, 删除对象用resonse_delete
+		"""
+		# 如果有出错消息
+		if messages.get_messages(request):
+			return HttpResponseRedirect(".")
+		# end--如果没有出错消息
+		return super(Fund_DetailAdmin, self).response_change(request, obj)
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
+		# messages.error(request, u'角色不存在')
+		# return
+		if form.changed_data.count('fund_state') > 0 and (obj.fund_state == 'profit' or obj.fund_state == 'loss'):
+			messages.error(request, '资金类型不能选择盈利或亏损')
+			return
+
+		if change:
+			# 如果是修改状态
+			if form.changed_data.count('fund_audit')>0 and form.initial['fund_audit']=='agree':
+				# 已经审核通过的不能再次修改状态
+				messages.error(request, '不能再次修改已经审核通过的资金状态！')
+				return
+			if form.changed_data.count('fund_state')>0 or form.changed_data.count('fund_type')>0:
+				# 不能修改资金渠道及资金类型
+				messages.error(request, '资金渠道及资金类型不能进行修改！')
+				return
+			if form.changed_data.count('fund_audit')>0 and obj.fund_audit=='agree':
+				if obj.fund_state == 'out' or obj.fund_state == 'in':
+					self.agree_change_account_balance(obj)
+				elif obj.fund_state == 'freeze':
+					if obj.client is not None:
+						self.agree_client_frozen_balance(obj)
+					else:
+						messages.error(request, '只能客户进行冻结解冻资金！')
+						return
+				elif obj.fund_state == 'unfreeze':
+					self.agree_client_unfrozen_balance(obj)
+
+		else:
+			# 如果是新增
+			# if obj.fund_state == 'in':
+			# 	# 入金操作
+			# 	if obj.org is not None:
+			# 		obj.balance_before = obj.org.account_balance
+			# 		obj.balance_after = obj.org.account_balance + obj.balance_change
+			# 	elif obj.agency is not None:
+			# 		obj.balance_before = obj.agency.account_balance
+			# 		obj.balance_after = obj.agency.account_balance + obj.balance_change
+			# 	elif obj.client is not None:
+			# 		obj.balance_before = obj.client.account_balance
+			# 		obj.balance_after = obj.client.account_balance + obj.balance_change
+			# 	self.agree_change_account_balance(obj)
+			if obj.fund_state == 'out' or obj.fund_state == 'in':
+				# 出金操作
+				if obj.org is not None:
+					self.change_fund_detail(obj.fund_state,request,obj,obj.org)
+				elif obj.agency is not None:
+					self.change_fund_detail(obj.fund_state,request, obj, obj.agency)
+				elif obj.client is not None:
+					self.change_fund_detail(obj.fund_state,request, obj, obj.client)
+				self.agree_change_account_balance(obj)
+			elif obj.fund_state == 'freeze':
+				# 冻结资金
+				if obj.client is not None:
+					if self.over_limit(obj.client.account_balance, obj.balance_change):
+						messages.error(request, '冻结金额不能大于账户余额！')
+						return
+					obj.balance_before = obj.client.account_balance
+					obj.balance_after = obj.client.account_balance - obj.balance_change
+					self.agree_client_frozen_balance(obj)
+				else:
+					messages.error(request, '只能对客户资金进行冻结！')
+					return
+			elif obj.fund_state == 'unfreeze':
+				# 解冻资金
+				if obj.client is not None:
+					if self.over_limit(obj.client.frozen_balance, obj.balance_change):
+						messages.error(request, '解冻金额不能大于冻结余额！')
+						return
+					obj.balance_before = obj.client.account_balance
+					obj.balance_after = obj.client.account_balance + obj.balance_change
+					self.agree_client_unfrozen_balance(obj)
+				else:
+					messages.error(request, '只能对客户资金进行解冻！')
+					return
+			else:
+				messages.error(request, '资金类型不能修改为盈利或亏损！')
+				return
 		obj.save()
+
+	def change_fund_detail(self,in_or_out,request,obj,who):
+		if in_or_out=='out':
+			if self.over_limit(who.account_balance, obj.balance_change):
+				messages.error(request, '出金金额不能大于账户余额！')
+				return
+			obj.balance_before = who.account_balance
+			obj.balance_after = who.account_balance - obj.balance_change
+		elif in_or_out=='in':
+			obj.balance_before = who.account_balance
+			obj.balance_after = who.account_balance + obj.balance_change
+
+	def over_limit(self,min,max):
+		# 是否超过现有账户金额
+		if Decimal(min) < Decimal(max):
+			return True
+		else:
+			return False
+
+	def agree_client_frozen_balance(self,obj):
+		if obj.fund_audit == 'agree':
+			frozen_client_balance(obj.client_id,obj.balance_change)
+	def agree_client_unfrozen_balance(self,obj):
+		if obj.fund_audit == 'agree':
+			unfrozen_client_balance(obj.client_id,obj.balance_change)
+
+	def agree_change_account_balance(self,obj):
+		# 审核通过资金变更申请
+		if obj.fund_audit == 'agree':
+			if obj.org is not None:
+				change_org_account_balance(obj.org_id, obj.balance_after)
+			elif obj.agency is not None:
+				change_agency_account_balance(obj.agency_id, obj.balance_after)
+			elif obj.client is not None:
+				change_client_account_balance(obj.client_id, obj.balance_after)
 
 
 @admin.register(Fund_In_Rule)
@@ -237,7 +347,7 @@ class Fund_In_RuleAdmin(admin.ModelAdmin):
 	list_display = (
 		'org', 'begin_time', 'end_time', 'week', 'min_gateway', 'min_shortcut',
 		'operator', 'date_joined')
-	readonly_fields = ('operator',)
+	readonly_fields = ('operator','date_joined')
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
@@ -250,7 +360,7 @@ class Fund_Out_RuleAdmin(admin.ModelAdmin):
 	list_display = (
 		'week', 'org', 'begin_time', 'end_time', 'max_count_each_day', 'max_money_each_day', 'max_money_each_time',
 		'operator', 'date_joined')
-	readonly_fields = ('operator',)
+	readonly_fields = ('operator','date_joined')
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
@@ -263,7 +373,7 @@ class Exchange_RuleAdmin(admin.ModelAdmin):
 	list_display = (
 		'week','org', 'begin_time', 'end_time', 'option_type', 'type', 'operator',
 		'date_joined')
-	readonly_fields = ('operator',)
+	readonly_fields = ('operator','date_joined')
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
@@ -274,7 +384,7 @@ class Notional_PrincipalAdmin(admin.ModelAdmin):
 	date_hierarchy = 'date_joined'
 	list_display = (
 		'number', 'org', 'option_type', 'operator', 'date_joined')
-	readonly_fields = ('operator',)
+	readonly_fields = ('operator','date_joined')
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
@@ -284,8 +394,8 @@ class Notional_PrincipalAdmin(admin.ModelAdmin):
 class ClientAdmin(admin.ModelAdmin):
 	date_hierarchy = 'date_joined'
 	list_display = (
-		'mobile_phone', 'identity_card', 'organization','agency','status','is_freeze','get_allow_business','date_joined')
-	readonly_fields = ('operator',)
+		'mobile_phone', 'identity_card', 'organization','agency','status','is_freeze','account_balance','get_allow_business','date_joined')
+	readonly_fields = ('operator','date_joined')
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()
@@ -308,7 +418,7 @@ class Order_DetailAdmin(admin.ModelAdmin):
 		'call_put', 'option_pattern','option_code','option_rate',
 		'order_number','order_price','exercise_day','notional_principal'
 		,'date_joined')
-	readonly_fields = ('serial_number','operator',)
+	readonly_fields = ('serial_number','operator','date_joined')
 
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
@@ -329,7 +439,7 @@ class MessageAdmin(admin.ModelAdmin):
 	)  # 分组排列
 
 	filter_horizontal = ('client','org','agency')  # 生成多选框
-	readonly_fields = ('client_have_read','org_have_read','agency_have_read','operator',)
+	readonly_fields = ('client_have_read','org_have_read','agency_have_read','operator','date_joined')
 	def save_model(self, request, obj, form, change):
 		obj.operator = request.user.username
 		obj.save()

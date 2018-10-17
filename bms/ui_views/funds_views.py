@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -7,11 +8,16 @@ from django.db import transaction
 from bms.models.choices_for_model import FUND_STATUS_CHOICES
 from bms.forms import *
 from django.contrib.auth.models import Group
-from bms.tool_kit.view_shortcuts import get_agency_obj,get_org_obj,get_agency_id,page_helper
+from bms.tool_kit.view_shortcuts import get_agency_obj,get_org_obj,get_org_id,get_agency_id,page_helper
+from bms.tool_kit.fund_shortcuts import offline_org_balance,offline_agency_balance
 
 @login_required
 def funds_list(request):
-	return render(request, 'bms/funds_config/funds_list.html')
+	if request.user.identity == 'org':
+		account_balance = get_org_obj(request).account_balance
+	elif request.user.identity == 'agency':
+		account_balance =get_agency_obj(request).account_balance
+	return render(request, 'bms/funds_config/funds_list.html',locals())
 
 @login_required
 def fund_detail_list(request):
@@ -98,7 +104,10 @@ def fund_audit(request):
 						if fund_detail.client is not None:
 							Client.objects.filter(pk=fund_detail.client_id).update(account_balance=fund_detail.balance_after)
 						if fund_detail.agency is not None:
-							Agency.objects.filter(pk=fund_detail.agency_id).update(account_balance=fund_detail.balance_after)
+							if request.user.identity == 'org':
+								Agency.objects.filter(pk=fund_detail.agency_id).update(account_balance=fund_detail.balance_after)
+							else:
+								return JsonResponse({'success': False, 'msg': '只有上级才能对资金明细进行审核！'}, safe=False)
 					find_fund_detail.update(fund_audit=fund_audit)
 					return JsonResponse({'success': True, 'msg': '更新成功！'}, safe=False)
 		return JsonResponse({'success': False, 'msg': '参数有误！'}, safe=False)
@@ -106,9 +115,27 @@ def fund_audit(request):
 		print(ex)
 		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)
 
-def offline_in_balance(request):
+def offline_balance_change(request):
+	'''线下资金出入金'''
+	global false_msg
 	try:
-		pass
+		if request.method=='POST':
+			balance_change = request.POST.get('balance_change', None)
+			type = request.POST.get('type', None)
+
+			if balance_change is not None and type is not None:
+
+				if request.user.identity == 'org':
+					is_ok,false_msg = offline_org_balance(get_org_id(request),type,balance_change,request.user.username)
+					if is_ok:
+						return JsonResponse({'success': True, 'msg': '出入金申请已提交'}, safe=False)
+
+				elif request.user.identity == 'agency':
+					is_ok,false_msg = offline_agency_balance(get_agency_id(request),type,balance_change,request.user.username)
+					if is_ok:
+						return JsonResponse({'success': True, 'msg': '出入金申请已提交'}, safe=False)
+
+		return JsonResponse({'success': False, 'msg': false_msg}, safe=False)
 	except Exception as ex:
 		print(ex)
 		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)

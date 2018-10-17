@@ -40,8 +40,6 @@ class Organization(models.Model):
 		verbose_name_plural = '机构'
 
 
-
-
 class Org_Rule(models.Model):
 	'''机构费率规则'''
 	org = models.ForeignKey('Organization', null=True, on_delete=models.SET_NULL,

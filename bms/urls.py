@@ -64,7 +64,7 @@ urlpatterns = [
 	path('fund_detail_list',funds_views.fund_detail_list,name='fund_detail_list'),
 	path('get_fund_audit',funds_views.get_fund_audit,name='get_fund_audit'),
 	path('fund_audit',funds_views.fund_audit,name='fund_audit'),
-	path('offline_in_balance',funds_views.offline_in_balance,name='offline_in_balance'),
+	path('offline_balance_change',funds_views.offline_balance_change,name='offline_balance_change'),
 	# 订单管理
 	path('order_list',order_views.order_list,name='order_list'),
 ]

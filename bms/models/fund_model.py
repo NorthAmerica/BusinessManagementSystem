@@ -23,7 +23,7 @@ class Fund_Detail(models.Model):
 	balance_before = models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='交易前余额')
 	balance_after =  models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='交易后余额')
 	balance_change = models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='交易金额')
-	frozen_balance = models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='冻结金额')
+	# frozen_balance = models.DecimalField(blank=True,null=True,max_digits=12,decimal_places=2, verbose_name='冻结金额',help_text='在冻结解冻操作时使用')
 	date_joined = models.DateTimeField(default=timezone.now,verbose_name='操作时间')
 	operator = models.CharField(max_length=50, blank=True,null=True, verbose_name='添加者')
 

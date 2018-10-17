@@ -1,5 +1,5 @@
 {#资金流水列表#}
-
+{% load humanize %}
 <script>
     $(function () {
         initTable();
@@ -7,15 +7,15 @@
 
     function initTable() {
         $('#FundDetailGrid').datagrid({
-            title: '资金流水列表',
+            title: '资金流水列表-------当前账户余额：{{ account_balance|intcomma }} 元',
             iconCls: 'icon-user',
             loadMsg: '数据加载中...',
             nowrap: true,
             autoRowHeight: true,
             striped: true,
             url: '../bms/fund_detail_list',
-            {#sortName: 'username',#}
-            {#sortOrder: 'asc',#}
+            sortName: 'date_joined',
+            sortOrder: 'desc',
             border: true,
             remoteSort: false,
             idField: 'id',
@@ -80,18 +80,16 @@
     function InBalanceEvent() {
         if ($('#InBalanceForm #fund_type').combobox('getValue')=='offline')
         {
-            var postdata = {
-                fund_id: row.id,
-                fund_audit: $('#AuditBalanceForm #fund_audit').combobox('getValue'),
-
+            var post_data = {
+                balance_change: $('#InBalanceForm #balance_change').val(),
+                type:'in'
            };
-            var post_url='../bms/fund_audit';
+            var post_url='../bms/offline_balance_change';
 
-            common_ajax_post(post_url,postdata,true,function () {
-                $('#AuditBalanceDialog').dialog('close');
+            common_ajax_post(post_url,post_data,true,function () {
+                $('#InBalanceDialog').dialog('close');
                 $("#FundDetailGrid").datagrid("reload");
             });
-
         }
     }
 
@@ -101,7 +99,19 @@
     }
 
     function OutBalanceEvent() {
-        var row = $('#FundDetailGrid').datagrid('getSelected');
+        if ($('#OutBalanceForm #fund_type').combobox('getValue')=='offline')
+        {
+            var postdata = {
+                balance_change: $('#OutBalanceForm #balance_change').val(),
+                type:'out'
+           };
+            var post_url='../bms/offline_balance_change';
+
+            common_ajax_post(post_url,postdata,true,function () {
+                $('#OutBalanceDialog').dialog('close');
+                $("#FundDetailGrid").datagrid("reload");
+            });
+        }
     }
 
     function AuditBalanceDialog(init_title) {
@@ -120,23 +130,14 @@
             $.messager.alert("友情提示", "不能对机构资金明细进行审核");
             return;
         }
-        common_dialog($('#AuditBalanceDialog'),init_title,null,null,true,AuditBalanceEvent,null);
-        {#$('#AuditBalanceDialog').dialog({title:init_title,#}
-        {#    width:650,#}
-        {#    height:300,#}
-        {#    buttons:[{#}
-        {#        text:'保存',#}
-        {#        handler:function(){#}
-        {#            AuditBalanceEvent();#}
-        {#        }#}
-        {#    },{#}
-        {#        text:'关闭',#}
-        {#        handler:function(){#}
-        {#            $('#AuditBalanceDialog').dialog('close')#}
-        {#        }#}
-        {#    }]#}
-        {# });#}
-        {#$('#AuditBalanceDialog').dialog('open');#}
+        {% if request.user.identity == 'agency' %}
+            if(Update.agency!=null && Update.agency!=undefined && Update.agency!='')
+            {
+                $.messager.alert("友情提示", "只能上级对归属资金明细进行审核");
+                return;
+            }
+        {% endif %}
+        common_dialog($('#AuditBalanceDialog'),init_title,650,300,true,AuditBalanceEvent);
 
         if(Update)
         {
