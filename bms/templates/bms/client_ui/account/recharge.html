@@ -17,7 +17,7 @@
             <div class="weui-cell">
                 <div class="weui-cell__hd"><label class="weui-label">充值金额</label></div>
                 <div class="weui-cell__bd">
-                    <input class="weui-input" id="recharge_num" name="recharge_num" type="number" pattern="[0-9]*" placeholder="请输入金额">
+                    <input class="weui-input" id="balance_change" name="balance_change" type="number" pattern="[0-9]*" placeholder="请输入金额">
                 </div>
             </div>
         </form>
@@ -34,11 +34,12 @@
     <script>
         $(function () {
             $('#recharge').click(function () {
+
                 if($('#fund_type').val()==''||$('#fund_type').val()==null||$('#fund_type').val()==undefined){
                     $.toptip('充值类型必须选择', 'error');
                     return;
                 }
-                if($('#recharge_num').val()==''||$('#recharge_num').val()==null||$('#recharge_num').val()==undefined)
+                if($('#balance_change').val()==''||$('#balance_change').val()==null||$('#balance_change').val()==undefined)
                 {
                     $.toptip('充值金额不能为空', 'error');
                     return;
@@ -46,7 +47,8 @@
                 if($('#fund_type').attr('data-values')=='offline')
                 {
                     {#线下充值#}
-                    var data = new FormData($('#recharge_form')[0]);
+                    {#var data = new FormData($('#recharge_form')[0]);#}
+                    var data = $('#recharge_form').serializeArray();
                     var post_url = '../recharge';
                     client_ajax_post(post_url,data,function () {
                         window.location.href='/checking'
@@ -71,7 +73,7 @@
                 }
             ],
             onChange: function(d) {
-                console.log(d);
+                {#console.log(d);#}
             },
             {#onClose: function() {#}
             {#    console.log("close");#}

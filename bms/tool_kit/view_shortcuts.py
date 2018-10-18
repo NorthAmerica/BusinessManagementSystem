@@ -302,7 +302,10 @@ def get_msg_num(request):
 
 def date_joined_sort(elem):
 	'''按日期排序'''
-	return elem.date_joined
+	if isinstance(elem,dict):
+		return elem['date_joined']
+	else:
+		return elem.date_joined
 
 def page_helper(list, rows, page):
 	'''分页器'''
@@ -351,18 +354,3 @@ def get_local_time():
 	return time.strftime('%H:%M:%S', time.localtime(time.time()))
 
 
-def check_in_rule(db_rule,balance_change):
-	# 检查是否符合入金规则
-	if [day for day in db_rule.week].count(get_week_day()) > 0:
-		t1 = int(db_rule.begin_time.strftime("%H%M%S"))
-		t2 = int(time.strftime('%H%M%S', time.localtime(time.time())))
-		t3 = int(db_rule.end_time.strftime("%H%M%S"))
-		if t1 < t2 < t3:
-			if db_rule.min_gateway > balance_change or db_rule.min_shortcut > balance_change:
-				return False, '抱歉，入金金额必须大于最小金额限制。'
-			else:
-				return True,''
-		else:
-			return False, '抱歉，现在时间不能进行入金操作。'
-	else:
-		return False, '抱歉，今天不能进行入金操作。'

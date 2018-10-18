@@ -118,7 +118,7 @@ def fund_audit(request):
 		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)
 
 @transaction.atomic
-@check_fund_rule('in')
+@check_fund_rule()
 def offline_balance_change(request):
 	'''线下资金出入金'''
 	global false_msg
@@ -133,7 +133,6 @@ def offline_balance_change(request):
 					is_ok,false_msg = offline_org_balance(get_org_id(request),type,balance_change,request.user.username)
 					if is_ok:
 						return JsonResponse({'success': True, 'msg': '出入金申请已提交'}, safe=False)
-
 				elif request.user.identity == 'agency':
 					is_ok,false_msg = offline_agency_balance(get_agency_id(request),type,balance_change,request.user.username)
 					if is_ok:

@@ -5,39 +5,51 @@
       <h1 class="demos-title">账户记录</h1>
     </header>
     <div class="weui-cells weui-cells_form">
-        <div class="weui-form-preview">
-            <div class="weui-form-preview__hd">
-                <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">交易金额</label>
-                    <em class="weui-form-preview__value">¥2400.00</em>
-                </div>
-            </div>
-            <div class="weui-form-preview__bd">
-                <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">资金渠道</label>
-                    <span class="weui-form-preview__value">电动打蛋机</span>
-                </div>
-                <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">资金类型</label>
-                    <span class="weui-form-preview__value">名字名字名字</span>
-                </div>
-                <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">流水号</label>
-                    <span class="weui-form-preview__value">长很长的名字很长很长的名字</span>
-                </div>
-                <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">交易前余额</label>
-                    <span class="weui-form-preview__value">¥2400.00</span>
-                </div>
-                <div class="weui-form-preview__item">
-                    <label class="weui-form-preview__label">交易后余额</label>
-                    <span class="weui-form-preview__value">¥2400.00</span>
-                </div>
-            </div>
-{#            <div class="weui-form-preview__ft">#}
-{#                <a class="weui-form-preview__btn weui-form-preview__btn_primary" href="javascript:">操作</a>#}
-{#            </div>#}
+        <div class='demos-content-padded'>
+            <a href="../redirect_pre_page/index#subtab3" class="weui-btn weui-btn_plain-default">返回</a>
         </div>
+        {% if account_list is not None %}
+            {% for account in account_list %}
+                <div class="weui-form-preview">
+                    <div class="weui-form-preview__hd">
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">交易金额</label>
+                            <em class="weui-form-preview__value">¥{{ account.balance_change|intcomma }}</em>
+                        </div>
+                    </div>
+                    <div class="weui-form-preview__bd">
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">资金渠道</label>
+                            <span class="weui-form-preview__value">{{ account.fund_type }}</span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">资金类型</label>
+                            <span class="weui-form-preview__value">{{ account.fund_state }}</span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">流水号</label>
+                            <span class="weui-form-preview__value">{{ account.serial_number }}</span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">交易前余额</label>
+                            <span class="weui-form-preview__value">¥{{ account.balance_before }}</span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">交易后余额</label>
+                            <span class="weui-form-preview__value">¥{{ account.balance_after }}</span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">申请时间</label>
+                            <span class="weui-form-preview__value">{{ account.date_joined }}</span>
+                        </div>
+                        <div class="weui-form-preview__item">
+                            <label class="weui-form-preview__label">审核状态</label>
+                            <span class="weui-form-preview__value">{{ account.fund_audit }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
         <div class='demos-content-padded'>
             <a href="../redirect_pre_page/index#subtab3" class="weui-btn weui-btn_plain-default">返回</a>
         </div>

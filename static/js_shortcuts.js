@@ -1,10 +1,10 @@
-function client_ajax_post(passurl,postdata,success_fun=null,failure_fun=null) {
+function client_ajax_post(post_url,post_data,success_fun=null,failure_fun=null) {
     // 客户端POST提交
     $.ajax({
         type: 'POST',
-        url: passurl,
+        url: post_url,
         cache: false,
-        data:postdata,
+        data:post_data,
         success: function (data) {
             if (data && data.success) {
                 if(success_fun)

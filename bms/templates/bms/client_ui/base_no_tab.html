@@ -17,6 +17,7 @@
             data: {csrfmiddlewaretoken: '{{ csrf_token }}'},
         });
     </script>
+    <script src="{% static 'js_shortcuts.js' %}"></script>
 </head>
 <body ontouchstart>
     {% block main-content %}
