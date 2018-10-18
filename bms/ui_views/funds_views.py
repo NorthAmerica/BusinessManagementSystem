@@ -1,15 +1,13 @@
 from decimal import Decimal
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from bms.models.choices_for_model import FUND_STATUS_CHOICES
 from bms.forms import *
-from django.contrib.auth.models import Group
-from bms.tool_kit.view_shortcuts import get_agency_obj,get_org_obj,get_org_id,get_agency_id,page_helper
+from bms.tool_kit.view_shortcuts import get_agency_obj,get_org_obj,get_org_id,get_agency_id,page_helper,date_joined_sort
 from bms.tool_kit.fund_shortcuts import offline_org_balance,offline_agency_balance
+from bms.tool_kit.views_decorator import check_fund_rule
 
 @login_required
 def funds_list(request):
@@ -37,6 +35,7 @@ def fund_detail_list(request):
 				fund_list.extend(list(Fund_Detail.objects.filter(agency=get_agency_obj(request))))
 				client_ids = Client.objects.filter(agency=get_agency_obj(request)).values('id')
 				fund_list.extend(list(Fund_Detail.objects.filter(client__id__in=client_ids)))
+			fund_list.sort(key=date_joined_sort,reverse=True)
 			results, total = page_helper(fund_list, rows, page)
 			eaList = []
 			for fund in results.object_list:
@@ -56,6 +55,7 @@ def fund_detail_list(request):
 					'auditor': fund.auditor,
 					'audit_time':'' if fund.audit_time is None else fund.audit_time.strftime("%Y-%m-%d %H:%M:%S")
 				})
+
 			json_data_list = {
 				'total': total,
 				'rows': eaList
@@ -100,11 +100,13 @@ def fund_audit(request):
 					if fund_audit=='agree':
 						fund_detail = find_fund_detail.first()
 						if fund_detail.org is not None:
+							# 不能对机构资金明细进行审核
 							return JsonResponse({'success': False, 'msg': '不能对机构资金明细进行审核！'}, safe=False)
 						if fund_detail.client is not None:
 							Client.objects.filter(pk=fund_detail.client_id).update(account_balance=fund_detail.balance_after)
 						if fund_detail.agency is not None:
 							if request.user.identity == 'org':
+								# 上级才能对资金明细进行审核
 								Agency.objects.filter(pk=fund_detail.agency_id).update(account_balance=fund_detail.balance_after)
 							else:
 								return JsonResponse({'success': False, 'msg': '只有上级才能对资金明细进行审核！'}, safe=False)
@@ -115,6 +117,8 @@ def fund_audit(request):
 		print(ex)
 		return JsonResponse({'success': False, 'msg': ex.__str__()}, safe=False)
 
+@transaction.atomic
+@check_fund_rule('in')
 def offline_balance_change(request):
 	'''线下资金出入金'''
 	global false_msg

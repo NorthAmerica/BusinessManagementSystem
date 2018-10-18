@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from bms.models import *
 from django.contrib.auth.hashers import make_password
-from bms.tool_kit.view_shortcuts import get_org_obj, send_msg_to_client,get_multi_text,page_helper
+from bms.tool_kit.view_shortcuts import get_org_obj, send_msg_to_client,get_multi_text,page_helper,date_joined_sort
 
 def client_list(request):
 	return render(request, 'bms/client_config/client_list.html')
@@ -21,6 +21,7 @@ def get_client_list(request):
 			else:
 				#默认查询机构下所有客户
 				client_list.extend(list(Client.objects.filter(organization=get_org_obj(request))))
+			client_list.sort(key=date_joined_sort, reverse=True)
 			results, total = page_helper(client_list,rows,page)
 			eaList = []
 			for client in results.object_list:

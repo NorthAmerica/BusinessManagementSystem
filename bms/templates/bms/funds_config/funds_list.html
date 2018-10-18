@@ -4,6 +4,12 @@
     $(function () {
         initTable();
     });
+    {#function sort_date(a,b){#}
+    {#    var starttime = new Date(Date.parse(a));#}
+    {#    var endtime = new Date(Date.parse(b));#}
+    {#    if (starttime>endtime) return 1;#}
+    {#    else return -1;#}
+    {# }#}
 
     function initTable() {
         $('#FundDetailGrid').datagrid({
@@ -14,8 +20,8 @@
             autoRowHeight: true,
             striped: true,
             url: '../bms/fund_detail_list',
-            sortName: 'date_joined',
-            sortOrder: 'desc',
+            {#sortName: 'date_joined',#}
+            {#sortOrder: 'desc',#}
             border: true,
             remoteSort: false,
             idField: 'id',

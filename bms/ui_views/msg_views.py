@@ -3,7 +3,7 @@ from django.shortcuts import render, get_list_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse,HttpResponseNotFound
 from bms.models import *
-from bms.tool_kit.view_shortcuts import get_org_id,get_agency_id,page_helper,msg_have_read
+from bms.tool_kit.view_shortcuts import get_org_id,get_agency_id,page_helper,msg_have_read,date_joined_sort
 
 def show_msg_num(request):
 	'''显示消息数量'''
@@ -26,7 +26,7 @@ def msg_list(request):
 			elif request.user.identity=='agency':
 				msg_list.extend(list(Message.objects.filter(for_all_agency=True)))
 				msg_list.extend(list(Message.objects.filter(org__id=get_agency_id(request))))
-
+			msg_list.sort(key=date_joined_sort, reverse=True)
 			results,total = page_helper(msg_list,rows,page)
 			eaList = []
 			for msg in results.object_list:

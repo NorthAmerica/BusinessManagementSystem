@@ -147,7 +147,7 @@ def offline_org_balance(org_id,in_or_out,balance,operator):
 					'operator':operator
 				}
 				Fund_Detail.objects.create(**fund_dic)
-				return True
+				return True,''
 			elif in_or_out=='out':
 				org = find_org.first()
 				if org.account_balance<balance:
@@ -166,12 +166,12 @@ def offline_org_balance(org_id,in_or_out,balance,operator):
 					'operator': operator
 				}
 				Fund_Detail.objects.create(**fund_dic)
-				return True
+				return True,''
 		else:
-			return False
+			return False,''
 	except Exception as ex:
 		print(ex)
-		return False
+		return False,ex.__str__()
 
 def offline_agency_balance(agency_id,in_or_out,balance,operator):
 	'''归属线下出入金'''

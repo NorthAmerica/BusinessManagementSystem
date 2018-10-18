@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from bms.forms import *
 from django.contrib.auth.models import Group
-from bms.tool_kit.view_shortcuts import get_org_user_list,page_helper
+from bms.tool_kit.view_shortcuts import get_org_user_list,page_helper,date_joined_sort
 
 def org_user_config(request):
 	return render(request,'bms/user_config/org_user_config.html')
@@ -38,9 +38,11 @@ def main_user_list(request):
 				if request.POST.get('agency_id') is not None:
 					agency = Agency.objects.get(pk=request.POST.get('agency_id'))
 					user_all =[agency_user_set.user for agency_user_set in agency.agency_user_set.all()]
+			user_all.sort(key=date_joined_sort, reverse=True)
 			#分页判断
 			if page is not None and rows is not None:
 				#有分页
+
 				results,total =page_helper(user_all,rows,page)
 				eaList=[]
 				for user in results.object_list:

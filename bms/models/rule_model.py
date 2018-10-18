@@ -16,6 +16,10 @@ class Fund_In_Rule(models.Model):
 	min_shortcut = models.DecimalField(null=True,max_digits=12,decimal_places=2, verbose_name='快捷单笔最小入金金额')
 	date_joined = models.DateTimeField(default=timezone.now, verbose_name='操作时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
+
+	def __str__(self):
+		return '入金限制表'
+
 	class Meta:
 		verbose_name = '入金限制表'
 		verbose_name_plural = '入金限制表'
@@ -31,6 +35,8 @@ class Fund_Out_Rule(models.Model):
 	max_money_each_time = models.DecimalField(null=True,max_digits=12,decimal_places=2, verbose_name='单笔最大出金金额')
 	date_joined = models.DateTimeField(default=timezone.now, verbose_name='操作时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
+	def __str__(self):
+		return '出金限制表'
 	class Meta:
 		verbose_name = '出金限制表'
 		verbose_name_plural = '出金限制表'
@@ -48,7 +54,8 @@ class Exchange_Rule(models.Model):
 	type = models.CharField(choices=EXCHANGE_TYPE,max_length=32,verbose_name='所属类型')
 	date_joined = models.DateTimeField(default=timezone.now, verbose_name='操作时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
-
+	def __str__(self):
+		return '交易询价时间设置'
 	class Meta:
 		verbose_name = '交易询价时间设置'
 		verbose_name_plural = '交易询价时间设置'
@@ -61,6 +68,8 @@ class Notional_Principal(models.Model):
 	number = models.DecimalField(null=True,max_digits=12,decimal_places=2, verbose_name='名义本金数额')
 	date_joined = models.DateTimeField(default=timezone.now, verbose_name='操作时间')
 	operator = models.CharField(max_length=50, blank=True, verbose_name='添加者')
+	def __str__(self):
+		return '名义本金设置'
 	class Meta:
 		verbose_name = '名义本金设置'
 		verbose_name_plural = '名义本金设置'

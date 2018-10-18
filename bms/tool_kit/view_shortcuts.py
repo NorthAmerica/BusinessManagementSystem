@@ -3,6 +3,7 @@ from django.contrib.auth.hashers import make_password
 from multiselectfield.db.fields import MSFList
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from bms.models import *
+import time
 
 
 def get_org_user_list(request):
@@ -25,14 +26,6 @@ def get_agency_user_list(request):
 		list_agency_user = list(Agency_User.objects.filter(agency_id=agency_id))
 		return [agency_user.user for agency_user in list_agency_user]
 
-	else:
-		return None
-
-
-def get_agency_id(request):
-	'''从登陆用户获取所属代理ID'''
-	if request.user is not None and request.user.identity == 'agency':
-		return request.user.agency_user.agency_id
 	else:
 		return None
 
@@ -60,20 +53,17 @@ def get_org_name(request):
 	else:
 		return '广州金艮投资有限公司'
 
-
-def get_agency_id(request):
-	if request.user is not None and request.user.identity == 'agency':
-		return request.user.agency_user.agency.id
-	else:
-		return None
-
-
 def get_agency_obj(request):
 	if request.user is not None and request.user.identity == 'agency':
 		return request.user.agency_user.agency
 	else:
 		return None
 
+def get_agency_id(request):
+	if request.user is not None and request.user.identity == 'agency':
+		return request.user.agency_user.agency.id
+	else:
+		return None
 
 def get_agency_name(request):
 	'''从登陆用户获取所属机构名称'''
@@ -128,7 +118,8 @@ def auto_add_permissions(obj, request, org_agency):
 	try:
 		if org_agency == 'org':
 			all_temp = Group_Template.objects.filter(type='org')
-			new_user = User.objects.create(username=obj.name + '总管理员', identity='org', password=make_password('686868'))
+			new_user = User.objects.create(username=obj.name + '总管理员', identity='org',
+			                               password=make_password('686868'))
 			Org_User.objects.create(user=new_user, organization=obj, operator=request.user.username)
 			for temp in all_temp:
 				all_perm = [perm for perm in temp.permissions.all()]
@@ -309,6 +300,9 @@ def get_msg_num(request):
 		print(ex)
 		return 0
 
+def date_joined_sort(elem):
+	'''按日期排序'''
+	return elem.date_joined
 
 def page_helper(list, rows, page):
 	'''分页器'''
@@ -346,3 +340,29 @@ def msg_have_read(request, msg_id):
 					'ageny_have_read': msg_obj.ageny_have_read
 				}
 				find_msg.update(**update_dict)
+
+def get_week_day():
+	'''获得当前日期的星期几'''
+	a = time.localtime()
+	return time.strftime("%A", a)
+
+def get_local_time():
+	'''获取当前时间（小时：分钟：秒）'''
+	return time.strftime('%H:%M:%S', time.localtime(time.time()))
+
+
+def check_in_rule(db_rule,balance_change):
+	# 检查是否符合入金规则
+	if [day for day in db_rule.week].count(get_week_day()) > 0:
+		t1 = int(db_rule.begin_time.strftime("%H%M%S"))
+		t2 = int(time.strftime('%H%M%S', time.localtime(time.time())))
+		t3 = int(db_rule.end_time.strftime("%H%M%S"))
+		if t1 < t2 < t3:
+			if db_rule.min_gateway > balance_change or db_rule.min_shortcut > balance_change:
+				return False, '抱歉，入金金额必须大于最小金额限制。'
+			else:
+				return True,''
+		else:
+			return False, '抱歉，现在时间不能进行入金操作。'
+	else:
+		return False, '抱歉，今天不能进行入金操作。'
