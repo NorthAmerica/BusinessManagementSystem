@@ -38,8 +38,8 @@ FUND_STATUS_CHOICES = (
 )
 
 ORDER_STATUS_CHOICES = (
-	('hold','持有'),
-	('end','结束'),
+		('hold','持有'),
+		('end','结束'),
 )
 
 TEMPLATE_TYPE_CHOICES=(
@@ -59,14 +59,14 @@ OPTION_TYPE = (
 	)
 
 CALL_OR_PUT = (
-	('call','看涨'),
-	('put','看跌'),
+		('call','看涨'),
+		('put','看跌'),
 )
 
 OPTION_PATTERN = (
-	('virtual','虚值'),
-	('flat','平值'),
-	('actual','实值'),
+		('virtual','虚值'),
+		('flat','平值'),
+		('actual','实值'),
 )
 
 
@@ -100,6 +100,6 @@ IDENTITY_CHOICE=(
 	)
 
 MSG_TYPE_CHOICE=(
-	('public','公共消息'),
-	('private','私信'),
+		('public','公共消息'),
+		('private','私信'),
 )

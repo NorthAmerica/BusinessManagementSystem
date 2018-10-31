@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{% static 'jquery-weui/lib/weui.min.css'%}">
     <link rel="stylesheet" href="{% static 'jquery-weui/css/jquery-weui.min.css'%}">
     <link rel="stylesheet" href="{% static 'jquery-weui/css/demos.css'%}">
+      <link rel="stylesheet" type="text/css" href="{% static 'verify/css/verify.css'%}">
       <script src="{% static 'jquery-weui/lib/jquery-2.1.4.js'%}"></script>
     <script>
         $.ajaxSetup({
@@ -50,19 +51,21 @@
             </div>
         </div>
         <div class="weui-cell">
-            <div class="weui-cell__hd"><label class="weui-label">滑到<span id="sliderB"></span></label></div>
-            <div class="weui-cell__bd weui-cell_primary">
-
-                <div class="weui-slider-box" id='slider2'>
-                <div class="weui-slider">
-                  <div id="sliderInner" class="weui-slider__inner">
-                    <div id="sliderTrack" style="width: 0%;" class="weui-slider__track"></div>
-                    <div id="sliderHandler" style="left: 0%;" class="weui-slider__handler"></div>
-                  </div>
-                </div>
-                <div id="sliderValue" class="weui-slider-box__value">0</div>
-              </div>
-
+{#            <div class="weui-cell__hd"><label class="weui-label">滑到<span id="sliderB"></span></label></div>#}
+{#            <div class="weui-cell__bd weui-cell_primary">#}
+{##}
+{#                <div class="weui-slider-box" id='slider2'>#}
+{#                <div class="weui-slider">#}
+{#                  <div id="sliderInner" class="weui-slider__inner">#}
+{#                    <div id="sliderTrack" style="width: 0%;" class="weui-slider__track"></div>#}
+{#                    <div id="sliderHandler" style="left: 0%;" class="weui-slider__handler"></div>#}
+{#                  </div>#}
+{#                </div>#}
+{#                <div id="sliderValue" class="weui-slider-box__value">0</div>#}
+{#              </div>#}
+{##}
+{#            </div>#}
+            <div id="mpanel1" >
             </div>
         </div>
 {#        <div class="weui-cell weui-cell_vcode">#}
@@ -88,20 +91,32 @@
     </script>
     <script src="{% static 'jquery-weui/js/jquery-weui.js'%}"></script>
     <script src="{% static 'jquery-weui/js/tool-kit.js'%}"></script>
+    <script type="text/javascript" src="{% static 'verify/js/verify.js'%}"></script>
     <script>
+        var verify = false;
+        $('#mpanel1').slideVerify({
+        		type : 1,		//类型
+        		vOffset : 5,	//误差量，根据需求自行调整
+		        barSize : {
+		        	width : '100%',
+		        	height : '40px',
+		        },
+		        ready : function() {
+        		    verify=false;
+		    	},
+		        success : function() {
+		        	verify=true;
+		        },
+		        error : function() {
+                    verify=false;
+		        }
+
+        });
         $(function () {
-            var slider_value = 0;
-            $('#slider2').slider(function (per) {
-                slider_value = per;
-            });
 
             var code = GetQueryString('code');
             if (code != null && code != undefined) {
                 $('#input_code').val(code);
-            }
-            var slider = getRandom(0,100);
-            if (slider != null && slider != undefined){
-                $('#sliderB').html(slider);
             }
 
             regbtn = $('#reg_btn').click(function () {
@@ -134,8 +149,8 @@
                     $.toptip('提交失败,两次输入的密码必须一致', 'error');
                     return false
                 }
-                if (slider_value!=slider){
-                    $.toptip('提交失败,请将滑动条滑动到指定数字位置', 'error');
+                if(!verify){
+                    $.toptip('注册失败,未滑动验证', 'error');
                     return false
                 }
 

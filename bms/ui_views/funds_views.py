@@ -6,7 +6,7 @@ from django.db import transaction
 from bms.models.choices_for_model import FUND_STATUS_CHOICES
 from bms.forms import *
 from bms.tool_kit.view_shortcuts import get_agency_obj,get_org_obj,get_org_id,get_agency_id,page_helper,date_joined_sort
-from bms.tool_kit.fund_shortcuts import offline_org_balance,offline_agency_balance
+from bms.tool_kit.fund_shortcuts import offline_org_balance,offline_agency_balance,change_client_account_balance,change_agency_account_balance
 from bms.tool_kit.views_decorator import check_fund_rule
 
 @login_required
@@ -103,11 +103,17 @@ def fund_audit(request):
 							# 不能对机构资金明细进行审核
 							return JsonResponse({'success': False, 'msg': '不能对机构资金明细进行审核！'}, safe=False)
 						if fund_detail.client is not None:
-							Client.objects.filter(pk=fund_detail.client_id).update(account_balance=fund_detail.balance_after)
+							result,msg = change_client_account_balance(fund_detail.client_id, fund_detail.balance_change, fund_detail.fund_state)
+							if not result:
+								return JsonResponse({'success': False, 'msg': msg}, safe=False)
+							# Client.objects.filter(pk=fund_detail.client_id).update(account_balance=fund_detail.balance_after)
 						if fund_detail.agency is not None:
 							if request.user.identity == 'org':
 								# 上级才能对资金明细进行审核
-								Agency.objects.filter(pk=fund_detail.agency_id).update(account_balance=fund_detail.balance_after)
+								result, msg = change_agency_account_balance(fund_detail.agency_id,fund_detail.balance_change,fund_detail.fund_state)
+								if not result:
+									return JsonResponse({'success': False, 'msg': msg}, safe=False)
+								# Agency.objects.filter(pk=fund_detail.agency_id).update(account_balance=fund_detail.balance_after)
 							else:
 								return JsonResponse({'success': False, 'msg': '只有上级才能对资金明细进行审核！'}, safe=False)
 					find_fund_detail.update(fund_audit=fund_audit)

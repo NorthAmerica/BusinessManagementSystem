@@ -119,14 +119,14 @@ def auto_add_permissions(obj, request, org_agency):
 		if org_agency == 'org':
 			all_temp = Group_Template.objects.filter(type='org')
 			new_user = User.objects.create(username=obj.name + '总管理员', identity='org',
-			                               password=make_password('686868'))
+										   password=make_password('686868'))
 			Org_User.objects.create(user=new_user, organization=obj, operator=request.user.username)
 			for temp in all_temp:
 				all_perm = [perm for perm in temp.permissions.all()]
 				all_object_perm = list(temp.groupobjectpermission_set.all())
 
 				s_group = Special_Group.objects.create(name=obj.name + temp.temp_name, org=obj,
-				                                       operator=request.user.username)
+													   operator=request.user.username)
 				for perm in all_perm:
 					s_group.permissions.add(perm)
 				for object_perm in all_object_perm:
@@ -138,14 +138,14 @@ def auto_add_permissions(obj, request, org_agency):
 		elif org_agency == 'agency':
 			all_temp = Group_Template.objects.filter(type='agency')
 			new_user = User.objects.create(username=obj.name + '总管理员', identity='agency',
-			                               password=make_password('686868'))
+										   password=make_password('686868'))
 			Agency_User.objects.create(user=new_user, agency=obj, operator=request.user.username)
 			for temp in all_temp:
 				all_perm = [perm for perm in temp.permissions.all()]
 				all_object_perm = list(temp.groupobjectpermission_set.all())
 
 				s_group = Special_Group.objects.create(name=obj.name + temp.temp_name, agency=obj,
-				                                       operator=request.user.username)
+													   operator=request.user.username)
 				for perm in all_perm:
 					s_group.permissions.add(perm)
 				for object_perm in all_object_perm:
@@ -242,7 +242,7 @@ def send_msg_to_client(sender, title, msg, clients_id):
 			'operator': sender
 		}
 		Message.objects.create(**msg_dict).client.add(*Client.objects.filter(id__in=str(clients_id).split(',')))
-	# Message.save()
+
 	except Exception as ex:
 		print(ex)
 

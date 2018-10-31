@@ -11,7 +11,6 @@ import os
 
 @Check_Login('/login')
 def my_account(request):
-
 	try:
 		account_list = []
 		client_id = request.session.get('client_id', None)

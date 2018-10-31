@@ -17,16 +17,7 @@ def get_client_balance(client_id):
 		print(ex)
 		return 0
 
-def change_client_account_balance(client_id,balance_after):
-	"""改变客户账户余额"""
-	try:
-		update_count = Client.objects.filter(pk=client_id).update(account_balance=balance_after)
-		if update_count>0:
-			return True
-		return False
-	except Exception as ex:
-		print(ex)
-		return False
+
 
 def frozen_client_balance(client_id,frozen_balance):
 	"""冻结客户账户金额"""
@@ -60,30 +51,80 @@ def unfrozen_client_balance(client_id,frozen_balance):
 		print(ex)
 		return False
 
-def change_org_account_balance(org_id,balance_after):
+def change_client_account_balance(client_id,balance_change,in_or_out):
+	"""改变客户账户余额"""
+	try:
+		find_client = Client.objects.filter(pk=client_id)
+		if find_client.exists():
+			if in_or_out=='in':
+				client_balance = find_client.first().account_balance+balance_change
+				update_count = Client.objects.filter(pk=client_id).update(account_balance=client_balance)
+				if update_count>0:
+					return True,''
+			elif in_or_out=='out':
+				client_balance = find_client.first().account_balance
+				if client_balance<balance_change:
+					return False,'出金失败，出金金额大于账户余额'
+				else:
+					new_balance = client_balance-balance_change
+					update_count = Client.objects.filter(pk=client_id).update(account_balance=new_balance)
+					if update_count > 0:
+						return True,''
+		return False,'客户账户不存在'
+	except Exception as ex:
+		print(ex)
+		return False,ex.__str__()
+
+def change_org_account_balance(org_id,balance_change,in_or_out):
 	"""改变机构账户余额"""
 	try:
-		update_count = Organization.objects.filter(pk=org_id).update(account_balance=balance_after)
-		if update_count>0:
-			return True
-		return False
+		find_org = Organization.objects.filter(pk=org_id)
+		if find_org.exists():
+			if in_or_out == 'in':
+				new_in_balance = find_org.first().account_balance+balance_change
+				update_count = Organization.objects.filter(pk=org_id).update(account_balance=new_in_balance)
+				if update_count>0:
+					return True,''
+			elif in_or_out=='out':
+				org_balance = find_org.first().account_balance
+				if org_balance<balance_change:
+					return False,'出金失败，出金金额大于账户余额'
+				else:
+					new_balance = org_balance-balance_change
+					update_count = Organization.objects.filter(pk=org_id).update(account_balance=new_balance)
+					if update_count > 0:
+						return True,''
+		return False,'机构账户不存在'
 	except Exception as ex:
 		print(ex)
-		return False
+		return False,ex.__str__()
 
-def change_agency_account_balance(agency_id,balance_after):
+def change_agency_account_balance(agency_id,balance_change,in_or_out):
 	"""改变归属账户余额"""
 	try:
-		update_count = Agency.objects.filter(pk=agency_id).update(account_balance=balance_after)
-		if update_count>0:
-			return True
-		return False
+		find_agency = Agency.objects.filter(pk=agency_id)
+		if find_agency.exists():
+			if in_or_out=='in':
+				new_in_balance = find_agency.first().account_balance + balance_change
+				update_count = Agency.objects.filter(pk=agency_id).update(account_balance=new_in_balance)
+				if update_count>0:
+					return True
+			elif in_or_out=='out':
+				agency_balance = find_agency.first().account_balance
+				if agency_balance < balance_change:
+					return False, '出金失败，出金金额大于账户余额'
+				else:
+					new_balance = agency_balance - balance_change
+					update_count = Agency.objects.filter(pk=agency_id).update(account_balance=new_balance)
+					if update_count > 0:
+						return True, ''
+		return False,'归属账户不存在'
 	except Exception as ex:
 		print(ex)
-		return False
+		return False,ex.__str__()
 
 def offline_client_balance(client_id,in_or_out,balance,operator):
-	'''客户线下出入金'''
+	'''客户线下出入金申请'''
 	try:
 		find_client = Client.objects.filter(pk=client_id)
 		if find_client.exists():
@@ -92,7 +133,7 @@ def offline_client_balance(client_id,in_or_out,balance,operator):
 				old_balance = client.account_balance
 				client.account_balance+=balance
 				new_balance = client.account_balance
-				# Client.objects.filter(pk=client_id).update(account_balance=new_balance)
+
 				fund_dic = {
 					'client':client,
 					'fund_state':'in',
@@ -109,7 +150,7 @@ def offline_client_balance(client_id,in_or_out,balance,operator):
 				old_balance = client.account_balance
 				client.account_balance -= balance
 				new_balance = client.account_balance
-				# Client.objects.filter(pk=client_id).update(**client)
+
 				fund_dic = {
 					'client': client,
 					'fund_state': 'out',
@@ -128,7 +169,7 @@ def offline_client_balance(client_id,in_or_out,balance,operator):
 		return False
 
 def offline_org_balance(org_id,in_or_out,balance,operator):
-	'''机构线下出入金'''
+	'''机构线下出入金申请'''
 	try:
 		if isinstance(balance,str):
 			balance = Decimal(balance)
@@ -139,7 +180,7 @@ def offline_org_balance(org_id,in_or_out,balance,operator):
 				old_balance = org.account_balance
 				org.account_balance+=balance
 				new_balance = org.account_balance
-				# Client.objects.filter(pk=client_id).update(account_balance=new_balance)
+
 				fund_dic = {
 					'org':org,
 					'fund_state':'in',
@@ -158,7 +199,7 @@ def offline_org_balance(org_id,in_or_out,balance,operator):
 				old_balance = org.account_balance
 				org.account_balance -= balance
 				new_balance = org.account_balance
-				# Client.objects.filter(pk=client_id).update(**client)
+
 				fund_dic = {
 					'org': org,
 					'fund_state': 'out',
@@ -177,7 +218,7 @@ def offline_org_balance(org_id,in_or_out,balance,operator):
 		return False,ex.__str__()
 
 def offline_agency_balance(agency_id,in_or_out,balance,operator):
-	'''归属线下出入金'''
+	'''归属线下出入金申请'''
 	try:
 		if isinstance(balance,str):
 			balance = Decimal(balance)
@@ -188,7 +229,6 @@ def offline_agency_balance(agency_id,in_or_out,balance,operator):
 				old_balance = agency.account_balance
 				agency.account_balance+=balance
 				new_balance = agency.account_balance
-				# Client.objects.filter(pk=client_id).update(account_balance=new_balance)
 				fund_dic = {
 					'agency':agency,
 					'fund_state':'in',
@@ -207,7 +247,7 @@ def offline_agency_balance(agency_id,in_or_out,balance,operator):
 				old_balance = agency.account_balance
 				agency.account_balance -= balance
 				new_balance = agency.account_balance
-				# Client.objects.filter(pk=client_id).update(**client)
+
 				fund_dic = {
 					'agency': agency,
 					'fund_state': 'out',

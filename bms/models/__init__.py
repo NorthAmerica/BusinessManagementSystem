@@ -11,6 +11,7 @@ from .menu_model import Menu
 from .record_model import Change_Info
 from .rule_model import Fund_In_Rule,Fund_Out_Rule,Exchange_Rule,Notional_Principal
 from .group_template_model import Group_Template
+from .options_model import Options_File,Option_Rate
 from .choices_for_model import WEB_APP_CHOICES,\
 	STATUS_CHOICES,\
 	BUSINESS_TYPE,\
