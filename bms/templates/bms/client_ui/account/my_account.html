@@ -32,11 +32,11 @@
                         </div>
                         <div class="weui-form-preview__item">
                             <label class="weui-form-preview__label">交易前余额</label>
-                            <span class="weui-form-preview__value">¥{{ account.balance_before }}</span>
+                            <span class="weui-form-preview__value">¥{{ account.balance_before|intcomma }}</span>
                         </div>
                         <div class="weui-form-preview__item">
                             <label class="weui-form-preview__label">交易后余额</label>
-                            <span class="weui-form-preview__value">¥{{ account.balance_after }}</span>
+                            <span class="weui-form-preview__value">¥{{ account.balance_after|intcomma }}</span>
                         </div>
                         <div class="weui-form-preview__item">
                             <label class="weui-form-preview__label">申请时间</label>

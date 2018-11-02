@@ -1,0 +1,39 @@
+<div class="weui-tab" id="bj-nav">
+    <div class="weui-navbar">
+        <a class="weui-navbar__item weui-bar__item--on" href="#bj-tab1">
+            未报价
+        </a>
+        <a class="weui-navbar__item" href="#bj-tab2">
+            已报价
+        </a>
+    </div>
+    <div class="weui-tab__bd for-bj">
+        <div id="bj-tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
+            {% include 'bms/client_ui/exchange/no_quote.html' %}
+        </div>
+        <div id="bj-tab2" class="weui-tab__bd-item">
+            {% include 'bms/client_ui/exchange/has_quote.html' %}
+        </div>
+    </div>
+</div>
+{% block javascript %}
+<script type="text/javascript">
+    $('#bj-nav .weui-navbar__item').click(function () {
+
+        var href = $(this).attr("href");
+        if($(this).hasClass(ITEM_ON)) return;
+        if(!/^#/.test(href)) return;
+
+        $(this).parent().find("."+ITEM_ON).removeClass(ITEM_ON);
+        $(this).addClass(ITEM_ON);
+
+        var bd = $(this).parents("#bj-nav").find(".weui-tab__bd");
+        bd = bd.filter('.for-bj');
+
+        bd.children(".weui-tab__bd-item--active").removeClass("weui-tab__bd-item--active");
+
+        $(href).addClass("weui-tab__bd-item--active");
+    });
+
+</script>
+{% endblock javascript %}

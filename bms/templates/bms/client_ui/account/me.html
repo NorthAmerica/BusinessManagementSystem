@@ -1,3 +1,4 @@
+{% load humanize %}
 {% load staticfiles %}
 <header class='demos-header'>
   <h1 class="demos-title">账户信息</h1>
@@ -9,7 +10,7 @@
         <div class="weui-cell__bd">
             <p>我的账户</p>
         </div>
-        <div class="weui-cell__ft" style="color: red;">¥{{ client_balance }}</div>
+        <div class="weui-cell__ft" style="color: red;">¥{{ client_balance|intcomma }}</div>
     </a>
     <a class="weui-cell weui-cell_access" href="/recharge_page">
         <div class="weui-cell__hd"><img src="{% static 'jquery-weui/images/in.png'%}" alt="" style="width:20px;margin-right:5px;display:block"></div>

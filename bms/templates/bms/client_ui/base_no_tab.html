@@ -23,6 +23,11 @@
     {% block main-content %}
     {% endblock main-content %}
 <script src="{% static 'jquery-weui/lib/fastclick.js'%}"></script>
+<script>
+  $(function() {
+    FastClick.attach(document.body);
+  });
+</script>
 <script src="{% static 'jquery-weui/js/jquery-weui.min.js'%}"></script>
 <script src="{% static 'jquery-weui/js/city-picker.js'%}"></script>
 <script src="{% static 'jquery-weui/js/tool-kit.js'%}"></script>

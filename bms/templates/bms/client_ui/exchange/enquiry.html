@@ -1,0 +1,109 @@
+{% load humanize %}
+{% load staticfiles %}
+{#<link rel="stylesheet" href="{% static 'bootstrap/bootstrap.min.css' %}">#}
+<link rel="stylesheet" href="{% static 'bootstrap-select/for-select.css' %}">
+<link rel="stylesheet" href="{% static 'bootstrap-select/bootstrap-select.css' %}">
+{#<style>#}
+{#    .dowebok { width: 210px;}#}
+{#</style>#}
+<div class="weui-cells">
+    <a class="weui-cell weui-cell_access" href="/recharge_page">
+        <div class="weui-cell__bd">
+            <p>资金余额</p>
+        </div>
+        <div class="weui-cell__ft" style="color: red;">¥{{ client_balance|intcomma }}</div>
+    </a>
+</div>
+
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><p class="weui-label">商品标的</p></div>
+        <div class="weui-cell__bd">
+            <select id="myselect" class="selectpicker form-control" data-live-search="true">
+                <option>四川(sichuan)</option>
+                <option>江西(jiangxi)</option>
+                <option>湖北(hubei)</option>
+                <option>上海(shanghai)</option>
+                <option>北京(beijing)</option>
+                <option>河北(hebei)</option>
+            </select>
+
+        </div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><p class="weui-label">选择期限</p></div>
+        <div class="weui-cell__bd">
+            <select class="selectpicker form-control" data-live-search="true">
+                <option>一天(sichuan)</option>
+                <option>两天(jiangxi)</option>
+                <option>三天(hubei)</option>
+                <option>四天(shanghai)</option>
+                <option>一周(beijing)</option>
+                <option>两周(hebei)</option>
+                <option>一天(sichuan)</option>
+                <option>两天(jiangxi)</option>
+                <option>三天(hubei)</option>
+                <option>四天(shanghai)</option>
+                <option>一周(beijing)</option>
+                <option>两周(hebei)</option>
+            </select>
+        </div>
+    </div>
+<div class="weui-cells">
+    <div class="weui-cell">
+        <div class="weui-cell__hd"><p class="weui-label">名义金额</p></div>
+        <div class="weui-cell__bd">
+            <input class="weui-input" style="font-weight: bold" type="number" pattern="[0-9]*" placeholder="请输入金额">
+        </div>
+        <div class="weui-cell__hd"><p class="weui-label">万元</p></div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cells__title" style="font-size: medium;color: black">期权类型:</div>
+        <div class="weui-cells weui-cells_radio">
+            <label class="weui-cell weui-check__label" for="x11">
+                <div class="weui-cell__bd">
+                    <p style="font-weight: normal;">看涨期权</p>
+                </div>
+                <div class="weui-cell__ft">
+                    <input type="radio" class="weui-check" name="radio1" id="x11" checked="checked">
+                    <span class="weui-icon-checked"></span>
+                </div>
+            </label>
+            <label class="weui-cell weui-check__label" for="x12">
+
+                <div class="weui-cell__bd">
+                    <p style="font-weight: normal">看跌期权</p>
+                </div>
+                <div class="weui-cell__ft">
+                    <input type="radio" name="radio1" class="weui-check" id="x12">
+                    <span class="weui-icon-checked"></span>
+                </div>
+            </label>
+        </div>
+    </div>
+    <div class="weui-cell" style="height: content-box">
+        <div class="weui-cells__title" style="font-size: medium;color: black">期权模式:</div>
+        <div class="weui-cells weui-cells_radio">
+            <label class="weui-cell weui-check__label" for="x13">
+                <div class="weui-cell__bd">
+                    <p style="font-weight: normal;">平值期权</p>
+                </div>
+                <div class="weui-cell__ft">
+                    <input type="radio" class="weui-check" name="radio2" id="x13" checked="checked">
+                    <span class="weui-icon-checked"></span>
+                </div>
+            </label>
+        </div>
+    </div>
+</div>
+<div class="weui-btn-area">
+    <a class="weui-btn weui-btn_primary" href="javascript:" id="showTooltips">询价</a>
+</div>
+{% block javascript %}
+<script src="{% static 'bootstrap/bootstrap.min.js' %}"></script>
+<script src="{% static 'bootstrap-select/bootstrap-select.js' %}"></script>
+    <script>
+        {#$(function() {#}
+        {#    $('#myselect').comboSelect();#}
+        {# });#}
+    </script>
+{% endblock javascript %}

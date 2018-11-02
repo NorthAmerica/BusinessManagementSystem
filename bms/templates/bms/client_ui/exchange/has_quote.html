@@ -1,0 +1,73 @@
+{% load humanize %}
+{% load staticfiles %}
+
+<div class="weui-cells">
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <p>合约</p>
+        </div>
+        <div class="weui-cell__ft" style="color: red;">玉米1910</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <p>名义本金</p>
+        </div>
+        <div class="weui-cell__ft">20W</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <p>行权周期</p>
+        </div>
+        <div class="weui-cell__ft">14天</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <p>执行价格</p>
+        </div>
+        <div class="weui-cell__ft">1212</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <p>期权费率</p>
+        </div>
+        <div class="weui-cell__ft">等待报价</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <p>期权类型</p>
+        </div>
+        <div class="weui-cell__ft">看涨期权</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <p>期权模式</p>
+        </div>
+        <div class="weui-cell__ft">平值期权</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <p>询价时间</p>
+        </div>
+        <div class="weui-cell__ft">08-28</div>
+    </div>
+    <div class="weui-cell">
+        <div class="weui-cell__bd">
+            <p>期权费</p>
+        </div>
+        <div class="weui-cell__ft">2393</div>
+    </div>
+</div>
+<div class="weui-btn-area">
+    <a class="weui-btn weui-btn_primary" href="javascript:" id="confirm_order">立即下单</a>
+</div>
+{% block javascript %}
+    <script>
+    $(document).on("click", "#confirm_order", function() {
+        $.confirm("您确定要下单吗?", "确认下单", function() {
+          $.toast("下单成功!");
+        }, function() {
+          //取消操作
+        });
+      });
+    </script>
+{% endblock javascript %}

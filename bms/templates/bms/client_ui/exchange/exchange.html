@@ -15,37 +15,21 @@
   </div>
 
   <div class="weui-tab__bd for-ex">
-    <div id="ex-tab1" class="weui-tab__bd-item weui-tab__bd-item--active">
-      <h1>询价</h1>
-        <h1>页面一</h1>
-        <h1>页面一</h1>
-        <h1>页面一</h1>
-        <h1>页面一</h1>
+    <div id="ex-tab1" class="weui-tab__bd-item weui-tab__bd-item--active" style="height: 100%; overflow-y: hidden;">
+        {% include 'bms/client_ui/exchange/enquiry.html' %}
     </div>
     <div id="ex-tab2" class="weui-tab__bd-item">
-      <h1>下单</h1>
-        <h1>页面二</h1>
-        <h1>页面二</h1><h1>页面二</h1><h1>页面二</h1>
-        <h1>页面二</h1>
+      {% include 'bms/client_ui/exchange/order.html' %}
     </div>
     <div id="ex-tab3" class="weui-tab__bd-item">
-      <h1>持仓</h1>
-        <h1>页面二</h1>
-        <h1>页面二</h1><h1>页面二</h1><h1>页面二</h1>
-        <h1>页面二</h1>
+      {% include 'bms/client_ui/exchange/position.html' %}
     </div>
     <div id="ex-tab4" class="weui-tab__bd-item">
-      <h1>结算</h1>
-        <h1>页面二</h1>
-        <h1>页面二</h1><h1>页面二</h1><h1>页面二</h1>
-        <h1>页面二</h1>
+      {% include 'bms/client_ui/exchange/settlement.html' %}
     </div>
   </div>
 </div>
 <script type="text/javascript">
-    $(function(){
-    });
-
 
     $('#ex-nav .weui-navbar__item').click(function () {
         var href = $(this).attr("href");
@@ -54,7 +38,7 @@
 
         $(this).parent().find("."+ITEM_ON).removeClass(ITEM_ON);
         $(this).addClass(ITEM_ON);
-        {#debugger;#}
+
         var bd = $(this).parents("#ex-nav").find(".weui-tab__bd");
         bd = bd.filter('.for-ex');
 
